@@ -32,7 +32,7 @@ We release AfriSpeech, 196 hrs of Pan-African speech across 120 indigenous accen
 
 - Total Number of Unique Speakers: 2,463
 - Female/Male/Other Ratio: 51.96/47.38/0.66
-
+- Data was first split on speakers. Speakers in Train/Dev/Test do not cross partitions
 
 |  | Train | Dev | Test |
 | ----------- | ----------- | ----------- | ----------- |
@@ -68,7 +68,7 @@ We release AfriSpeech, 196 hrs of Pan-African speech across 120 indigenous accen
 
 #### Accent Stats
 
-|  Accent | Clips | Speakers | Duration | Country | Splits | 
+|  Accent | Clips | Speakers | Duration (s) | Country | Splits | 
 | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
 | yoruba | 15241 | 683 | 159835.76 | US,NG | train,test,dev |
 | igbo | 8598 | 374 | 92197.0 | US,NG,ZA | train,test,dev |
@@ -191,3 +191,9 @@ We release AfriSpeech, 196 hrs of Pan-African speech across 120 indigenous accen
 | bagi | 15 | 1 | 235.54 | NG | test |
 | gerawa | 10 | 1 | 245.01 | NG | test |
 
+
+--------
+ 
+#### License
+
+(c) 2022. This work is licensed under a CC BY-NC-SA 4.0 license. See official instructions [here](https://creativecommons.org/about/cclicenses/).
