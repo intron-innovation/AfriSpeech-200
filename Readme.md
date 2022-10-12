@@ -196,4 +196,4 @@ We release AfriSpeech, 196 hrs of Pan-African speech across 120 indigenous accen
  
 #### License
 
-(c) 2022. This work is licensed under a CC BY-NC-SA 4.0 license. See official instructions [here](https://creativecommons.org/about/cclicenses/).
+(c) 2022. This work is licensed under a CC BY-NC-SA 4.0 license.
