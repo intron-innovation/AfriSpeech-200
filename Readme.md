@@ -30,6 +30,10 @@ We release AfriSpeech, 196 hrs of Pan-African speech across 120 indigenous accen
 
 #### Data Stats
 
+- Total Number of Unique Speakers: 2,463
+- Female/Male/Other Ratio: 51.96/47.38/0.66
+
+
 |  | Train | Dev | Test |
 | ----------- | ----------- | ----------- | ----------- |
 | # Speakers | 1466 | 247 | 750 |
@@ -44,7 +48,26 @@ We release AfriSpeech, 196 hrs of Pan-African speech across 120 indigenous accen
 | # clips clinical domain | 36319 | 1825 | 2868 |
 
 
+#### Country Stats
+
+| Country | Clips | Speakers | Duration (seconds) | Duration (hrs) |
+| ----------- | ----------- | ----------- | ----------- | ----------- |
+| NG | 44722 | 1979 | 499016.25 | 138.62 |
+| KE | 8254 | 137 | 74713.57 | 20.75 |
+| ZA | 7837 | 223 | 81387.36 | 22.61 |
+| GH | 2008 | 37 | 18475.60 | 5.13 |
+| BW | 1384 | 38 | 14194.02 | 3.94 |
+| UG | 1081 | 26 | 10318.94 | 2.87 |
+| RW | 466 | 9 | 5260.11 | 1.46 |
+| US | 219 | 5 | 1900.98 | 0.53 |
+| TR | 66 | 1 | 664.01 | 0.18 |
+| ZW | 63 | 3 | 635.11 | 0.18 |
+| MW | 60 | 1 | 554.61 | 0.15 |
+| TZ | 51 | 2 | 645.51 | 0.18 |
+| LS | 7 | 1 | 78.40 | 0.02 |
+
 #### Accent Stats
+
 |  Accent | Clips | Speakers | Duration | Country | Splits | 
 | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
 | yoruba | 15241 | 683 | 159835.76 | US,NG | train,test,dev |
