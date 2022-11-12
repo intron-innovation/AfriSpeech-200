@@ -200,12 +200,12 @@ Here are the steps to access the data
 platform (linux/mac/windows) following the instructions [here](https
 ://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) 
 
-2. Create a download folder e.g. `mkdir data`
+2. Create a download folder e.g. `mkdir AfriSpeech-100`
 
 3. Request aws credentials to access the data by sending an email
 with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM on slack
 
-4. Once you receive credentials, change into your data directory `cd data`
+4. Once you receive credentials, change into your data directory `cd AfriSpeech-100`
 
 5. Type `aws configure` at the command line, hit enter, and fill in the following based on the credentials you receive.
     ```
