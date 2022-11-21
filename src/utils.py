@@ -16,10 +16,13 @@ def cleanup(text):
     text = text.replace('\n', '')
     text = text.lower()
     text = text.replace(" comma,", ",") \
+        .replace(" koma,", " ") \
+        .replace(" coma,", " ") \
         .replace(" full stop.", ".") \
         .replace(" full stop", ".") \
         .replace(",.", ".") \
-        .replace(",,", ",")
+        .replace(",,", ",") \
+        .strip()
     text = " ".join(text.split())
     text = re.sub(r"[^a-zA-Z0-9\s\.\,\-\?\:\'\/\(\)\[\]\+\%]", '', text)
     return text
