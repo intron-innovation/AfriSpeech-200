@@ -15,7 +15,7 @@ from transformers import (
                           TrainingArguments,
                           Trainer,
                           set_seed)
-import utils
+from src.utils import cleanup
 
 set_seed(1778)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -36,7 +36,7 @@ def load_data(data_path, max_audio_len_secs=17):
     data = data[data.duration < max_audio_len_secs]
     data['text'] = data['transcript']
     print("before dedup", data.shape)
-    data.drop_duplicates(subset=['audio_path'], inplace=True)
+    data.drop_duplicates(subset=['audio_paths'], inplace=True)
     print("after dedup", data.shape)
     return Dataset.from_pandas(data)
 
@@ -47,7 +47,7 @@ def compute_benchmarks(batch):
     :param batch:
     :return:
     """
-    speech, fs = librosa.load(batch["audio_path"], sr=16000)
+    speech, fs = librosa.load(batch["audio_paths"], sr=16000)
     if fs != 16000:
         speech = librosa.resample(speech, fs, 16000)
 
@@ -61,30 +61,31 @@ def compute_benchmarks(batch):
 
     pred_ids = torch.argmax(torch.tensor(batch['logits']), dim=-1)
     pred = processor.batch_decode(pred_ids)[0]
-    batch['predictions'] = utils.cleanup(pred)
-    batch['reference'] = utils.cleanup(batch['text']).lower()
+    batch['predictions'] = cleanup(pred)
+    batch['reference'] = cleanup(batch['text']).lower()
     batch['wer'] = wer_metric.compute(predictions=[batch['predictions']],
                                       references=[batch['reference']])
     return batch
 
 
-def write_pred(model_id_or_path, results, wer):
+def write_pred(model_id_or_path, results, wer, output_dir="./results"):
     """
     Write model predictions to file
+    :param output_dir: str
     :param model_id_or_path: str
     :param results: Dataset instance
     :param wer: float
     :return: DataFrame
     """
     model_id_or_path = model_id_or_path.replace("/", "-")
-    cols = ['audio_path', 'text',
+    cols = ['audio_paths', 'text',
             'reference', 'predictions', 'wer', 'accent']
     predictions_data = {col: results[col] for col in cols}
     predictions_df = pd.DataFrame(data=predictions_data)
 
-    outpath = f'/data/saved_models/intron-open-test-{model_id_or_path}-wer-{round(wer, 4)}-{len(predictions_df)}.csv'
-    predictions_df.to_csv(outpath, index=False)
-    print(outpath)
+    output_path = f'{output_dir}/intron-open-test-{model_id_or_path}-wer-{round(wer, 4)}-{len(predictions_df)}.csv'
+    predictions_df.to_csv(output_path, index=False)
+    print(output_path)
     return predictions_df
 
 

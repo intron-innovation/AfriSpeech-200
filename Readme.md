@@ -220,6 +220,18 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 7. Download may take over 2hrs depending on your bandwidth. Train set: 57816, 103G; Dev set: 3227, 5.2G
 
 
+### How to run this code
+
+1. Create a virtual environment `conda create -n afrispeech python=3.8`
+
+2. Activate the virtual environment `conda activate afrispeech`
+
+3. Install pytorch for your operating system by following https://pytorch.org/
+
+4. Install requirements `pip3 install -r requirements.txt`
+
+5. Run `python3 bin/run_benchmarks.py`
+
 --------
  
 #### License
