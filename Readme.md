@@ -11,7 +11,7 @@ Contributor List: []
 #### Progress
 - [x] Select & Publish and splits
 - [x] Upload audio
-- [ ] Start experiments
+- [x] Start experiments
 
 
 #### Abstract [draft]
@@ -219,6 +219,41 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 
 7. Download may take over 2hrs depending on your bandwidth. Train set: 57816, 103G; Dev set: 3227, 5.2G
 
+
+### How to run this code
+
+1. Create a virtual environment `conda create -n afrispeech python=3.8`
+
+2. Activate the virtual environment `conda activate afrispeech`
+
+3. Install pytorch for your operating system by following https://pytorch.org/
+
+4. Install requirements `pip3 install -r requirements.txt`
+
+5. Run `python3 bin/run_benchmarks.py`
+
+
+### Benchmark Results
+
+| Model | Dev WER |
+| ----------- | ----------- |
+| Whisper-medium (cleanup) | 0.383 |
+| Whisper-medium | 0.486 |
+| nemo-conformer-ctc-large WER | 0.477 |
+| nemo-conformer-transducer-large WER | 0.481 |
+| AWS transcribe API | 0.5212 |
+| AWS transcribe Medical API (Primary Care) | 0.5544 |
+| jonatasgrosman/wav2vec2-large-xlsr-53-english | 0.554 |
+| jonatasgrosman/wav2vec2-xls-r-1b-english | 0.570 |
+| facebook/wav2vec2-large-960h-lv60-self | 0.596 |
+| facebook/hubert-large-ls960-ft | 0.624 | 
+| facebook/hubert-large-ls960-ft (cleanup) | 0.682 |
+| facebook/wav2vec2-large-960h | 0.693 |
+| facebook/hubert-large-ls960-ft | 0.738 |
+| facebook/wav2vec2-large-robust-ft-swbd-300h | 0.765 |
+| wavlm-libri-clean-100h-base-plus (cleanup) | 0.840 |
+| wavlm-libri-clean-100h-base-plus | 0.870 |
+| speechbrain-crdnn-rnnlm-librispeech WER | 0.899 |
 
 --------
  
