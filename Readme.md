@@ -243,10 +243,14 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 | nemo-conformer-transducer-large WER | 0.481 |
 | AWS transcribe API | 0.5212 |
 | AWS transcribe Medical API (Primary Care) | 0.5544 |
-| jonatasgrosman/wav2vec2-large-xlsr-53-english | 0.554 |
-| jonatasgrosman/wav2vec2-xls-r-1b-english | 0.570 |
+| wav2vec2-large-xlsr-53-english | 0.554 |
+| wav2vec2-xls-r-1b-english | 0.570 |
+| GCP Speech API (cleanup) | 0.577 |
 | facebook/wav2vec2-large-960h-lv60-self | 0.596 |
+| GCP medical transcription API | 0.598 |
+| GCP Speech API | 0.604 |
 | facebook/hubert-large-ls960-ft | 0.624 | 
+| wavlm-libri-clean-100h-large | 0.673
 | facebook/hubert-large-ls960-ft (cleanup) | 0.682 |
 | facebook/wav2vec2-large-960h | 0.693 |
 | facebook/hubert-large-ls960-ft | 0.738 |
