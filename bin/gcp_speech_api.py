@@ -102,7 +102,7 @@ if __name__ == '__main__':
     dataset_path = "./data/intron-dev-public-3232.csv"
     data_df = pd.read_csv(dataset_path)
     data_df = data_df[data_df.duration < 17]
-    
+
     service = 'gcp-transcribe-medical'
 
     data_df = main_transcribe_medical(data_df, service)
