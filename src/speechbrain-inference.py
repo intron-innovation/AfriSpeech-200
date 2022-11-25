@@ -1,7 +1,7 @@
 from speechbrain.pretrained import EncoderDecoderASR
 import glob
 
-ABS = "/scratch/pbsjobs/axy327/dev/"
+ABS = "/scratch/pbsjobs/axy327/dev/" # this is the path where the audio files exist
 wavfiles =  glob.glob(ABS+"*/"+"*.wav")
 uttids = []
 predictions = []
