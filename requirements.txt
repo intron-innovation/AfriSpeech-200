@@ -81,6 +81,11 @@ hydra-core==1.1.2
 idna
 ijson==3.1.4
 imagesize==1.4.1
+google-api-core==2.10.2
+google-auth==2.14.1
+google-cloud-speech==2.16.2
+googleapis-common-protos==1.57.0
+grpcio-status==1.50.0
 importlib-metadata==5.0.0
 inflect==6.0.2
 iniconfig==1.1.1
@@ -146,7 +151,6 @@ pooch==1.6.0
 portalocker==2.6.0
 promise==2.3
 prompt-toolkit==3.0.32
-protobuf==3.20.1
 psutil==5.9.4
 ptyprocess==0.7.0
 pure-eval==0.2.2
@@ -171,6 +175,8 @@ pyrsistent==0.19.2
 pystoi==0.3.3
 pytest-runner==6.0.0
 pytest==7.2.0
+proto-plus==1.22.1
+protobuf==4.21.9
 python-dateutil==2.8.2
 pytorch-lightning==1.7.6
 pytz==2022.6
