@@ -1,4 +1,5 @@
 import os
+import argparse
 import pandas as pd
 import time
 from datasets import load_dataset, load_metric, Dataset
@@ -117,4 +118,57 @@ def run_benchmarks(model_id_or_path, test_dataset, output_dir="./results"):
     print(
         f"{model_id_or_path}-- Inference Time: {ttime_elapsed / 60:.4f}m | "
         f"{ttime_elapsed / n_samples:.4f}s per sample"
+    )
+
+
+def parse_argument():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--data_csv_path",
+        type=str,
+        default="./data/intron-dev-public-3232.csv",
+        help="path to data csv file",
+    )
+    parser.add_argument(
+        "--model_id_or_path",
+        type=str,
+        default="facebook/hubert-large-ls960-ft",
+        help="id of the model or path to huggyface model",
+    )
+    parser.add_argument(
+        "--output_dir", type=str, default="./results", help="directory to store results"
+    )
+
+    args = parser.parse_args()
+    return args
+
+
+if __name__ == "__main__":
+    """Run main script"""
+    args = parse_argument()
+
+    # Make output directory if does not already exist.
+    os.makedirs(args.output_dir, exist_ok=True)
+
+    # Load dataset using huggyface dataset class because the
+    # `compute_benchmarks` function is mapped in the `run_benchmarks`
+    # function. So, `test_dataset` must be a Dataset type.
+    ds = load_dataset("csv", data_files={"dev": args.data_csv_path})["dev"]
+
+    # This block can be removed once the data csv file removes the
+    # `/AfriSpeech-100` prepended to the audio path.
+    DATA_PAR_DIR = os.path.dirname(args.data_csv_path)
+
+    def _fix_audio_path(batch):
+        batch["audio_paths"] = batch["audio_paths"].replace(
+            "/AfriSpeech-100", f"{DATA_PAR_DIR}"
+        )
+        return batch
+
+    ds = ds.map(_fix_audio_path).select(range(10))
+
+    run_benchmarks(
+        model_id_or_path=args.model_id_or_path,
+        test_dataset=ds,
+        output_dir=args.output_dir,
     )
