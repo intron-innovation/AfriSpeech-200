@@ -113,7 +113,6 @@ def transcribe_whisper(dataframe, model_size="medium"):
 
     model = whisper.load_model(model_size)
     for i in range(len(dataframe)):
-        print(audio_paths[i])
         pred = model.transcribe(audio_paths[i], language="en")["text"]
 
         idx = indexes[i]
