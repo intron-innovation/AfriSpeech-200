@@ -32,7 +32,7 @@ LONG_SPEECH_DETECTED = False
 MAX_MODEL_AUDIO_LEN = 59
 
 
-def load_data(data_path, max_audio_len_secs=MAX_MODEL_AUDIO_LEN, return_dataset=True):
+def load_data(data_path, max_audio_len_secs, return_dataset=True):
     """
     load train/dev/test data from csv path.
     :param max_audio_len_secs: int
@@ -56,8 +56,7 @@ def load_data(data_path, max_audio_len_secs=MAX_MODEL_AUDIO_LEN, return_dataset=
             LONG_SPEECH_DETECTED = True
             print(
                 f"Detected speech longer than {MAX_MODEL_AUDIO_LEN} "
-                "-- such speech length cannot be processed, even on cpu!"
-                "\nSet `max_audio_len_secs` to filter longer speech!"
+                "\n-- set `max_audio_len_secs` to filter longer speech!"
             )
 
     data["text"] = data["transcript"]
@@ -163,19 +162,28 @@ def run_benchmarks(model_id_or_path, data_csv_path, output_dir="./results"):
     """
     global MODEL, PROCESSOR
     tsince = int(round(time.time()))
-    cols = None
+    output_cols = None
 
     if "hubert" in model_id_or_path:
-        test_dataset = load_data(data_csv_path)
+        test_dataset = load_data(data_csv_path, max_audio_len_secs=MAX_MODEL_AUDIO_LEN)
         PROCESSOR = Wav2Vec2Processor.from_pretrained(model_id_or_path)
         MODEL = HubertForCTC.from_pretrained(model_id_or_path).to(device)
-        test_dataset = test_dataset.map(compute_benchmarks)
+
+        if LONG_SPEECH_DETECTED:
+            TODO: str("Write function to handle long speech!")
+            raise NotImplementedError(
+                "Long speech detected when loading the audio paths, "
+                "there is currently no logic to handle long speech, "
+                "set the `max_audio_len_secs` to <59 secs!"
+            )
+        else:
+            test_dataset = test_dataset.map(compute_benchmarks)
 
     elif "whisper" in model_id_or_path:
-        df = load_data(data_csv_path, return_dataset=False)
+        df = load_data(data_csv_path, max_audio_len_secs=None, return_dataset=False)
         df = transcribe_whisper(dataframe=df, model_size=model_id_or_path.split("_")[1])
         test_dataset = Dataset.from_pandas(df)
-        cols = [
+        output_cols = [
             "audio_paths",
             "text",
             "predictions_raw",
@@ -187,33 +195,34 @@ def run_benchmarks(model_id_or_path, data_csv_path, output_dir="./results"):
         ]
 
     else:
-        test_dataset = load_data(data_csv_path)
+        test_dataset = load_data(data_csv_path, max_audio_len_secs=MAX_MODEL_AUDIO_LEN)
         PROCESSOR = Wav2Vec2Processor.from_pretrained(model_id_or_path)
         MODEL = Wav2Vec2ForCTC.from_pretrained(model_id_or_path).to(device)
-        test_dataset = test_dataset.map(compute_benchmarks)
 
-    if LONG_SPEECH_DETECTED:
-        TODO: str("Write function to handle long speech!")
-        raise NotImplementedError(
-            "Long speech detected when loading the audio paths, "
-            "there is currently no logic to handle long speech, "
-            "set the `max_audio_len_secs` to <59 secs!"
-        )
-    else:
-        n_samples = len(test_dataset)
-        all_wer = wer_metric.compute(
-            predictions=test_dataset["predictions"],
-            references=test_dataset["reference"],
-        )
-        print(f"all_wer: {all_wer:0.03f}")
-        write_pred(
-            model_id_or_path, test_dataset, all_wer, cols=cols, output_dir=output_dir
-        )
-        ttime_elapsed = int(round(time.time())) - tsince
-        print(
-            f"{model_id_or_path}-- Inference Time: {ttime_elapsed / 60:.4f}m | "
-            f"{ttime_elapsed / n_samples:.4f}s per sample"
-        )
+        if LONG_SPEECH_DETECTED:
+            TODO: str("Write function to handle long speech!")
+            raise NotImplementedError(
+                "Long speech detected when loading the audio paths, "
+                "there is currently no logic to handle long speech, "
+                "set the `max_audio_len_secs` to <59 secs!"
+            )
+        else:
+            test_dataset = test_dataset.map(compute_benchmarks)
+
+    n_samples = len(test_dataset)
+    all_wer = wer_metric.compute(
+        predictions=test_dataset["predictions"],
+        references=test_dataset["reference"],
+    )
+    print(f"all_wer: {all_wer:0.03f}")
+    write_pred(
+        model_id_or_path, test_dataset, all_wer, cols=output_cols, output_dir=output_dir
+    )
+    ttime_elapsed = int(round(time.time())) - tsince
+    print(
+        f"{model_id_or_path}-- Inference Time: {ttime_elapsed / 60:.4f}m | "
+        f"{ttime_elapsed / n_samples:.4f}s per sample"
+    )
 
 
 def parse_argument():
