@@ -24,6 +24,7 @@ wer_metric = load_metric("wer")
 
 model = None
 processor = None
+sampling_rate = 16000
 
 
 def load_data(data_path, max_audio_len_secs=17):
@@ -48,12 +49,12 @@ def compute_benchmarks(batch):
     :param batch:
     :return:
     """
-    speech, fs = librosa.load(batch["audio_paths"], sr=16000)
-    if fs != 16000:
-        speech = librosa.resample(speech, fs, 16000)
+    speech, fs = librosa.load(batch["audio_paths"], sr=sampling_rate)
+    if fs != sampling_rate:
+        speech = librosa.resample(speech, fs, sampling_rate)
 
     input_features = processor(
-        speech, sampling_rate=16000, padding=True, return_tensors="pt"
+        speech, sampling_rate=sampling_rate, padding=True, return_tensors="pt"
     )
     input_val = input_features.input_values.to(device)
 
