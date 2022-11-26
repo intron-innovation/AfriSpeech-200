@@ -17,6 +17,7 @@ from transformers import (
     Trainer,
     set_seed,
 )
+import whisper
 from src.utils import cleanup
 
 set_seed(1778)
@@ -31,7 +32,7 @@ LONG_SPEECH_DETECTED = False
 MAX_MODEL_AUDIO_LEN = 59
 
 
-def load_data(data_path, max_audio_len_secs=MAX_MODEL_AUDIO_LEN):
+def load_data(data_path, max_audio_len_secs=MAX_MODEL_AUDIO_LEN, return_dataset=True):
     """
     load train/dev/test data from csv path.
     :param max_audio_len_secs: int
@@ -63,7 +64,10 @@ def load_data(data_path, max_audio_len_secs=MAX_MODEL_AUDIO_LEN):
     print("before dedup", data.shape)
     data.drop_duplicates(subset=["audio_paths"], inplace=True)
     print("after dedup", data.shape)
-    return Dataset.from_pandas(data)
+    if return_dataset:
+        return Dataset.from_pandas(data)
+    else:
+        return data
 
 
 def compute_benchmarks(batch):
@@ -94,7 +98,42 @@ def compute_benchmarks(batch):
     return batch
 
 
-def write_pred(model_id_or_path, results, wer, output_dir="./results"):
+def transcribe_whisper(dataframe, model_size="medium"):
+    """
+    Transcribe using whisper model
+    :param dataframe: pd.DataFrame
+    :param model_size: str
+    :return: DataFrame
+    """
+    audio_paths = dataframe["audio_paths"].to_numpy()
+    indexes = dataframe["idx"].to_numpy()
+    texts = dataframe["text"].to_numpy()
+
+    # Reset dataframe index.
+    dataframe.set_index("idx", inplace=True)
+
+    model = whisper.load_model(model_size)
+    for i in range(len(dataframe)):
+        print(audio_paths[i])
+        pred = model.transcribe(audio_paths[i], language="en")["text"]
+
+        idx = indexes[i]
+        dataframe.loc[idx, "reference"] = cleanup(texts[i]).lower()
+        dataframe.loc[idx, "predictions"] = cleanup(pred)
+        dataframe.loc[idx, "predictions_raw"] = pred.lower()
+        dataframe.loc[idx, "wer_raw"] = wer_metric.compute(
+            predictions=[pred],
+            references=[texts[i].lower()],
+        )
+        dataframe.loc[idx, "wer"] = wer_metric.compute(
+            predictions=[cleanup(pred)],
+            references=[cleanup(texts[i]).lower()],
+        )
+    dataframe.reset_index(drop=True, inplace=True)
+    return dataframe
+
+
+def write_pred(model_id_or_path, results, wer, cols=None, output_dir="./results"):
     """
     Write model predictions to file
     :param output_dir: str
@@ -104,7 +143,8 @@ def write_pred(model_id_or_path, results, wer, output_dir="./results"):
     :return: DataFrame
     """
     model_id_or_path = model_id_or_path.replace("/", "-")
-    cols = ["audio_paths", "text", "reference", "predictions", "wer", "accent"]
+    if cols is None:
+        cols = ["audio_paths", "text", "reference", "predictions", "wer", "accent"]
     predictions_data = {col: results[col] for col in cols}
     predictions_df = pd.DataFrame(data=predictions_data)
 
@@ -114,21 +154,43 @@ def write_pred(model_id_or_path, results, wer, output_dir="./results"):
     return predictions_df
 
 
-def run_benchmarks(model_id_or_path, test_dataset, output_dir="./results"):
+def run_benchmarks(model_id_or_path, data_csv_path, output_dir="./results"):
     """
     Pipeline for running benchmarks for huggingface models on dev/test data
     :param model_id_or_path: str
-    :param test_dataset: Dataset
+    :param data_csv_path: str
     :return:
     """
     global MODEL, PROCESSOR
     tsince = int(round(time.time()))
-    n_samples = len(test_dataset)
-    PROCESSOR = Wav2Vec2Processor.from_pretrained(model_id_or_path)
+    cols = None
+
     if "hubert" in model_id_or_path:
+        test_dataset = load_data(data_csv_path)
+        PROCESSOR = Wav2Vec2Processor.from_pretrained(model_id_or_path)
         MODEL = HubertForCTC.from_pretrained(model_id_or_path).to(device)
+        test_dataset = test_dataset.map(compute_benchmarks)
+
+    elif "whisper" in model_id_or_path:
+        df = load_data(data_csv_path, return_dataset=False)
+        df = transcribe_whisper(dataframe=df, model_size=model_id_or_path.split("_")[1])
+        test_dataset = Dataset.from_pandas(df)
+        cols = [
+            "audio_paths",
+            "text",
+            "predictions_raw",
+            "reference",
+            "predictions",
+            "wer_raw",
+            "wer",
+            "accent",
+        ]
+
     else:
+        test_dataset = load_data(data_csv_path)
+        PROCESSOR = Wav2Vec2Processor.from_pretrained(model_id_or_path)
         MODEL = Wav2Vec2ForCTC.from_pretrained(model_id_or_path).to(device)
+        test_dataset = test_dataset.map(compute_benchmarks)
 
     if LONG_SPEECH_DETECTED:
         TODO: str("Write function to handle long speech!")
@@ -137,16 +199,16 @@ def run_benchmarks(model_id_or_path, test_dataset, output_dir="./results"):
             "there is currently no logic to handle long speech, "
             "set the `max_audio_len_secs` to <59 secs!"
         )
-
     else:
-        test_dataset = test_dataset.map(compute_benchmarks)
-
+        n_samples = len(test_dataset)
         all_wer = wer_metric.compute(
             predictions=test_dataset["predictions"],
             references=test_dataset["reference"],
         )
         print(f"all_wer: {all_wer:0.03f}")
-        write_pred(model_id_or_path, test_dataset, all_wer, output_dir=output_dir)
+        write_pred(
+            model_id_or_path, test_dataset, all_wer, cols=cols, output_dir=output_dir
+        )
         ttime_elapsed = int(round(time.time())) - tsince
         print(
             f"{model_id_or_path}-- Inference Time: {ttime_elapsed / 60:.4f}m | "
@@ -183,11 +245,8 @@ if __name__ == "__main__":
     # Make output directory if does not already exist.
     os.makedirs(args.output_dir, exist_ok=True)
 
-    # Load data.
-    ds = load_data(args.data_csv_path, max_audio_len_secs=None).select(range(2))
-
     run_benchmarks(
         model_id_or_path=args.model_id_or_path,
-        test_dataset=ds,
+        data_csv_path=args.data_csv_path,
         output_dir=args.output_dir,
     )
