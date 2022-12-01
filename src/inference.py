@@ -29,9 +29,8 @@ PROCESSOR = None
 SAMPLING_RATE = 16000
 AUDIO_DIR = "./data/"
 
-# Most models consider audio length that is less than 1 minute,
-# however, whisper max duration is 87 -- a bit longer.
-MAX_MODEL_AUDIO_LEN = 59
+# This is the max audio length for whisper
+MAX_MODEL_AUDIO_LEN = 87
 
 
 def load_data(data_path, max_audio_len_secs, return_dataset=True):
