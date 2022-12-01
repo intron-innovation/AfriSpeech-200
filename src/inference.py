@@ -27,13 +27,14 @@ wer_metric = load_metric("wer")
 MODEL = None
 PROCESSOR = None
 SAMPLING_RATE = 16000
-AUDIO_DIR = "./data/"
 
 # This is the max audio length for whisper
 MAX_MODEL_AUDIO_LEN = 87
 
 
-def load_data(data_path, max_audio_len_secs, return_dataset=True):
+def load_data(
+    data_path, max_audio_len_secs=17, audio_dir="./data/", return_dataset=True
+):
     """
     load train/dev/test data from csv path.
     :param max_audio_len_secs: int
@@ -44,7 +45,7 @@ def load_data(data_path, max_audio_len_secs, return_dataset=True):
 
     data = pd.read_csv(data_path)
     data["audio_paths"] = data["audio_paths"].apply(
-        lambda x: x.replace("/AfriSpeech-100/", AUDIO_DIR)
+        lambda x: x.replace("/AfriSpeech-100/", audio_dir)
     )
 
     if max_audio_len_secs != -1:
@@ -214,6 +215,12 @@ def parse_argument():
         help="path to data csv file",
     )
     parser.add_argument(
+        "--audio_dir",
+        type=str,
+        default="./data/",
+        help="directory to locate the audio",
+    )
+    parser.add_argument(
         "--model_id_or_path",
         type=str,
         default="facebook/hubert-large-ls960-ft",
@@ -245,11 +252,14 @@ if __name__ == "__main__":
         test_dataset = load_data(
             args.data_csv_path,
             max_audio_len_secs=args.max_audio_len,
+            audio_dir=args.audio_dir,
             return_dataset=False,
         )
     else:
         test_dataset = load_data(
-            args.data_csv_path, max_audio_len_secs=args.max_audio_len
+            args.data_csv_path,
+            max_audio_len_secs=args.max_audio_len,
+            audio_dir=args.audio_dir,
         )
 
     run_benchmarks(
