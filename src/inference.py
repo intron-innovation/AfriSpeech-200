@@ -29,7 +29,7 @@ PROCESSOR = None
 SAMPLING_RATE = 16000
 
 # This is the max audio length for whisper
-MAX_MODEL_AUDIO_LEN = 87
+MAX_MODEL_AUDIO_LEN_SECS = 87
 
 
 def load_data(
@@ -53,10 +53,10 @@ def load_data(
 
     else:
         # Check if any of the sample is longer than
-        # the specified MAX_MODEL_AUDIO_LEN
-        if (data.duration.to_numpy() > MAX_MODEL_AUDIO_LEN).any():
+        # the global MAX_MODEL_AUDIO_LEN_SECS
+        if (data.duration.to_numpy() > MAX_MODEL_AUDIO_LEN_SECS).any():
             raise ValueError(
-                f"Detected speech longer than {MAX_MODEL_AUDIO_LEN} secs"
+                f"Detected speech longer than {MAX_MODEL_AUDIO_LEN_SECS} secs"
                 "-- set `max_audio_len_secs` to filter longer speech!"
             )
 
@@ -230,7 +230,7 @@ def parse_argument():
         "--output_dir", type=str, default="./results", help="directory to store results"
     )
     parser.add_argument(
-        "--max_audio_len",
+        "--max_audio_len_secs",
         type=int,
         default=17,
         help="maximum audio length passed to the inference model should",
@@ -251,14 +251,14 @@ if __name__ == "__main__":
     if "whisper" in args.model_id_or_path:
         test_dataset = load_data(
             data_path=args.data_csv_path,
-            max_audio_len_secs=args.max_audio_len,
+            max_audio_len_secs=args.max_audio_len_secs,
             audio_dir=args.audio_dir,
             return_dataset=False,
         )
     else:
         test_dataset = load_data(
             data_path=args.data_csv_path,
-            max_audio_len_secs=args.max_audio_len,
+            max_audio_len_secs=args.max_audio_len_secs,
             audio_dir=args.audio_dir,
         )
 
