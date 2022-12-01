@@ -109,7 +109,7 @@ def transcribe_whisper(dataframe, model_size="medium"):
     indexes = dataframe["idx"].to_numpy()
     texts = dataframe["text"].to_numpy()
 
-    # Reset dataframe index.
+    # Reset dataframe index
     dataframe.set_index("idx", inplace=True)
 
     model = whisper.load_model(model_size)
@@ -244,20 +244,20 @@ if __name__ == "__main__":
     """Run main script"""
     args = parse_argument()
 
-    # Make output directory if does not already exist.
+    # Make output directory if does not already exist
     os.makedirs(args.output_dir, exist_ok=True)
 
     # Load dataset
     if "whisper" in args.model_id_or_path:
         test_dataset = load_data(
-            args.data_csv_path,
+            data_path=args.data_csv_path,
             max_audio_len_secs=args.max_audio_len,
             audio_dir=args.audio_dir,
             return_dataset=False,
         )
     else:
         test_dataset = load_data(
-            args.data_csv_path,
+            data_path=args.data_csv_path,
             max_audio_len_secs=args.max_audio_len,
             audio_dir=args.audio_dir,
         )
