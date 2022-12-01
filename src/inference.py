@@ -54,10 +54,8 @@ def load_data(data_path, max_audio_len_secs, return_dataset=True):
         # the specified MAX_MODEL_AUDIO_LEN
         if (data.duration.to_numpy() > MAX_MODEL_AUDIO_LEN).any():
             LONG_SPEECH_DETECTED = True
-            print(
-                f"Detected speech longer than {MAX_MODEL_AUDIO_LEN} "
-                "\n-- set `max_audio_len_secs` to filter longer speech!"
-            )
+            raise ValueError(f"Detected speech longer than {MAX_MODEL_AUDIO_LEN} "
+                "-- set `max_audio_len_secs` to filter longer speech!")
 
     data["text"] = data["transcript"]
     print("before dedup", data.shape)
