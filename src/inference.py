@@ -8,13 +8,7 @@ import torch
 from transformers import (
     Wav2Vec2ForCTC,
     HubertForCTC,
-    Wav2Vec2Tokenizer,
-    Wav2Vec2CTCTokenizer,
-    Wav2Vec2FeatureExtractor,
     Wav2Vec2Processor,
-    Wav2Vec2ProcessorWithLM,
-    TrainingArguments,
-    Trainer,
     set_seed,
 )
 import whisper
@@ -41,8 +35,6 @@ def load_data(
     :param data_path: str
     :return: Dataset instance
     """
-    global LONG_SPEECH_DETECTED
-
     data = pd.read_csv(data_path)
     data["audio_paths"] = data["audio_paths"].apply(
         lambda x: x.replace("/AfriSpeech-100/", audio_dir)
