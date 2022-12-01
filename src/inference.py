@@ -28,7 +28,9 @@ MODEL = None
 PROCESSOR = None
 SAMPLING_RATE = 16000
 AUDIO_DIR = "./data/"
-LONG_SPEECH_DETECTED = False
+
+# Most models consider audio length that is less than 1 minute,
+# however, whisper max duration is 87 -- a bit longer.
 MAX_MODEL_AUDIO_LEN = 59
 
 
@@ -46,16 +48,17 @@ def load_data(data_path, max_audio_len_secs, return_dataset=True):
         lambda x: x.replace("/AfriSpeech-100/", AUDIO_DIR)
     )
 
-    if max_audio_len_secs is not None:
+    if max_audio_len_secs != -1:
         data = data[data.duration < max_audio_len_secs]
 
     else:
         # Check if any of the sample is longer than
         # the specified MAX_MODEL_AUDIO_LEN
         if (data.duration.to_numpy() > MAX_MODEL_AUDIO_LEN).any():
-            LONG_SPEECH_DETECTED = True
-            raise ValueError(f"Detected speech longer than {MAX_MODEL_AUDIO_LEN} "
-                "-- set `max_audio_len_secs` to filter longer speech!")
+            raise ValueError(
+                f"Detected speech longer than {MAX_MODEL_AUDIO_LEN} secs"
+                "-- set `max_audio_len_secs` to filter longer speech!"
+            )
 
     data["text"] = data["transcript"]
     print("before dedup", data.shape)
@@ -150,11 +153,11 @@ def write_pred(model_id_or_path, results, wer, cols=None, output_dir="./results"
     return predictions_df
 
 
-def run_benchmarks(model_id_or_path, data_csv_path, output_dir="./results"):
+def run_benchmarks(model_id_or_path, test_dataset, output_dir="./results"):
     """
     Pipeline for running benchmarks for huggingface models on dev/test data
     :param model_id_or_path: str
-    :param data_csv_path: str
+    :param test_dataset: Dataset instance or pd.DataFrame
     :return:
     """
     global MODEL, PROCESSOR
@@ -162,24 +165,15 @@ def run_benchmarks(model_id_or_path, data_csv_path, output_dir="./results"):
     output_cols = None
 
     if "hubert" in model_id_or_path:
-        test_dataset = load_data(data_csv_path, max_audio_len_secs=MAX_MODEL_AUDIO_LEN)
         PROCESSOR = Wav2Vec2Processor.from_pretrained(model_id_or_path)
         MODEL = HubertForCTC.from_pretrained(model_id_or_path).to(device)
-
-        if LONG_SPEECH_DETECTED:
-            TODO: str("Write function to handle long speech!")
-            raise NotImplementedError(
-                "Long speech detected when loading the audio paths, "
-                "there is currently no logic to handle long speech, "
-                "set the `max_audio_len_secs` to <59 secs!"
-            )
-        else:
-            test_dataset = test_dataset.map(compute_benchmarks)
+        test_dataset = test_dataset.map(compute_benchmarks)
 
     elif "whisper" in model_id_or_path:
-        df = load_data(data_csv_path, max_audio_len_secs=None, return_dataset=False)
-        df = transcribe_whisper(dataframe=df, model_size=model_id_or_path.split("_")[1])
-        test_dataset = Dataset.from_pandas(df)
+        test_dataset = transcribe_whisper(
+            dataframe=test_dataset, model_size=model_id_or_path.split("_")[1]
+        )
+        test_dataset = Dataset.from_pandas(test_dataset)
         output_cols = [
             "audio_paths",
             "text",
@@ -192,19 +186,9 @@ def run_benchmarks(model_id_or_path, data_csv_path, output_dir="./results"):
         ]
 
     else:
-        test_dataset = load_data(data_csv_path, max_audio_len_secs=MAX_MODEL_AUDIO_LEN)
         PROCESSOR = Wav2Vec2Processor.from_pretrained(model_id_or_path)
         MODEL = Wav2Vec2ForCTC.from_pretrained(model_id_or_path).to(device)
-
-        if LONG_SPEECH_DETECTED:
-            TODO: str("Write function to handle long speech!")
-            raise NotImplementedError(
-                "Long speech detected when loading the audio paths, "
-                "there is currently no logic to handle long speech, "
-                "set the `max_audio_len_secs` to <59 secs!"
-            )
-        else:
-            test_dataset = test_dataset.map(compute_benchmarks)
+        test_dataset = test_dataset.map(compute_benchmarks)
 
     n_samples = len(test_dataset)
     all_wer = wer_metric.compute(
@@ -239,6 +223,12 @@ def parse_argument():
     parser.add_argument(
         "--output_dir", type=str, default="./results", help="directory to store results"
     )
+    parser.add_argument(
+        "--max_audio_len",
+        type=int,
+        default=17,
+        help="maximum audio length passed to the inference model should",
+    )
 
     args = parser.parse_args()
     return args
@@ -251,8 +241,20 @@ if __name__ == "__main__":
     # Make output directory if does not already exist.
     os.makedirs(args.output_dir, exist_ok=True)
 
+    # Load dataset
+    if "whisper" in args.model_id_or_path:
+        test_dataset = load_data(
+            args.data_csv_path,
+            max_audio_len_secs=args.max_audio_len,
+            return_dataset=False,
+        )
+    else:
+        test_dataset = load_data(
+            args.data_csv_path, max_audio_len_secs=args.max_audio_len
+        )
+
     run_benchmarks(
         model_id_or_path=args.model_id_or_path,
-        data_csv_path=args.data_csv_path,
+        test_dataset=test_dataset,
         output_dir=args.output_dir,
     )
