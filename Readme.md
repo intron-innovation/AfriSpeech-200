@@ -243,18 +243,18 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 | nemo-conformer-transducer-large WER | 0.481 |
 | AWS transcribe API | 0.5212 |
 | AWS transcribe Medical API (Primary Care) | 0.5544 |
-| wav2vec2-large-xlsr-53-english | 0.554 |
-| wav2vec2-xls-r-1b-english | 0.570 |
+| wav2vec2-large-xlsr-53-english | 0.561 |
+| wav2vec2-xls-r-1b-english | 0.576 |
 | GCP Speech API (cleanup) | 0.577 |
-| facebook/wav2vec2-large-960h-lv60-self | 0.596 |
+| facebook/wav2vec2-large-960h-lv60-self | 0.594 |
 | GCP medical transcription API | 0.598 |
 | GCP Speech API | 0.604 |
-| facebook/hubert-large-ls960-ft | 0.624 | 
+| facebook/hubert-large-ls960-ft | 0.628 | 
 | wavlm-libri-clean-100h-large | 0.673
 | facebook/hubert-large-ls960-ft (cleanup) | 0.682 |
-| facebook/wav2vec2-large-960h | 0.693 |
+| facebook/wav2vec2-large-960h | 0.703 |
 | facebook/hubert-large-ls960-ft | 0.738 |
-| facebook/wav2vec2-large-robust-ft-swbd-300h | 0.765 |
+| facebook/wav2vec2-large-robust-ft-swbd-300h | 0.775 |
 | wavlm-libri-clean-100h-base-plus (cleanup) | 0.840 |
 | wavlm-libri-clean-100h-base-plus | 0.870 |
 | speechbrain-crdnn-rnnlm-librispeech WER | 0.899 |
