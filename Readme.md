@@ -237,10 +237,12 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 
 | Model | Dev WER |
 | ----------- | ----------- |
+| Whisper-large (cleanup) | 0.375 |
 | Whisper-medium (cleanup) | 0.383 |
-| Whisper-medium | 0.486 |
+| Whisper-large | 0.464 |
 | nemo-conformer-ctc-large WER | 0.477 |
 | nemo-conformer-transducer-large WER | 0.481 |
+| Whisper-medium | 0.486 |
 | AWS transcribe API | 0.5212 |
 | AWS transcribe Medical API (Primary Care) | 0.5544 |
 | wav2vec2-large-xlsr-53-english | 0.554 |
@@ -253,7 +255,9 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 | wavlm-libri-clean-100h-large | 0.673
 | facebook/hubert-large-ls960-ft (cleanup) | 0.682 |
 | facebook/wav2vec2-large-960h | 0.693 |
+| facebook/hubert-xlarge-ls960-ft (cleanup) | 0.692 |
 | facebook/hubert-large-ls960-ft | 0.738 |
+| facebook/hubert-xlarge-ls960-ft | 0.747 |
 | facebook/wav2vec2-large-robust-ft-swbd-300h | 0.765 |
 | wavlm-libri-clean-100h-base-plus (cleanup) | 0.840 |
 | wavlm-libri-clean-100h-base-plus | 0.870 |
