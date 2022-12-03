@@ -258,3 +258,4 @@ yarg==0.1.9
 yarl==1.8.1
 youtokentome==1.0.6
 zipp==3.10.0
+whisper==1.0ß
