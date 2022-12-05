@@ -15,6 +15,6 @@ for wavfile in wavfiles:
     predictions.append(transcription)
     os.system("rm *.wav")
 
-with open("../results/african-nlp-nemo-ctc-predictons", "w") as f:
+with open("../../results/african-nlp-nemo-ctc-predictons", "w") as f:
     for i in range(len(wavfiles)):
         f.write(f"{wavfiles[i]}\t{predictions[i]}\n")
