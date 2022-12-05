@@ -31,12 +31,6 @@ warnings.filterwarnings('ignore')
 wer_metric = load_metric("wer")
 PROCESSOR = None
 
-if is_apex_available():
-    from apex import amp
-
-_is_native_amp_available = True
-from torch.cuda.amp import autocast
-
 
 def parse_argument():
     config = configparser.ConfigParser()
@@ -196,7 +190,7 @@ if __name__ == "__main__":
         ddp_find_unused_parameters=True if config['hyperparameters']['ddp_find_unused_parameters'] == "True" else False,
         evaluation_strategy="steps",
         num_train_epochs=int(config['hyperparameters']['num_epochs']),
-        # fp16=True,
+        fp16=torch.cuda.is_available(),
         save_steps=int(config['hyperparameters']['save_steps']),
         eval_steps=int(config['hyperparameters']['eval_steps']),
         logging_steps=int(config['hyperparameters']['logging_steps']),
