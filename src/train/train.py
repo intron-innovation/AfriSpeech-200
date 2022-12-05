@@ -22,7 +22,6 @@ from transformers import (
     is_apex_available,
     set_seed)
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
-from transformers.file_utils import hf_bucket_url, cached_path
 import warnings
 
 from src.utils.prepare_dataset import DataConfig, data_prep, DataCollatorCTCWithPaddingGroupLen
@@ -130,6 +129,7 @@ if __name__ == "__main__":
 
     print(f"model starting...from last checkpoint:{last_checkpoint}")
     if config['models']['model_path'] in models_with_different_vocab:
+        from transformers.file_utils import hf_bucket_url, cached_path
 
         archive_file = hf_bucket_url(
             config['models']['model_path'],
