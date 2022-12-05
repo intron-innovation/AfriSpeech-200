@@ -66,7 +66,9 @@ def data_setup(config):
         val_path=config['data']['val'],
         exp_dir=config['experiment']['dir'],
         ckpt_path=config['checkpoints']['checkpoints_path'],
-        model_path=config['models']['model_path'])
+        model_path=config['models']['model_path'],
+        audio_path=config['audio']['audio_path']
+    )
     return data_prep(data_config)
 
 

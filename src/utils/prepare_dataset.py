@@ -58,8 +58,8 @@ def data_prep(config):
     logger.debug(f"...Load vocab and processor complete in {time.time() - start:.4f}.\n"
                  f"Loading dataset...")
 
-    train_dataset = CustomASRDataset(config.train_path, transform_audio, transform_labels)
-    val_dataset = CustomASRDataset(config.val_path, transform_audio, transform_labels)
+    train_dataset = CustomASRDataset(config.train_path, transform_audio, transform_labels, config.audio_path)
+    val_dataset = CustomASRDataset(config.val_path, transform_audio, transform_labels, config.audio_path)
     logger.debug(f"Load train and val dataset done in {time.time() - start:.4f}.")
     return train_dataset, val_dataset, PROCESSOR
 
@@ -110,12 +110,12 @@ def load_data(train_path, val_path):
 
 
 def remove_special_characters(batch):
-    batch['text'] = clean_text(batch['text']) + " "
+    batch['transcript'] = clean_text(batch['transcript']) + " "
     return batch
 
 
 def extract_chars_vocab(batch):
-    all_text = " ".join(batch['text'])
+    all_text = " ".join(batch['transcript'])
     vocab = list(set(all_text))
     return {'vocab': [vocab], 'all_text': [all_text]}
 
@@ -175,8 +175,11 @@ def transform_labels(text):
 
 
 class CustomASRDataset(Dataset):
-    def __init__(self, data_file, transform=None, transform_target=None):
+    def __init__(self, data_file, transform=None, transform_target=None, audio_dir=None):
         self.asr_data = pd.read_csv(data_file)
+        self.asr_data["audio_paths"] = self.asr_data["audio_paths"].apply(
+            lambda x: x.replace("/AfriSpeech-100/dev/", audio_dir)
+        )
         self.transform = transform
         self.target_transform = transform_target
 
@@ -184,8 +187,8 @@ class CustomASRDataset(Dataset):
         return len(self.asr_data)
 
     def __getitem__(self, idx):
-        audio_path = self.asr_data.iloc[idx, 0]  # audio_path
-        text = self.asr_data.iloc[idx, 1]  # text
+        audio_path = self.asr_data.iloc[idx, 8]  # audio_path
+        text = self.asr_data.iloc[idx, 5]  # text
         input_audio = self.transform(audio_path)
         label = self.target_transform(text)
 
