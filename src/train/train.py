@@ -10,6 +10,7 @@ os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
 
 import torch
 from datasets import load_dataset, load_metric
+import transformers
 from transformers import (
     Wav2Vec2ForCTC,
     HubertForCTC,
@@ -29,6 +30,12 @@ from src.utils.prepare_dataset import DataConfig, data_prep, DataCollatorCTCWith
 warnings.filterwarnings('ignore')
 wer_metric = load_metric("wer")
 PROCESSOR = None
+
+if is_apex_available():
+    from apex import amp
+
+_is_native_amp_available = True
+from torch.cuda.amp import autocast
 
 
 def parse_argument():
@@ -174,7 +181,7 @@ if __name__ == "__main__":
 
     print(f"\n...Model loaded in {time.time() - start:.4f}.\n")
 
-    if config['hyperparameters']['freeze_feature_encoder']:
+    if config['hyperparameters']['freeze_feature_encoder'] == "True":
         model.freeze_feature_encoder()
 
     training_args = TrainingArguments(
