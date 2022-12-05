@@ -35,7 +35,7 @@ def load_data(
     """
     data = pd.read_csv(data_path)
     data["audio_paths"] = data["audio_paths"].apply(
-        lambda x: x.replace("/AfriSpeech-100/", audio_dir)
+        lambda x: x.replace("/AfriSpeech-100/dev/", audio_dir)
     )
 
     if max_audio_len_secs != -1:

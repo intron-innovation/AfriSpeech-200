@@ -230,7 +230,7 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 
 4. Install ffmpeg `sudo apt install ffmpeg`
 
-4. Install requirements `pip3 install -r requirements.txt`
+4. Install requirements `conda install -y --name afrispeech -c conda-forge --file requirements.txt`
 
 5. Run `python3 bin/run_benchmarks.py`
 
