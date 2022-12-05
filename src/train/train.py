@@ -67,7 +67,6 @@ def data_setup(config):
         exp_dir=config['experiment']['dir'],
         ckpt_path=config['checkpoints']['checkpoints_path'],
         model_path=config['models']['model_path'],
-        mixed_vocabs=config['data']['mixed_vocabs'],
         audio_normalize=config['audio_preprocessing']['audio_normalize'],
         reduce_noise_silence=config['audio_preprocessing']['reduce_noise_silence'],
         mode=config['audio_preprocessing']['mode'])
