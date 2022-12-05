@@ -222,11 +222,13 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 
 ### How to run this code
 
-1. Create a virtual environment `conda create -n afrispeech python=3.8`
+1. Create a virtual environment `conda create -n afrispeech python=3.9`
 
 2. Activate the virtual environment `conda activate afrispeech`
 
 3. Install pytorch for your operating system by following https://pytorch.org/
+
+4. Install ffmpeg `sudo apt install ffmpeg`
 
 4. Install requirements `pip3 install -r requirements.txt`
 
