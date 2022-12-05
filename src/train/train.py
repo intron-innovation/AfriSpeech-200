@@ -196,7 +196,7 @@ if __name__ == "__main__":
         ddp_find_unused_parameters=True if config['hyperparameters']['ddp_find_unused_parameters'] == "True" else False,
         evaluation_strategy="steps",
         num_train_epochs=int(config['hyperparameters']['num_epochs']),
-        fp16=True,
+        # fp16=True,
         save_steps=int(config['hyperparameters']['save_steps']),
         eval_steps=int(config['hyperparameters']['eval_steps']),
         logging_steps=int(config['hyperparameters']['logging_steps']),

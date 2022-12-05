@@ -178,7 +178,7 @@ class CustomASRDataset(Dataset):
     def __init__(self, data_file, transform=None, transform_target=None, audio_dir=None):
         self.asr_data = pd.read_csv(data_file)
         self.asr_data["audio_paths"] = self.asr_data["audio_paths"].apply(
-            lambda x: x.replace("/AfriSpeech-100/dev/", audio_dir)
+            lambda x: x.replace("/AfriSpeech-100/train/", audio_dir)
         )
         self.transform = transform
         self.target_transform = transform_target
