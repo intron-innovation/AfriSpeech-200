@@ -50,7 +50,7 @@ def train_setup(config, args):
     predictions_path = config['logs']['predictions_path']
 
     Path(exp_dir).mkdir(parents=True, exist_ok=True)
-    subprocess.call(['cp', args.config_file, f"{exp_dir}/{args.filename.split('/')[-1]}"])
+    subprocess.call(['cp', args.config_file, f"{exp_dir}/{args.config_file.split('/')[-1]}"])
     Path(checkpoints_path).mkdir(parents=True, exist_ok=True)
     Path(figure_path).mkdir(parents=True, exist_ok=True)
     Path(predictions_path).mkdir(parents=True, exist_ok=True)
