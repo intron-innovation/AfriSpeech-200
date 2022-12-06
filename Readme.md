@@ -222,36 +222,38 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 
 ### How to run this code
 
-1. Create a virtual environment `conda create -n afrispeech python=3.8`
+1. Create a virtual environment `conda create -n afrispeech python=3.9`
 
 2. Activate the virtual environment `conda activate afrispeech`
 
 3. Install pytorch for your operating system by following https://pytorch.org/
 
+4. Install ffmpeg `sudo apt install ffmpeg`
+
 4. Install requirements `pip3 install -r requirements.txt`
 
-5. Run `python3 bin/run_benchmarks.py`
+5. For Inference Run `python3 bin/run_benchmarks.py`
+
+6. To train, create config in format like `src/config/config_xlsr.ini` and run `python3 src/train/train.py -c src/config/config_xlsr.ini`
 
 
 ### Benchmark Results
 
 | Model | Dev WER |
 | ----------- | ----------- |
-| Whisper-large (cleanup) | 0.375 |
-| Whisper-medium (cleanup) | 0.383 |
-| Whisper-large | 0.464 |
+| Whisper-large | 0.375 |
+| Whisper-medium | 0.383 |
 | nemo-conformer-ctc-large WER | 0.477 |
 | nemo-conformer-transducer-large WER | 0.481 |
-| Whisper-medium | 0.486 |
 | AWS transcribe API | 0.5212 |
 | AWS transcribe Medical API (Primary Care) | 0.5544 |
-| wav2vec2-large-xlsr-53-english | 0.554 |
-| wav2vec2-xls-r-1b-english | 0.570 |
+| wav2vec2-large-xlsr-53-english | 0.561 |
+| wav2vec2-xls-r-1b-english | 0.576 |
 | GCP Speech API (cleanup) | 0.577 |
-| facebook/wav2vec2-large-960h-lv60-self | 0.596 |
+| facebook/wav2vec2-large-960h-lv60-self | 0.594 |
 | GCP medical transcription API | 0.598 |
 | GCP Speech API | 0.604 |
-| facebook/hubert-large-ls960-ft | 0.624 | 
+| facebook/hubert-large-ls960-ft | 0.628 | 
 | wavlm-libri-clean-100h-large | 0.673
 | facebook/hubert-large-ls960-ft (cleanup) | 0.682 |
 | facebook/wav2vec2-large-960h | 0.693 |

@@ -9,6 +9,6 @@ asr_model = EncoderDecoderASR.from_hparams(source="speechbrain/asr-crdnn-transfo
 for wavfile in wavfiles:
     predictions.append(asr_model.transcribe_file(wavfile))
 
-with open("../results/african-nlp-speechbrain-predictons", "w") as f:
+with open("../../results/african-nlp-speechbrain-predictons", "w") as f:
     for i in range(len(wavfiles)):
         f.write(f"{wavfiles[i]}\t{predictions[i]}\n")

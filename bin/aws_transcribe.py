@@ -5,7 +5,7 @@ import time
 from datasets import load_metric
 import numpy as np
 
-from src.utils import get_s3_file, get_json_result, cleanup
+from src.utils.utils import get_s3_file, get_json_result, cleanup
 
 wer_metric = load_metric("wer")
 
