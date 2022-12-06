@@ -226,13 +226,13 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 
 2. Activate the virtual environment `conda activate afrispeech`
 
-3. Install pytorch for your operating system by following https://pytorch.org/
+3. Install pytorch for your operating system by following https://pytorch.org/, e.g. `conda install pytorch==1.13.0 torchaudio==0.13.0 cudatoolkit=10.0 -c pytorch`
 
 4. Install ffmpeg `sudo apt install ffmpeg`
 
 4. Install requirements `pip3 install -r requirements.txt`
 
-5. For Inference Run `python3 bin/run_benchmarks.py`
+5. For Inference Run `python3 bin/run_benchmarks.py --audio_dir /data/data/intron/ --model_id_or_path facebook/wav2vec2-large-960h`
 
 6. To train, create config in format like `src/config/config_xlsr.ini` and run `python3 src/train/train.py -c src/config/config_xlsr.ini`
 

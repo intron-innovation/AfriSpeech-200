@@ -58,10 +58,10 @@ def data_prep(config):
     logger.debug(f"...Load vocab and processor complete in {time.time() - start:.4f}.\n"
                  f"Loading dataset...")
 
-    train_dataset = CustomASRDataset(config.train_path, transform_audio,
-                                     transform_labels, config.audio_path, 'train')
-    val_dataset = CustomASRDataset(config.val_path, transform_audio,
-                                   transform_labels, config.audio_path, 'dev')
+    train_dataset = CustomASRDataset(config.train_path, transform_audio, transform_labels, 
+                                     config.audio_path, 'train', config.max_audio_len_secs)
+    val_dataset = CustomASRDataset(config.val_path, transform_audio, transform_labels, 
+                                   config.audio_path, 'dev', config.max_audio_len_secs)
     logger.debug(f"Load train and val dataset done in {time.time() - start:.4f}.")
     return train_dataset, val_dataset, PROCESSOR
 
@@ -177,8 +177,11 @@ def transform_labels(text):
 
 
 class CustomASRDataset(Dataset):
-    def __init__(self, data_file, transform=None, transform_target=None, audio_dir=None, split='train'):
+    def __init__(self, data_file, transform=None, transform_target=None, audio_dir=None, 
+                 split='train', max_audio_len_secs=-1):
         self.asr_data = pd.read_csv(data_file)
+        if max_audio_len_secs != -1:
+            self.asr_data = self.asr_data[self.asr_data.duration < max_audio_len_secs]
         self.asr_data["audio_paths"] = self.asr_data["audio_paths"].apply(
             lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
         )
