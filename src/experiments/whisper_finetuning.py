@@ -1,3 +1,7 @@
+#
+# Code mostly borrowed from https://huggingface.co/blog/fine-tune-whisper 🤗
+#
+
 import os
 import argparse
 import pandas as pd
@@ -90,9 +94,14 @@ def load_data(
 
 def transcribe_whisper(batch, processor, model, metric, sampling_rate, device):
     """
-    Run inference on batch using whisper model
-    :param batch:
-    :return:
+    run inference on batch using whisper model
+    :param batch: Dataset instance
+    :param processor: object
+    :param model: object
+    :param metric: object
+    :param sampling_rate: int
+    :param device: str
+    :return: Dataset instance
     """
 
     speech, sampling_rate = librosa.load(batch["audio_paths"], sr=sampling_rate)
@@ -171,6 +180,12 @@ class DataCollatorSpeechSeq2SeqWithPadding:
 
 
 def compute_metrics(pred, metric):
+    """
+    compute metrics
+    :param pred: Dataset instance
+    :param metric: object
+    :return: dict
+    """
     pred_ids = pred.predictions
     label_ids = pred.label_ids
 
