@@ -272,7 +272,7 @@ if __name__ == "__main__":
 
         # Save the processor object once before starting to train
         processor.save_pretrained(training_args.output_dir)
-        args.model_id_or_path = Path(args.output_dir+"/checkpoint-5")
+        args.model_id_or_path = Path(args.output_dir + "/checkpoint-5")
 
         # Train the model
         trainer.train()
@@ -294,7 +294,9 @@ if __name__ == "__main__":
         )
 
         # Define processor and model
-        processor = WhisperProcessor.from_pretrained(args.model_id_or_path.parents[0], language="en", task="transcribe")
+        processor = WhisperProcessor.from_pretrained(
+            args.model_id_or_path.parents[0], language="en", task="transcribe"
+        )
         model = WhisperForConditionalGeneration.from_pretrained(args.model_id_or_path)
 
         # Define metric
