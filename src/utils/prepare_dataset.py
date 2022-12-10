@@ -58,10 +58,10 @@ def data_prep(config):
     logger.debug(f"...Load vocab and processor complete in {time.time() - start:.4f}.\n"
                  f"Loading dataset...")
 
-    train_dataset = CustomASRDataset(config.train_path, transform_audio,
-                                     transform_labels, config.audio_path, 'train')
-    val_dataset = CustomASRDataset(config.val_path, transform_audio,
-                                   transform_labels, config.audio_path, 'dev')
+    train_dataset = CustomASRDataset(config.train_path, transform_audio, transform_labels, 
+                                     config.audio_path, 'train', config.max_audio_len_secs)
+    val_dataset = CustomASRDataset(config.val_path, transform_audio, transform_labels, 
+                                   config.audio_path, 'dev', config.max_audio_len_secs)
     logger.debug(f"Load train and val dataset done in {time.time() - start:.4f}.")
     return train_dataset, val_dataset, PROCESSOR
 
@@ -163,7 +163,7 @@ def transform_audio(audio_path):
         speech = load_audio_file(audio_path)
     except Exception as e:
         print(e)
-        speech, fs = librosa.load('/data/data/cv-corpus-10.0-2022-07-04/en/clips/common_voice_en_28900832.wav',
+        speech, fs = librosa.load('/data/data/intron/e809b58c-4f05-4754-b98c-fbf236a88fbc/544bbfe5e1c6f8afb80c4840b681908d.wav',
                                   sr=AudioConfig.sr)
 
     return PROCESSOR(speech, sampling_rate=AudioConfig.sr).input_values
@@ -177,8 +177,12 @@ def transform_labels(text):
 
 
 class CustomASRDataset(Dataset):
-    def __init__(self, data_file, transform=None, transform_target=None, audio_dir=None, split='train'):
+    def __init__(self, data_file, transform=None, transform_target=None, audio_dir=None, 
+                 split='train', max_audio_len_secs=-1):
         self.asr_data = pd.read_csv(data_file)
+        if max_audio_len_secs != -1:
+            self.asr_data = self.asr_data[self.asr_data.duration < max_audio_len_secs]
+        self.asr_data = self.asr_data[self.asr_data.transcript.str.len() >= 10]
         self.asr_data["audio_paths"] = self.asr_data["audio_paths"].apply(
             lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
         )
@@ -190,7 +194,7 @@ class CustomASRDataset(Dataset):
 
     def __getitem__(self, idx):
         audio_path = self.asr_data.iloc[idx, 8]  # audio_path
-        text = self.asr_data.iloc[idx, 5]  # text
+        text = self.asr_data.iloc[idx, 5]  # transcript
         input_audio = self.transform(audio_path)
         label = self.target_transform(text)
 
