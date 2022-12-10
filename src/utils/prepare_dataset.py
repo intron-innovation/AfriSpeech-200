@@ -50,7 +50,7 @@ def data_prep(config):
     CONFIG = config
     start = time.time()
 
-    raw_dataset = load_data(config.train_path, config.val_path)
+    raw_dataset = load_data(config.train_path, config.val_path, config.aug_path)
     logger.debug(f"...Data Read Complete in {time.time() - start:.4f}. Starting Tokenizer...")
 
     vocab_file_name = load_vocab(config.model_path, config.ckpt_path, config.exp_dir, raw_dataset)
@@ -62,8 +62,11 @@ def data_prep(config):
                                      transform_labels, config.audio_path, 'train')
     val_dataset = CustomASRDataset(config.val_path, transform_audio,
                                    transform_labels, config.audio_path, 'dev')
+    aug_dataset = CustomASRDataset(config.aug_path, transform_audio,
+                                   transform_labels, config.audio_path, 'aug')
+
     logger.debug(f"Load train and val dataset done in {time.time() - start:.4f}.")
-    return train_dataset, val_dataset, PROCESSOR
+    return train_dataset, val_dataset, aug_dataset, PROCESSOR
 
 
 def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets):
@@ -107,8 +110,8 @@ def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets):
     return vocab_file_name
 
 
-def load_data(train_path, val_path):
-    return load_dataset('csv', data_files={'train': train_path, 'val': val_path})
+def load_data(train_path, val_path, aug_path):
+    return load_dataset('csv', data_files={'train': train_path, 'val': val_path, 'aug': aug_path})
 
 
 def remove_special_characters(batch):
@@ -185,6 +188,12 @@ class CustomASRDataset(Dataset):
         self.transform = transform
         self.target_transform = transform_target
 
+    def set_dataset(self, new_data):
+        self.asr_data = new_data
+
+    def get_dataset(self):
+        return self.asr_data
+
     def __len__(self):
         return len(self.asr_data)
 
@@ -193,8 +202,10 @@ class CustomASRDataset(Dataset):
         text = self.asr_data.iloc[idx, 5]  # text
         input_audio = self.transform(audio_path)
         label = self.target_transform(text)
+        audio_idx = self.asr_data.iloc[idx, 0]  # audio ID
 
-        return {'input_values': input_audio[0], 'labels': label, 'input_lengths': len(input_audio[0])}
+        return {'input_values': input_audio[0], 'labels': label, 'input_lengths': len(input_audio[0]),
+                'audio_idx': audio_idx}
 
 
 @dataclass

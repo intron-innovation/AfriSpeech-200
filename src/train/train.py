@@ -3,7 +3,12 @@ import configparser
 import os
 import subprocess
 import time
+import pandas as pd
 from pathlib import Path
+from torch.utils.data import DataLoader
+import numpy as np
+import librosa
+from src.utils.utils import cleanup
 
 os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
 os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
@@ -29,6 +34,8 @@ from src.utils.prepare_dataset import DataConfig, data_prep, DataCollatorCTCWith
 
 warnings.filterwarnings('ignore')
 wer_metric = load_metric("wer")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+SAMPLING_RATE = 16000
 PROCESSOR = None
 
 
@@ -65,6 +72,7 @@ def data_setup(config):
     data_config = DataConfig(
         train_path=config['data']['train'],
         val_path=config['data']['val'],
+        aug_path=config['data']['aug'],
         exp_dir=config['experiment']['dir'],
         ckpt_path=config['checkpoints']['checkpoints_path'],
         model_path=config['models']['model_path'],
@@ -96,11 +104,49 @@ def compute_wer(logits, label_ids):
     return {"wer": wer}, target_transcription, predicted_transcription
 
 
+def setDropout(trained_model):
+    trained_model.eval()
+    for name, module in trained_model.named_modules():
+        if 'dropout' in name:
+            module.train()
+
+
+def run_inference(trained_model, dataloader, mode='most'):
+    audio_wers = {}
+    for batch in dataloader:
+        input_val = batch.input_values.to(device)
+
+        # run 10 steps of mc dropout
+        wer_list = []
+        for mc_dropout_round in range(10):
+            with torch.no_grad():
+                logits = trained_model(input_val).logits
+                batch["logits"] = logits
+
+            pred_ids = torch.argmax(torch.tensor(batch["logits"]), dim=-1)
+            pred = PROCESSOR.batch_decode(pred_ids)[0]
+            batch["predictions"] = cleanup(pred)
+            batch["reference"] = cleanup(batch["text"]).lower()
+            batch["wer"] = wer_metric.compute(
+                predictions=[batch["predictions"]], references=[batch["reference"]]
+            )
+            wer_list.append(batch['wer'])
+        uncertainty_score = np.array(wer_list).std()
+        audio_wers[batch['audio_idx']] = uncertainty_score
+    if mode == 'most':
+        # we select most uncertain samples
+        sorted_dict = dict(sorted(audio_wers.items(), key=lambda item: item[1]), reverse=True)
+    else:
+        # we select the least uncertain samples
+        sorted_dict = dict(sorted(audio_wers.items(), key=lambda item: item[1]), reverse=False)
+    return sorted_dict
+
+
 if __name__ == "__main__":
 
     args, config = parse_argument()
     checkpoints_path = train_setup(config, args)
-    train_dataset, val_dataset, PROCESSOR = data_setup(config)
+    train_dataset, val_dataset, aug_dataset, PROCESSOR = data_setup(config)
     data_collator = get_data_collator()
 
     start = time.time()
@@ -225,9 +271,47 @@ if __name__ == "__main__":
 
     PROCESSOR.save_pretrained(checkpoints_path)
 
-    print(f"\n...Model Args loaded in {time.time() - start:.4f}. Start training...\n")
+    print(f"\n...Model Args loaded in {time.time() - start:.4f}. Start training with Active Learning...\n")
 
-    trainer.train(resume_from_checkpoint=checkpoint)
+    # Five AL rounds
+    for active_learning_round in range(5):
+        print('Active Learning Round: {}\n'.format(active_learning_round))
+        trainer.train(resume_from_checkpoint=checkpoint)
+        model.save_pretrained(checkpoints_path)
+        PROCESSOR.save_pretrained(checkpoints_path)
 
-    model.save_pretrained(checkpoints_path)
-    PROCESSOR.save_pretrained(checkpoints_path)
+        # McDropout for uncertainty computation
+        setDropout(model)
+        # evaluation step and uncertain samples selection
+        augmentation_dataloader = DataLoader(aug_dataset, batch_size=1)
+        samples_uncertainty = run_inference(model, augmentation_dataloader)
+        # top-k samples (select top-3k)
+        k = 3000
+        most_uncertain_samples_idx = list(samples_uncertainty.keys())[:k]
+        print('Old training set size: {} - Old Augmenting Size: {}'.format(len(train_dataset), len(aug_dataset)))
+        augmentation_data = aug_dataset.get_dataset()
+        training_data = train_dataset.get_dataset()
+        # get top-k samples of the augmentation set
+        selected_samples_df = augmentation_data[augmentation_data.idx.isin(most_uncertain_samples_idx)]
+        # remove those samples from the augmenting set and set the new augmentation set
+        new_augmenting_samples = augmentation_data[~augmentation_data.idx.isin(most_uncertain_samples_idx)]
+        aug_dataset.set_dataset(new_augmenting_samples)
+        # add the new dataset to the training set
+        new_training_data = pd.concat([training_data, selected_samples_df])
+        train_dataset.set_dataset(new_training_data)
+        print('New training set size: {} - New Augmenting Size: {}'.format(len(train_dataset), len(aug_dataset)))
+
+        # set model back to eval before training mode
+        model.eval()
+
+        # reset the trainer with the updated training and augmenting dataset
+        trainer = Trainer(
+            model=model,
+            data_collator=data_collator,
+            args=training_args,
+            compute_metrics=compute_metric,
+            train_dataset=train_dataset,
+            eval_dataset=val_dataset,
+            tokenizer=PROCESSOR.feature_extractor,
+        )
+        PROCESSOR.save_pretrained(checkpoints_path)
