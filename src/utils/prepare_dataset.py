@@ -93,7 +93,7 @@ def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets):
         create_new_vocab = True
 
     if create_new_vocab:
-        vocab_dict = prepare_tokenizer(raw_datasets)
+        vocab_dict = create_vocab(raw_datasets)
         vocab_file_name = f'vocab-{datetime.now().strftime("%d-%m-%Y--%H:%M:%S")}.json'
         vocab_file_name = os.path.join(exp_dir, 'checkpoints', vocab_file_name)
         logger.debug(f"creating new vocab {vocab_file_name}")
@@ -132,7 +132,7 @@ def special_tokens(vocab_dict):
     return vocab_dict
 
 
-def prepare_tokenizer(raw_datasets):
+def create_vocab(raw_datasets):
     raw_datasets = raw_datasets.map(remove_special_characters, num_proc=6)
     vocabs = raw_datasets.map(extract_chars_vocab,
                               batched=True, batch_size=-1, keep_in_memory=True,
