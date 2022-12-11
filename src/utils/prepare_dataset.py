@@ -94,7 +94,7 @@ def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets):
         create_new_vocab = True
 
     if create_new_vocab:
-        vocab_dict = prepare_tokenizer(raw_datasets)
+        vocab_dict = create_vocab(raw_datasets)  # prepare_tokenizer(raw_datasets)
         vocab_file_name = f'vocab-{datetime.now().strftime("%d-%m-%Y--%H:%M:%S")}.json'
         vocab_file_name = os.path.join(exp_dir, 'checkpoints', vocab_file_name)
         logger.debug(f"creating new vocab {vocab_file_name}")
@@ -133,7 +133,7 @@ def special_tokens(vocab_dict):
     return vocab_dict
 
 
-def prepare_tokenizer(raw_datasets):
+def create_vocab(raw_datasets):
     raw_datasets = raw_datasets.map(remove_special_characters, num_proc=6)
     vocabs = raw_datasets.map(extract_chars_vocab,
                               batched=True, batch_size=-1, keep_in_memory=True,
@@ -180,8 +180,14 @@ def transform_labels(text):
 
 
 class CustomASRDataset(Dataset):
-    def __init__(self, data_file, transform=None, transform_target=None, audio_dir=None, split='train'):
+    def __init__(self, data_file, transform=None, transform_target=None, audio_dir=None,
+                 split='train', domain="all", max_audio_len_secs=-1, min_transcript_len=10):
         self.asr_data = pd.read_csv(data_file)
+        if max_audio_len_secs != -1:
+            self.asr_data = self.asr_data[self.asr_data.duration < max_audio_len_secs]
+        if domain != 'all':
+            self.asr_data = self.asr_data[self.asr_data.domain == domain]
+        self.asr_data = self.asr_data[self.asr_data.transcript.str.len() >= min_transcript_len]
         self.asr_data["audio_paths"] = self.asr_data["audio_paths"].apply(
             lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
         )

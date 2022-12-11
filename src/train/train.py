@@ -12,6 +12,7 @@ from src.utils.utils import cleanup
 
 os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
 os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
+os.environ["WANDB_DISABLED"] = "true"
 
 import torch
 from datasets import load_dataset, load_metric
@@ -76,7 +77,10 @@ def data_setup(config):
         exp_dir=config['experiment']['dir'],
         ckpt_path=config['checkpoints']['checkpoints_path'],
         model_path=config['models']['model_path'],
-        audio_path=config['audio']['audio_path']
+        audio_path=config['audio']['audio_path'],
+        max_audio_len_secs=float(config['hyperparameters']['max_audio_len_secs']),
+        min_transcript_len=float(config['hyperparameters']['min_transcript_len']),
+        domain=config['data']['domain']
     )
     return data_prep(data_config)
 
@@ -249,6 +253,7 @@ if __name__ == "__main__":
         metric_for_best_model='eval_wer',
         greater_is_better=False,
         ignore_data_skip=True if config['hyperparameters']['ignore_data_skip'] == 'True' else False,
+        report_to=None
     )
 
     trainer = Trainer(
