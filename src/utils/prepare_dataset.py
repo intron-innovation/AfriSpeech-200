@@ -110,8 +110,11 @@ def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets):
     return vocab_file_name
 
 
-def load_data(train_path, val_path, aug_path):
-    return load_dataset('csv', data_files={'train': train_path, 'val': val_path, 'aug': aug_path})
+def load_data(train_path, val_path, aug_path=None):
+    if aug_path is not None:
+        return load_dataset('csv', data_files={'train': train_path, 'val': val_path, 'aug': aug_path})
+    else:
+        return load_dataset('csv', data_files={'train': train_path, 'val': val_path})
 
 
 def remove_special_characters(batch):
