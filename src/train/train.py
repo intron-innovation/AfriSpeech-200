@@ -1,6 +1,7 @@
 import argparse
 import configparser
 import os
+import random
 import subprocess
 import time
 import pandas as pd
@@ -137,13 +138,18 @@ def run_inference(trained_model, dataloader, mode='most'):
             wer_list.append(batch['wer'])
         uncertainty_score = np.array(wer_list).std()
         audio_wers[batch['audio_idx']] = uncertainty_score
+
+    if mode == 'random':
+        # we shuffle randomly the dictionary (this will display a random order) - the selecting the strict first top-k
+        keys = list(audio_wers.keys())
+        random.shuffle(keys)
+        return {key: audio_wers[key] for key in keys}
     if mode == 'most':
         # we select most uncertain samples
-        sorted_dict = dict(sorted(audio_wers.items(), key=lambda item: item[1]), reverse=True)
-    else:
+        return dict(sorted(audio_wers.items(), key=lambda item: item[1]), reverse=True)
+    if mode == 'least':
         # we select the least uncertain samples
-        sorted_dict = dict(sorted(audio_wers.items(), key=lambda item: item[1]), reverse=False)
-    return sorted_dict
+        return dict(sorted(audio_wers.items(), key=lambda item: item[1]), reverse=False)
 
 
 if __name__ == "__main__":
@@ -289,7 +295,8 @@ if __name__ == "__main__":
         setDropout(model)
         # evaluation step and uncertain samples selection
         augmentation_dataloader = DataLoader(aug_dataset, batch_size=1)
-        samples_uncertainty = run_inference(model, augmentation_dataloader)
+        samples_uncertainty = run_inference(model, augmentation_dataloader,
+                                            mode=config['hyperparameters']['sampling_mode'])
         # top-k samples (select top-3k)
         most_uncertain_samples_idx = list(samples_uncertainty.keys())[:config['hyperparameters']['top_k']]
         print('Old training set size: {} - Old Augmenting Size: {}'.format(len(train_dataset), len(aug_dataset)))
