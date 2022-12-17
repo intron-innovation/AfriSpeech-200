@@ -233,7 +233,7 @@ if __name__ == "__main__":
     #     data_path=config['data']['val'],
     #     audio_dir=config['audio']['audio_path'],
     #     split="dev",
-    #     duration=float(config['audio']['max_audio_len_secs']),
+    #     duration=float(config['hyperparameters']['max_audio_len_secs']),
     #     min_transcript_len=float(config['hyperparameters']['min_transcript_len']),
     #     domain=config['data']['domain']
     # )
@@ -250,7 +250,7 @@ if __name__ == "__main__":
         #     data_path=config['data']['train'],
         #     audio_dir=config['audio']['audio_path'],
         #     split="train",
-        #     duration=float(config['audio']['max_audio_len_secs']),
+        #     duration=float(config['hyperparameters']['max_audio_len_secs']),
         #     min_transcript_len=float(config['hyperparameters']['min_transcript_len']),
         #     domain=config['data']['domain']
         # )
