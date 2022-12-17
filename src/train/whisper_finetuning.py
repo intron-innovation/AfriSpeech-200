@@ -149,8 +149,6 @@ class DataCollatorSpeechSeq2SeqWithPadding:
 
         # Split inputs and labels since they have to be of different lengths and need different padding methods
         # First treat the audio inputs by simply returning torch tensors
-        # print(features[0])
-        # print(features[1])
 
         input_features = [
             {"input_features": feature["input_features"]} for feature in features
