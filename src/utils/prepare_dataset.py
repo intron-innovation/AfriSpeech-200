@@ -65,10 +65,11 @@ def data_prep(config):
     return train_dataset, val_dataset, PROCESSOR
 
 
-def load_custom_dataset(config, split, transform_audio_, transform_labels_):
+def load_custom_dataset(config, split, transform_audio_, transform_labels_=None, prepare=None):
     return CustomASRDataset(config.train_path, transform_audio_, transform_labels_,
                             config.audio_path, split, config.domain,
-                            config.max_audio_len_secs, config.min_transcript_len)
+                            config.max_audio_len_secs, config.min_transcript_len,
+                            prepare=prepare)
 
 
 def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets):
@@ -184,8 +185,10 @@ def transform_labels(text):
 
 class CustomASRDataset(Dataset):
     def __init__(self, data_file, transform=None, transform_target=None, audio_dir=None,
-                 split='train', domain="all", max_audio_len_secs=-1, min_transcript_len=10):
+                 split='train', domain="all", max_audio_len_secs=-1, min_transcript_len=10,
+                 prepare=False):
         self.asr_data = pd.read_csv(data_file)
+        self.prepare = prepare
         if max_audio_len_secs != -1:
             self.asr_data = self.asr_data[self.asr_data.duration < max_audio_len_secs]
         if domain != 'all':
@@ -203,10 +206,15 @@ class CustomASRDataset(Dataset):
     def __getitem__(self, idx):
         audio_path = self.asr_data.iloc[idx, 8]  # audio_path
         text = self.asr_data.iloc[idx, 5]  # transcript
-        input_audio = self.transform(audio_path)
-        label = self.target_transform(text)
+        if self.prepare:
+            input_audio, label = self.transform(audio_path, text)
+            result = {'input_features': input_audio, 'labels': label}
+        else:
+            input_audio = self.transform(audio_path)
+            label = self.target_transform(text)
+            result = {'input_values': input_audio[0], 'labels': label, 'input_lengths': len(input_audio[0])}
 
-        return {'input_values': input_audio[0], 'labels': label, 'input_lengths': len(input_audio[0])}
+        return result
 
 
 @dataclass

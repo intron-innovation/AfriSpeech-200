@@ -149,14 +149,11 @@ class DataCollatorSpeechSeq2SeqWithPadding:
 
         # Split inputs and labels since they have to be of different lengths and need different padding methods
         # First treat the audio inputs by simply returning torch tensors
-        print(features[0])
-        print(features[1])
-        
-        input_features = [{"input_values": feature["input_values"]} for feature in features]
-        label_features = [{"input_ids": feature["labels"]} for feature in features]
-        
+        # print(features[0])
+        # print(features[1])
+
         input_features = [
-            {"input_features": feature["input_values"]} for feature in features
+            {"input_features": feature["input_features"]} for feature in features
         ]
 
         batch = self.processor.feature_extractor.pad(
@@ -217,34 +214,23 @@ if __name__ == "__main__":
     feature_extractor = WhisperFeatureExtractor.from_pretrained(config['models']['model_path'])
     tokenizer = WhisperTokenizer.from_pretrained(config['models']['model_path'], language="en", task="transcribe")
 
-    def transform_whisper_audio(audio_path):
-        try:
-            speech = load_audio_file(audio_path)
-        except Exception as e:
-            print(e)
-            speech, fs = librosa.load(
-                '/data/data/intron/e809b58c-4f05-4754-b98c-fbf236a88fbc/544bbfe5e1c6f8afb80c4840b681908d.wav',
-                sr=AudioConfig.sr)
 
-        return feature_extractor(speech, sampling_rate=AudioConfig.sr).input_features
+    def transform_dataset(audio_path, text):
+        # Load and resample audio data to 16KHz
+        speech = load_audio_file(audio_path)
 
+        # Compute log-Mel input features from input audio array
+        audio = feature_extractor(speech, sampling_rate=AudioConfig.sr).input_features[0]
 
-    def transform_whisper_labels(text):
+        # Encode target text to label ids
         text = clean_text(text)
-        return tokenizer(text.lower()).input_ids
+        labels = tokenizer(text.lower()).input_ids
+
+        return audio, labels
 
     # Load the dataset
-    # fmt: off
-    # dev_dataset = load_data(
-    #     data_path=config['data']['val'],
-    #     audio_dir=config['audio']['audio_path'],
-    #     split="dev",
-    #     duration=float(config['hyperparameters']['max_audio_len_secs']),
-    #     min_transcript_len=float(config['hyperparameters']['min_transcript_len']),
-    #     domain=config['data']['domain']
-    # )
-    dev_dataset = load_custom_dataset(data_config, 'dev', transform_whisper_audio, transform_whisper_labels)
-    train_dataset = load_custom_dataset(data_config, 'train', transform_whisper_audio, transform_whisper_labels)
+    dev_dataset = load_custom_dataset(data_config, 'dev', transform_dataset, prepare=True)
+    train_dataset = load_custom_dataset(data_config, 'train', transform_dataset, prepare=True)
 
     sampling_rate = int(config['hyperparameters']['sampling_rate'])
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -252,24 +238,6 @@ if __name__ == "__main__":
     print(f"model starting...from last checkpoint:{last_checkpoint}")
 
     if config['hyperparameters']['do_train'] == "True":
-        # train_dataset = load_data(
-        #     data_path=config['data']['train'],
-        #     audio_dir=config['audio']['audio_path'],
-        #     split="train",
-        #     duration=float(config['hyperparameters']['max_audio_len_secs']),
-        #     min_transcript_len=float(config['hyperparameters']['min_transcript_len']),
-        #     domain=config['data']['domain']
-        # )
-
-        # Process the audio
-        # train_dataset = train_dataset.cast_column("audio_paths", Audio(sampling_rate=sampling_rate))
-        # dev_dataset = dev_dataset.cast_column("audio_paths", Audio(sampling_rate=sampling_rate))
-
-        # Prepare dataset for training
-        # prepare_dataset = partial(prepare_dataset, feature_extractor=feature_extractor, tokenizer=tokenizer)
-        # train_dataset = train_dataset.map(prepare_dataset, remove_columns=train_dataset.column_names)
-        # dev_dataset = dev_dataset.map(prepare_dataset, remove_columns=dev_dataset.column_names)
-        # print(train_dataset, dev_dataset)
 
         # load model
         w_config = WhisperConfig.from_pretrained(config['models']['model_path'], use_cache=False)
