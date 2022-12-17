@@ -22,37 +22,18 @@ import librosa
 from dataclasses import dataclass
 from typing import Any, Dict, List, Union
 
-from .train import parse_argument, train_setup, get_checkpoint
+from src.train.train import parse_argument, train_setup, get_checkpoint
 from src.utils.utils import cleanup
 from src.inference.inference import write_pred
 
 set_seed(1778)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
-def parse_argument2():
-    parser = argparse.ArgumentParser()
-
-    # fmt: off
-    parser.add_argument("--audio_dir", type=str, default="./data/", help="directory to locate the audio")
-    parser.add_argument("--model_id_or_path", type=str, default="openai/whisper-medium", 
-                        help="id of the model or path to huggyface model")
-    parser.add_argument("--output_dir", type=str, default="./whisper-medium-finetune", 
-                        help="directory to store results")
-    parser.add_argument("--train", action='store_true', help="Whether or not to train the model")
-    parser.add_argument("--evaluate", action='store_true', help="Whether or not to evaluate the trained the model")
-    parser.add_argument("--max_audio_len_secs", type=int, default=17,
-                        help="maximum audio length passed to the inference model should")
-    parser.add_argument("--sampling_rate", type=int, default=16000, help="sampling rate of audio")
-    # fmt: on
-
-    args = parser.parse_args()
-    return args
-
+print(f"device: {device}")
 
 def load_data(
     data_path,
     audio_dir="./data/",
+    split="train",
     duration=None,
     accent=None,
     age_group=None,
@@ -76,8 +57,9 @@ def load_data(
     """
     data = pd.read_csv(data_path)
     data["audio_paths"] = data["audio_paths"].apply(
-        lambda x: x.replace("/AfriSpeech-100/", audio_dir)
+        lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
     )
+
 
     if duration:
         data = data[data.duration < duration]
@@ -224,7 +206,8 @@ if __name__ == "__main__":
     dev_dataset = load_data(
         data_path=config['data']['val'],
         audio_dir=config['audio']['audio_path'],
-        duration=float(config['hyperparameters']['max_audio_len_secs']),
+        split="dev",
+        duration=float(config['audio']['max_audio_len_secs']),
         min_transcript_len=float(config['hyperparameters']['min_transcript_len']),
         domain=config['data']['domain']
     )
@@ -237,7 +220,8 @@ if __name__ == "__main__":
         train_dataset = load_data(
             data_path=config['data']['train'],
             audio_dir=config['audio']['audio_path'],
-            duration=float(config['hyperparameters']['max_audio_len_secs']),
+            split="train",
+            duration=float(config['audio']['max_audio_len_secs']),
             min_transcript_len=float(config['hyperparameters']['min_transcript_len']),
             domain=config['data']['domain']
         )
