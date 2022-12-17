@@ -58,14 +58,17 @@ def data_prep(config):
     logger.debug(f"...Load vocab and processor complete in {time.time() - start:.4f}.\n"
                  f"Loading dataset...")
 
-    train_dataset = CustomASRDataset(config.train_path, transform_audio, transform_labels, 
-                                     config.audio_path, 'train', config.domain, 
-                                     config.max_audio_len_secs, config.min_transcript_len)
-    val_dataset = CustomASRDataset(config.val_path, transform_audio, transform_labels, 
-                                   config.audio_path, 'dev', config.domain, 
-                                   config.max_audio_len_secs, config.min_transcript_len)
+    train_dataset = load_custom_dataset(config, 'train')
+    val_dataset = load_custom_dataset(config, 'dev')
+
     logger.debug(f"Load train and val dataset done in {time.time() - start:.4f}.")
     return train_dataset, val_dataset, PROCESSOR
+
+
+def load_custom_dataset(config, split):
+    return CustomASRDataset(config.train_path, transform_audio, transform_labels,
+                            config.audio_path, split, config.domain,
+                            config.max_audio_len_secs, config.min_transcript_len)
 
 
 def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets):
@@ -165,8 +168,9 @@ def transform_audio(audio_path):
         speech = load_audio_file(audio_path)
     except Exception as e:
         print(e)
-        speech, fs = librosa.load('/data/data/intron/e809b58c-4f05-4754-b98c-fbf236a88fbc/544bbfe5e1c6f8afb80c4840b681908d.wav',
-                                  sr=AudioConfig.sr)
+        speech, fs = librosa.load(
+            '/data/data/intron/e809b58c-4f05-4754-b98c-fbf236a88fbc/544bbfe5e1c6f8afb80c4840b681908d.wav',
+            sr=AudioConfig.sr)
 
     return PROCESSOR(speech, sampling_rate=AudioConfig.sr).input_values
 
@@ -179,7 +183,7 @@ def transform_labels(text):
 
 
 class CustomASRDataset(Dataset):
-    def __init__(self, data_file, transform=None, transform_target=None, audio_dir=None, 
+    def __init__(self, data_file, transform=None, transform_target=None, audio_dir=None,
                  split='train', domain="all", max_audio_len_secs=-1, min_transcript_len=10):
         self.asr_data = pd.read_csv(data_file)
         if max_audio_len_secs != -1:

@@ -17,18 +17,21 @@ from transformers import (
     set_seed,
     Seq2SeqTrainingArguments,
     Seq2SeqTrainer,
+    WhisperConfig
 )
 import librosa
 from dataclasses import dataclass
 from typing import Any, Dict, List, Union
 
 from src.train.train import parse_argument, train_setup, get_checkpoint
+from src.utils.prepare_dataset import load_custom_dataset
 from src.utils.utils import cleanup
 from src.inference.inference import write_pred
 
 set_seed(1778)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"device: {device}")
+
 
 def load_data(
     data_path,
@@ -212,6 +215,9 @@ if __name__ == "__main__":
         min_transcript_len=float(config['hyperparameters']['min_transcript_len']),
         domain=config['data']['domain']
     )
+    # train_dataset = load_custom_dataset(config, 'train')
+    # val_dataset = load_custom_dataset(config, 'dev')
+
     sampling_rate = int(config['hyperparameters']['sampling_rate'])
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     last_checkpoint, checkpoint_ = get_checkpoint(checkpoints_path, config['models']['model_path'])
@@ -235,10 +241,13 @@ if __name__ == "__main__":
         processor = WhisperProcessor.from_pretrained(config['models']['model_path'], language="en", task="transcribe")
         feature_extractor = WhisperFeatureExtractor.from_pretrained(config['models']['model_path'])
         tokenizer = WhisperTokenizer.from_pretrained(config['models']['model_path'], language="en", task="transcribe")
+
+        config = WhisperConfig.from_pretrained(config['models']['model_path'], use_cache=False)
         model = WhisperForConditionalGeneration.from_pretrained(
-            last_checkpoint if last_checkpoint else config['models']['model_path']
+            last_checkpoint if last_checkpoint else config['models']['model_path'],
+            config=config
         )
-        
+
         # Prepare dataset for training
         prepare_dataset = partial(prepare_dataset, feature_extractor=feature_extractor, tokenizer=tokenizer)
         train_dataset = train_dataset.map(prepare_dataset, remove_columns=train_dataset.column_names)
@@ -340,7 +349,7 @@ if __name__ == "__main__":
 
         # fmt: off
         output_cols = [
-            "audio_paths", "accent", "text", "predictions", 
+            "audio_paths", "accent", "text", "predictions",
             "clean_wer", "clean_text", "clean_predictions", "wer"
         ]
         # fmt: on
