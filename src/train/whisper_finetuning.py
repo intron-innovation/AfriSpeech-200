@@ -149,8 +149,14 @@ class DataCollatorSpeechSeq2SeqWithPadding:
 
         # Split inputs and labels since they have to be of different lengths and need different padding methods
         # First treat the audio inputs by simply returning torch tensors
+        print(features[0])
+        print(features[1])
+        
+        input_features = [{"input_values": feature["input_values"]} for feature in features]
+        label_features = [{"input_ids": feature["labels"]} for feature in features]
+        
         input_features = [
-            {"input_features": feature["input_features"]} for feature in features
+            {"input_features": feature["input_values"]} for feature in features
         ]
 
         batch = self.processor.feature_extractor.pad(
@@ -220,7 +226,7 @@ if __name__ == "__main__":
                 '/data/data/intron/e809b58c-4f05-4754-b98c-fbf236a88fbc/544bbfe5e1c6f8afb80c4840b681908d.wav',
                 sr=AudioConfig.sr)
 
-        return feature_extractor(speech, sampling_rate=AudioConfig.sr).input_values
+        return feature_extractor(speech, sampling_rate=AudioConfig.sr).input_features
 
 
     def transform_whisper_labels(text):
@@ -263,7 +269,7 @@ if __name__ == "__main__":
         # prepare_dataset = partial(prepare_dataset, feature_extractor=feature_extractor, tokenizer=tokenizer)
         # train_dataset = train_dataset.map(prepare_dataset, remove_columns=train_dataset.column_names)
         # dev_dataset = dev_dataset.map(prepare_dataset, remove_columns=dev_dataset.column_names)
-        print(train_dataset, dev_dataset)
+        # print(train_dataset, dev_dataset)
 
         # load model
         w_config = WhisperConfig.from_pretrained(config['models']['model_path'], use_cache=False)

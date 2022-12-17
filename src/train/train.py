@@ -63,7 +63,6 @@ def train_setup(config, args):
 
 
 def data_setup(config):
-    print(config.sections())
     data_config = DataConfig(
         train_path=config['data']['train'],
         val_path=config['data']['val'],
