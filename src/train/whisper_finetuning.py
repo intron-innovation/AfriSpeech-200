@@ -21,6 +21,8 @@ from transformers import (
 import librosa
 from dataclasses import dataclass
 from typing import Any, Dict, List, Union
+
+from .train import parse_argument, train_setup, get_checkpoint
 from src.utils.utils import cleanup
 from src.inference.inference import write_pred
 
@@ -28,7 +30,7 @@ set_seed(1778)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-def parse_argument():
+def parse_argument2():
     parser = argparse.ArgumentParser()
 
     # fmt: off
@@ -56,32 +58,43 @@ def load_data(
     age_group=None,
     country=None,
     origin=None,
-    domain=None,
+    domain='all',
+    min_transcript_len=None
 ):
     """
     load train/dev/test data from csv path.
-    :param max_audio_len_secs: int
+    :param min_transcript_len:
+    :param domain: str
+    :param origin: str
+    :param country: str
+    :param age_group: str
+    :param accent: str
+    :param duration: str
+    :param audio_dir: str
     :param data_path: str
     :return: Dataset instance
     """
-    data = pd.read_csv(audio_dir + data_path)
+    data = pd.read_csv(data_path)
     data["audio_paths"] = data["audio_paths"].apply(
         lambda x: x.replace("/AfriSpeech-100/", audio_dir)
     )
 
-    if duration is not None:
+    if duration:
         data = data[data.duration < duration]
 
-    if accent is not None:
+    if min_transcript_len:
+        data = data[data.transcript.str.len() >= min_transcript_len]
+
+    if accent:
         data = data[data.accent == accent]
 
-    if country is not None:
+    if country:
         data = data[data.age_group == age_group]
 
-    if origin is not None:
+    if origin:
         data = data[data.origin == origin]
 
-    if domain is not None:
+    if domain != 'all':
         data = data[data.domain == domain]
 
     data["text"] = data["transcript"]
@@ -203,35 +216,43 @@ def compute_metrics(pred, metric):
 
 if __name__ == "__main__":
     """Run main script"""
-    args = parse_argument()
+    args, config = parse_argument()
+    checkpoints_path = train_setup(config, args)
 
-    if args.train:
-        # Make output directory if does not already exist
-        os.makedirs(args.output_dir, exist_ok=True)
+    # Load the dataset
+    # fmt: off
+    dev_dataset = load_data(
+        data_path=config['data']['val'],
+        audio_dir=config['audio']['audio_path'],
+        duration=float(config['hyperparameters']['max_audio_len_secs']),
+        min_transcript_len=float(config['hyperparameters']['min_transcript_len']),
+        domain=config['data']['domain']
+    )
+    sampling_rate = int(config['hyperparameters']['sampling_rate'])
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    last_checkpoint, checkpoint_ = get_checkpoint(checkpoints_path, config['models']['model_path'])
+    print(f"model starting...from last checkpoint:{last_checkpoint}")
 
-        # Load the dataset
-        # fmt: off
+    if config['hyperparameters']['do_train'] == "True":
         train_dataset = load_data(
-            data_path="intron-train-public-58001.csv",
-            audio_dir=args.audio_dir, 
-            duration=args.max_audio_len_secs
-        )       
-        dev_dataset = load_data(
-            data_path="intron-dev-public-3232.csv",
-            audio_dir=args.audio_dir,
-            duration=args.max_audio_len_secs
+            data_path=config['data']['train'],
+            audio_dir=config['audio']['audio_path'],
+            duration=float(config['hyperparameters']['max_audio_len_secs']),
+            min_transcript_len=float(config['hyperparameters']['min_transcript_len']),
+            domain=config['data']['domain']
         )
 
         # Process the audio
-        train_dataset = train_dataset.cast_column("audio_paths", Audio(sampling_rate=args.sampling_rate))
-        dev_dataset = dev_dataset.cast_column("audio_paths", Audio(sampling_rate=args.sampling_rate))
+        train_dataset = train_dataset.cast_column("audio_paths", Audio(sampling_rate=sampling_rate))
+        dev_dataset = dev_dataset.cast_column("audio_paths", Audio(sampling_rate=sampling_rate))
 
         # Define processor, feature extractor, tokenizer and model
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        processor = WhisperProcessor.from_pretrained(args.model_id_or_path, language="en", task="transcribe")
-        feature_extractor = WhisperFeatureExtractor.from_pretrained(args.model_id_or_path)
-        tokenizer = WhisperTokenizer.from_pretrained(args.model_id_or_path, language="en", task="transcribe")
-        model = WhisperForConditionalGeneration.from_pretrained(args.model_id_or_path)
+        processor = WhisperProcessor.from_pretrained(config['models']['model_path'], language="en", task="transcribe")
+        feature_extractor = WhisperFeatureExtractor.from_pretrained(config['models']['model_path'])
+        tokenizer = WhisperTokenizer.from_pretrained(config['models']['model_path'], language="en", task="transcribe")
+        model = WhisperForConditionalGeneration.from_pretrained(
+            last_checkpoint if last_checkpoint else config['models']['model_path']
+        )
         
         # Prepare dataset for training
         prepare_dataset = partial(prepare_dataset, feature_extractor=feature_extractor, tokenizer=tokenizer)
@@ -253,23 +274,28 @@ if __name__ == "__main__":
 
         # Define the training configuration
         training_args = Seq2SeqTrainingArguments(
-            output_dir=args.output_dir,
-            per_device_train_batch_size=5,
-            gradient_accumulation_steps=4,
-            learning_rate=1e-4,
-            warmup_steps=500,
-            num_train_epochs=5,
-            gradient_checkpointing=True,
-            fp16=True,
+            output_dir=checkpoints_path,
+            overwrite_output_dir=True if config['hyperparameters']['overwrite_output_dir'] == "True" else False,
+            group_by_length=True if config['hyperparameters']['group_by_length'] == "True" else False,
+            length_column_name=config['hyperparameters']['length_column_name'],
+            data_seed=int(config['hyperparameters']['data_seed']),
+            per_device_train_batch_size=int(config['hyperparameters']['train_batch_size']),
+            gradient_accumulation_steps=int(config['hyperparameters']['gradient_accumulation_steps']),
+            learning_rate=float(config['hyperparameters']['learning_rate']),
+            warmup_steps=int(config['hyperparameters']['warmup_steps']),
+            num_train_epochs=int(config['hyperparameters']['num_epochs']),
+            gradient_checkpointing=True if config['hyperparameters']['gradient_checkpointing'] == "True" else False,
+            fp16=torch.cuda.is_available(),
             evaluation_strategy="steps",
-            per_device_eval_batch_size=8,
-            predict_with_generate=True,
-            generation_max_length=25,
-            save_steps=100,
-            eval_steps=100,
-            logging_steps=25,
-            report_to="tensorboard",
-            load_best_model_at_end=True,
+            per_device_eval_batch_size=int(config['hyperparameters']['val_batch_size']),
+            predict_with_generate=True if config['hyperparameters']['predict_with_generate'] == "True" else False,
+            generation_max_length=int(config['hyperparameters']['generation_max_length']),
+            save_steps=int(config['hyperparameters']['save_steps']),
+            eval_steps=int(config['hyperparameters']['eval_steps']),
+            logging_steps=int(config['hyperparameters']['logging_steps']),
+            report_to=config['hyperparameters']['report_to'],
+            load_best_model_at_end=True if config['hyperparameters']['load_best_model_at_end'] == 'True' else False,
+            metric_for_best_model='eval_wer',
             greater_is_better=False,
             push_to_hub=False,
         )
@@ -286,33 +312,25 @@ if __name__ == "__main__":
         )
 
         # Save the processor object once before starting to train
-        processor.save_pretrained(training_args.output_dir)
-        args.model_id_or_path = Path(args.output_dir + "/checkpoint-5")
+        processor.save_pretrained(checkpoints_path)
+        # args.model_id_or_path = Path(args.output_dir + "/checkpoint-5")
 
         # Train the model
-        trainer.train()
+        trainer.train(resume_from_checkpoint=checkpoint_)
 
-    if args.evaluate:
-        args.model_id_or_path = Path(args.model_id_or_path)
+        model.save_pretrained(checkpoints_path)
+        processor.save_pretrained(checkpoints_path)
 
-        # Make output directory if does not already exist
-        os.makedirs(args.output_dir, exist_ok=True)
+    if config['hyperparameters']['do_eval'] == "True":
 
         # Define processor, feature extractor, tokenizer and model
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-        # Load dev dataset
-        dev_dataset = load_data(
-            data_path="intron-dev-public-3232.csv",
-            audio_dir=args.audio_dir,
-            duration=args.max_audio_len_secs,
-        )
-
         # Define processor and model
         processor = WhisperProcessor.from_pretrained(
-            args.model_id_or_path.parents[0], language="en", task="transcribe"
+            config['models']['model_path'], language="en", task="transcribe"
         )
-        model = WhisperForConditionalGeneration.from_pretrained(args.model_id_or_path)
+        model = WhisperForConditionalGeneration.from_pretrained(
+            last_checkpoint if last_checkpoint else config['models']['model_path']
+        )
 
         # Define metric
         metric = load_metric("wer")
@@ -323,7 +341,7 @@ if __name__ == "__main__":
             processor=processor,
             model=model,
             metric=metric,
-            sampling_rate=args.sampling_rate,
+            sampling_rate=sampling_rate,
             device=device,
         )
         dev_dataset = dev_dataset.map(transcribe_whisper)
@@ -344,7 +362,7 @@ if __name__ == "__main__":
 
         # Write prediction to output folder
         write_pred(
-            str(args.model_id_or_path),
+            config['models']['model_path'],
             dev_dataset,
             all_wer,
             cols=output_cols,
