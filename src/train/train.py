@@ -285,7 +285,7 @@ if __name__ == "__main__":
     print(f"\n...Model Args loaded in {time.time() - start:.4f}. Start training with Active Learning...\n")
 
     # Five AL rounds
-    for active_learning_round in range(config['hyperparameters']['active_learning_rounds']):
+    for active_learning_round in range(int(config['hyperparameters']['active_learning_rounds'])):
         print('Active Learning Round: {}\n'.format(active_learning_round))
         trainer.train(resume_from_checkpoint=checkpoint)
         model.save_pretrained(checkpoints_path)
