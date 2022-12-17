@@ -199,6 +199,7 @@ def compute_metrics(pred, metric):
 if __name__ == "__main__":
     """Run main script"""
     args, config = parse_argument()
+    print(config.sections())
     checkpoints_path = train_setup(config, args)
 
     # Load the dataset
