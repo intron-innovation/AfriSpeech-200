@@ -40,7 +40,6 @@ def load_data(
 
     if max_audio_len_secs != -1:
         data = data[data.duration < max_audio_len_secs]
-
     else:
         # Check if any of the sample is longer than
         # the global MAX_MODEL_AUDIO_LEN_SECS
@@ -144,7 +143,7 @@ def write_pred(model_id_or_path, results, wer, cols=None, output_dir="./results"
     return predictions_df
 
 
-def run_benchmarks(model_id_or_path, test_dataset, output_dir="./results"):
+def run_benchmarks(model_id_or_path, test_dataset, output_dir="./results", gpu=-1):
     """
     Pipeline for running benchmarks for huggingface models on dev/test data
     :param output_dir: str
@@ -152,8 +151,9 @@ def run_benchmarks(model_id_or_path, test_dataset, output_dir="./results"):
     :param test_dataset: Dataset instance or pd.DataFrame
     :return:
     """
-    global MODEL, PROCESSOR
+    global MODEL, PROCESSOR, device
     tsince = int(round(time.time()))
+    device = torch.device("cuda" if (torch.cuda.is_available() and gpu>-1) else "cpu")
     output_cols = None
 
     if "hubert" in model_id_or_path:

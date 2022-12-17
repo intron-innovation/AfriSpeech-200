@@ -49,6 +49,12 @@ def parse_argument():
         default=17,
         help="maximum audio length passed to the inference model should",
     )
+    parser.add_argument(
+        "--gpu",
+        type=int,
+        default=-1,
+        help="set gpu to -1 to use cpu",
+    )
 
     return parser.parse_args()
 
@@ -80,4 +86,5 @@ if __name__ == "__main__":
         model_id_or_path=args.model_id_or_path,
         test_dataset=test_dataset,
         output_dir=args.output_dir,
+        gpu=args.gpu
     )

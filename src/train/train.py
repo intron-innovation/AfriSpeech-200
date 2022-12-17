@@ -68,7 +68,8 @@ def data_setup(config):
         exp_dir=config['experiment']['dir'],
         ckpt_path=config['checkpoints']['checkpoints_path'],
         model_path=config['models']['model_path'],
-        audio_path=config['audio']['audio_path']
+        audio_path=config['audio']['audio_path'],
+        max_audio_len_secs=float(config['audio']['max_audio_len_secs'])
     )
     return data_prep(data_config)
 

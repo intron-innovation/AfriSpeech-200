@@ -2,4 +2,5 @@
 .idea/
 src/__pycache__/
 *__pycache__*
-# src/experiments
+src/experiments
+wandb/
