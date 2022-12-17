@@ -63,6 +63,7 @@ def train_setup(config, args):
 
 
 def data_setup(config):
+    print(config.sections())
     data_config = DataConfig(
         train_path=config['data']['train'],
         val_path=config['data']['val'],
@@ -70,8 +71,8 @@ def data_setup(config):
         ckpt_path=config['checkpoints']['checkpoints_path'],
         model_path=config['models']['model_path'],
         audio_path=config['audio']['audio_path'],
-        max_audio_len_secs=float(config['hyperparameters']['max_audio_len_secs']),
-        min_transcript_len=float(config['hyperparameters']['min_transcript_len']),
+        max_audio_len_secs=int(config['hyperparameters']['max_audio_len_secs']),
+        min_transcript_len=int(config['hyperparameters']['min_transcript_len']),
         domain=config['data']['domain']
     )
     return data_config

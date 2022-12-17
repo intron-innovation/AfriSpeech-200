@@ -25,14 +25,13 @@ from typing import Any, Dict, List, Union
 
 from src.train.train import parse_argument, train_setup, get_checkpoint, data_setup
 from src.utils.audio_processing import load_audio_file, AudioConfig
-from src.utils.prepare_dataset import load_custom_dataset, DataConfig
+from src.utils.prepare_dataset import load_custom_dataset
 from src.utils.text_processing import clean_text
 from src.utils.utils import cleanup
 from src.inference.inference import write_pred
 
 set_seed(1778)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"device: {device}")
 
 
 def load_data(
