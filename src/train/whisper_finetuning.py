@@ -216,7 +216,7 @@ if __name__ == "__main__":
         domain=config['data']['domain']
     )
     # train_dataset = load_custom_dataset(config, 'train')
-    # val_dataset = load_custom_dataset(config, 'dev')
+    # dev_dataset = load_custom_dataset(config, 'dev')
 
     sampling_rate = int(config['hyperparameters']['sampling_rate'])
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -242,10 +242,10 @@ if __name__ == "__main__":
         feature_extractor = WhisperFeatureExtractor.from_pretrained(config['models']['model_path'])
         tokenizer = WhisperTokenizer.from_pretrained(config['models']['model_path'], language="en", task="transcribe")
 
-        config = WhisperConfig.from_pretrained(config['models']['model_path'], use_cache=False)
+        w_config = WhisperConfig.from_pretrained(config['models']['model_path'], use_cache=False)
         model = WhisperForConditionalGeneration.from_pretrained(
             last_checkpoint if last_checkpoint else config['models']['model_path'],
-            config=config
+            config=w_config
         )
 
         # Prepare dataset for training
