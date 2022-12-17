@@ -23,9 +23,9 @@ import librosa
 from dataclasses import dataclass
 from typing import Any, Dict, List, Union
 
-from src.train.train import parse_argument, train_setup, get_checkpoint
+from src.train.train import parse_argument, train_setup, get_checkpoint, data_setup
 from src.utils.audio_processing import load_audio_file, AudioConfig
-from src.utils.prepare_dataset import load_custom_dataset
+from src.utils.prepare_dataset import load_custom_dataset, DataConfig
 from src.utils.text_processing import clean_text
 from src.utils.utils import cleanup
 from src.inference.inference import write_pred
@@ -49,6 +49,7 @@ def load_data(
 ):
     """
     load train/dev/test data from csv path.
+    :param split: str
     :param min_transcript_len:
     :param domain: str
     :param origin: str
@@ -64,7 +65,6 @@ def load_data(
     data["audio_paths"] = data["audio_paths"].apply(
         lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
     )
-
 
     if duration:
         data = data[data.duration < duration]
@@ -204,8 +204,8 @@ def compute_metrics(pred, metric):
 if __name__ == "__main__":
     """Run main script"""
     args, config = parse_argument()
-    print(config.sections())
     checkpoints_path = train_setup(config, args)
+    data_config = data_setup(config)
 
     # Define processor, feature extractor, tokenizer and model
     processor = WhisperProcessor.from_pretrained(config['models']['model_path'], language="en", task="transcribe")
@@ -238,7 +238,8 @@ if __name__ == "__main__":
     #     min_transcript_len=float(config['hyperparameters']['min_transcript_len']),
     #     domain=config['data']['domain']
     # )
-    dev_dataset = load_custom_dataset(config, 'dev', transform_whisper_audio, transform_whisper_labels)
+    dev_dataset = load_custom_dataset(data_config, 'dev', transform_whisper_audio, transform_whisper_labels)
+    train_dataset = load_custom_dataset(data_config, 'train', transform_whisper_audio, transform_whisper_labels)
 
     sampling_rate = int(config['hyperparameters']['sampling_rate'])
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -254,11 +255,16 @@ if __name__ == "__main__":
         #     min_transcript_len=float(config['hyperparameters']['min_transcript_len']),
         #     domain=config['data']['domain']
         # )
-        train_dataset = load_custom_dataset(config, 'train', transform_whisper_audio, transform_whisper_labels)
 
         # Process the audio
-        train_dataset = train_dataset.cast_column("audio_paths", Audio(sampling_rate=sampling_rate))
-        dev_dataset = dev_dataset.cast_column("audio_paths", Audio(sampling_rate=sampling_rate))
+        # train_dataset = train_dataset.cast_column("audio_paths", Audio(sampling_rate=sampling_rate))
+        # dev_dataset = dev_dataset.cast_column("audio_paths", Audio(sampling_rate=sampling_rate))
+
+        # Prepare dataset for training
+        # prepare_dataset = partial(prepare_dataset, feature_extractor=feature_extractor, tokenizer=tokenizer)
+        # train_dataset = train_dataset.map(prepare_dataset, remove_columns=train_dataset.column_names)
+        # dev_dataset = dev_dataset.map(prepare_dataset, remove_columns=dev_dataset.column_names)
+        print(train_dataset, dev_dataset)
 
         # load model
         w_config = WhisperConfig.from_pretrained(config['models']['model_path'], use_cache=False)
@@ -267,11 +273,6 @@ if __name__ == "__main__":
             config=w_config
         )
 
-        # Prepare dataset for training
-        prepare_dataset = partial(prepare_dataset, feature_extractor=feature_extractor, tokenizer=tokenizer)
-        train_dataset = train_dataset.map(prepare_dataset, remove_columns=train_dataset.column_names)
-        dev_dataset = dev_dataset.map(prepare_dataset, remove_columns=dev_dataset.column_names)
-        print(train_dataset, dev_dataset)
         # fmt: on
 
         # Override generation arguments

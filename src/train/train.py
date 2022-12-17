@@ -74,7 +74,7 @@ def data_setup(config):
         min_transcript_len=float(config['hyperparameters']['min_transcript_len']),
         domain=config['data']['domain']
     )
-    return data_prep(data_config)
+    return data_config
 
 
 def get_data_collator():
@@ -130,7 +130,8 @@ if __name__ == "__main__":
 
     args, config = parse_argument()
     checkpoints_path = train_setup(config, args)
-    train_dataset, val_dataset, PROCESSOR = data_setup(config)
+    data_config = data_setup(config)
+    train_dataset, val_dataset, PROCESSOR = data_prep(data_config)
     data_collator = get_data_collator()
 
     start = time.time()
