@@ -58,15 +58,15 @@ def data_prep(config):
     logger.debug(f"...Load vocab and processor complete in {time.time() - start:.4f}.\n"
                  f"Loading dataset...")
 
-    train_dataset = load_custom_dataset(config, 'train')
-    val_dataset = load_custom_dataset(config, 'dev')
+    train_dataset = load_custom_dataset(config, 'train', transform_audio, transform_labels)
+    val_dataset = load_custom_dataset(config, 'dev', transform_audio, transform_labels)
 
     logger.debug(f"Load train and val dataset done in {time.time() - start:.4f}.")
     return train_dataset, val_dataset, PROCESSOR
 
 
-def load_custom_dataset(config, split):
-    return CustomASRDataset(config.train_path, transform_audio, transform_labels,
+def load_custom_dataset(config, split, transform_audio_, transform_labels_):
+    return CustomASRDataset(config.train_path, transform_audio_, transform_labels_,
                             config.audio_path, split, config.domain,
                             config.max_audio_len_secs, config.min_transcript_len)
 

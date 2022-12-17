@@ -24,7 +24,9 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Union
 
 from src.train.train import parse_argument, train_setup, get_checkpoint
+from src.utils.audio_processing import load_audio_file, AudioConfig
 from src.utils.prepare_dataset import load_custom_dataset
+from src.utils.text_processing import clean_text
 from src.utils.utils import cleanup
 from src.inference.inference import write_pred
 
@@ -205,18 +207,38 @@ if __name__ == "__main__":
     print(config.sections())
     checkpoints_path = train_setup(config, args)
 
+    # Define processor, feature extractor, tokenizer and model
+    processor = WhisperProcessor.from_pretrained(config['models']['model_path'], language="en", task="transcribe")
+    feature_extractor = WhisperFeatureExtractor.from_pretrained(config['models']['model_path'])
+    tokenizer = WhisperTokenizer.from_pretrained(config['models']['model_path'], language="en", task="transcribe")
+
+    def transform_whisper_audio(audio_path):
+        try:
+            speech = load_audio_file(audio_path)
+        except Exception as e:
+            print(e)
+            speech, fs = librosa.load(
+                '/data/data/intron/e809b58c-4f05-4754-b98c-fbf236a88fbc/544bbfe5e1c6f8afb80c4840b681908d.wav',
+                sr=AudioConfig.sr)
+
+        return feature_extractor(speech, sampling_rate=AudioConfig.sr).input_values
+
+
+    def transform_whisper_labels(text):
+        text = clean_text(text)
+        return tokenizer(text.lower()).input_ids
+
     # Load the dataset
     # fmt: off
-    dev_dataset = load_data(
-        data_path=config['data']['val'],
-        audio_dir=config['audio']['audio_path'],
-        split="dev",
-        duration=float(config['audio']['max_audio_len_secs']),
-        min_transcript_len=float(config['hyperparameters']['min_transcript_len']),
-        domain=config['data']['domain']
-    )
-    # train_dataset = load_custom_dataset(config, 'train')
-    # dev_dataset = load_custom_dataset(config, 'dev')
+    # dev_dataset = load_data(
+    #     data_path=config['data']['val'],
+    #     audio_dir=config['audio']['audio_path'],
+    #     split="dev",
+    #     duration=float(config['audio']['max_audio_len_secs']),
+    #     min_transcript_len=float(config['hyperparameters']['min_transcript_len']),
+    #     domain=config['data']['domain']
+    # )
+    dev_dataset = load_custom_dataset(config, 'dev', transform_whisper_audio, transform_whisper_labels)
 
     sampling_rate = int(config['hyperparameters']['sampling_rate'])
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -224,24 +246,21 @@ if __name__ == "__main__":
     print(f"model starting...from last checkpoint:{last_checkpoint}")
 
     if config['hyperparameters']['do_train'] == "True":
-        train_dataset = load_data(
-            data_path=config['data']['train'],
-            audio_dir=config['audio']['audio_path'],
-            split="train",
-            duration=float(config['audio']['max_audio_len_secs']),
-            min_transcript_len=float(config['hyperparameters']['min_transcript_len']),
-            domain=config['data']['domain']
-        )
+        # train_dataset = load_data(
+        #     data_path=config['data']['train'],
+        #     audio_dir=config['audio']['audio_path'],
+        #     split="train",
+        #     duration=float(config['audio']['max_audio_len_secs']),
+        #     min_transcript_len=float(config['hyperparameters']['min_transcript_len']),
+        #     domain=config['data']['domain']
+        # )
+        train_dataset = load_custom_dataset(config, 'train', transform_whisper_audio, transform_whisper_labels)
 
         # Process the audio
         train_dataset = train_dataset.cast_column("audio_paths", Audio(sampling_rate=sampling_rate))
         dev_dataset = dev_dataset.cast_column("audio_paths", Audio(sampling_rate=sampling_rate))
 
-        # Define processor, feature extractor, tokenizer and model
-        processor = WhisperProcessor.from_pretrained(config['models']['model_path'], language="en", task="transcribe")
-        feature_extractor = WhisperFeatureExtractor.from_pretrained(config['models']['model_path'])
-        tokenizer = WhisperTokenizer.from_pretrained(config['models']['model_path'], language="en", task="transcribe")
-
+        # load model
         w_config = WhisperConfig.from_pretrained(config['models']['model_path'], use_cache=False)
         model = WhisperForConditionalGeneration.from_pretrained(
             last_checkpoint if last_checkpoint else config['models']['model_path'],
