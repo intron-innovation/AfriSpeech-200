@@ -117,39 +117,42 @@ def setDropout(trained_model):
 
 
 def run_inference(trained_model, dataloader, mode='most'):
-    audio_wers = {}
-    for batch in dataloader:
-        input_val = batch.input_values.to(device)
-
-        # run 10 steps of mc dropout
-        wer_list = []
-        for mc_dropout_round in range(10):
-            with torch.no_grad():
-                logits = trained_model(input_val).logits
-                batch["logits"] = logits
-
-            pred_ids = torch.argmax(torch.tensor(batch["logits"]), dim=-1)
-            pred = PROCESSOR.batch_decode(pred_ids)[0]
-            batch["predictions"] = cleanup(pred)
-            batch["reference"] = cleanup(batch["text"]).lower()
-            batch["wer"] = wer_metric.compute(
-                predictions=[batch["predictions"]], references=[batch["reference"]]
-            )
-            wer_list.append(batch['wer'])
-        uncertainty_score = np.array(wer_list).std()
-        audio_wers[batch['audio_idx']] = uncertainty_score
-
     if mode == 'random':
+        # we do not need to compute the WER here
         # we shuffle randomly the dictionary (this will display a random order) - the selecting the strict first top-k
-        keys = list(audio_wers.keys())
-        random.shuffle(keys)
-        return {key: audio_wers[key] for key in keys}
-    if mode == 'most':
-        # we select most uncertain samples
-        return dict(sorted(audio_wers.items(), key=lambda item: item[1]), reverse=True)
-    if mode == 'least':
-        # we select the least uncertain samples
-        return dict(sorted(audio_wers.items(), key=lambda item: item[1]), reverse=False)
+        audios_ids = [batch.audio_idx for batch in dataloader]
+        random.shuffle(audios_ids)
+        return {key: 1.0 for key in
+                audios_ids}  # these values are just dummy ones, to have a format similar to the two other cases
+    else:
+        audio_wers = {}
+        for batch in dataloader:
+            input_val = batch.input_values.to(device)
+
+            # run 10 steps of mc dropout
+            wer_list = []
+            for mc_dropout_round in range(10):
+                with torch.no_grad():
+                    logits = trained_model(input_val).logits
+                    batch["logits"] = logits
+
+                pred_ids = torch.argmax(torch.tensor(batch["logits"]), dim=-1)
+                pred = PROCESSOR.batch_decode(pred_ids)[0]
+                batch["predictions"] = cleanup(pred)
+                batch["reference"] = cleanup(batch["text"]).lower()
+                batch["wer"] = wer_metric.compute(
+                    predictions=[batch["predictions"]], references=[batch["reference"]]
+                )
+                wer_list.append(batch['wer'])
+            uncertainty_score = np.array(wer_list).std()
+            audio_wers[batch['audio_idx']] = uncertainty_score
+
+        if mode == 'most':
+            # we select most uncertain samples
+            return dict(sorted(audio_wers.items(), key=lambda item: item[1]), reverse=True)
+        if mode == 'least':
+            # we select the least uncertain samples
+            return dict(sorted(audio_wers.items(), key=lambda item: item[1]), reverse=False)
 
 
 if __name__ == "__main__":
@@ -285,7 +288,7 @@ if __name__ == "__main__":
     print(f"\n...Model Args loaded in {time.time() - start:.4f}. Start training with Active Learning...\n")
 
     # Five AL rounds
-    for active_learning_round in range(config['hyperparameters']['active_learning_rounds']):
+    for active_learning_round in range(int(config['hyperparameters']['active_learning_rounds'])):
         print('Active Learning Round: {}\n'.format(active_learning_round))
         trainer.train(resume_from_checkpoint=checkpoint)
         model.save_pretrained(checkpoints_path)
@@ -295,10 +298,17 @@ if __name__ == "__main__":
         setDropout(model)
         # evaluation step and uncertain samples selection
         augmentation_dataloader = DataLoader(aug_dataset, batch_size=1)
+        sampling_mode = config['hyperparameters']['sampling_mode']
         samples_uncertainty = run_inference(model, augmentation_dataloader,
-                                            mode=config['hyperparameters']['sampling_mode'])
+                                            mode=sampling_mode)
         # top-k samples (select top-3k)
-        most_uncertain_samples_idx = list(samples_uncertainty.keys())[:config['hyperparameters']['top_k']]
+        k = int(config['hyperparameters']['top_k'])
+        most_uncertain_samples_idx = list(samples_uncertainty.keys())[:k]
+        # writing the top=k to disk
+        filename = 'Top-{}_AL_Round_{}_Mode_{}'.format(k, active_learning_round, sampling_mode)
+        # write the top-k to the disk
+        filepath = os.path.join(checkpoints_path, filename)
+        np.save(filepath, np.array(most_uncertain_samples_idx))
         print('Old training set size: {} - Old Augmenting Size: {}'.format(len(train_dataset), len(aug_dataset)))
         augmentation_data = aug_dataset.get_dataset()
         training_data = train_dataset.get_dataset()
