@@ -58,17 +58,17 @@ def data_prep(config):
     logger.debug(f"...Load vocab and processor complete in {time.time() - start:.4f}.\n"
                  f"Loading dataset...")
 
-    train_dataset = load_custom_dataset(config, 'train', transform_audio, transform_labels)
-    val_dataset = load_custom_dataset(config, 'dev', transform_audio, transform_labels)
+    train_dataset = load_custom_dataset(config, config.train_path, 'train', transform_audio, transform_labels)
+    val_dataset = load_custom_dataset(config, config.val_path, 'dev', transform_audio, transform_labels)
 
     logger.debug(f"Load train and val dataset done in {time.time() - start:.4f}.")
     return train_dataset, val_dataset, PROCESSOR
 
 
-def load_custom_dataset(config, split, transform_audio_, transform_labels_=None, prepare=None):
-    return CustomASRDataset(config.train_path, transform_audio_, transform_labels_,
-                            config.audio_path, split, config.domain,
-                            config.max_audio_len_secs, config.min_transcript_len,
+def load_custom_dataset(config, data_path, split, transform_audio_, transform_labels_=None, prepare=None):
+    return CustomASRDataset(data_path, transform_audio_, transform_labels_,
+                            config.audio_path, split=split, domain=config.domain,
+                            max_audio_len_secs=config.max_audio_len_secs, min_transcript_len=config.min_transcript_len,
                             prepare=prepare)
 
 
@@ -168,7 +168,7 @@ def transform_audio(audio_path):
     try:
         speech = load_audio_file(audio_path)
     except Exception as e:
-        print(e)
+        print(f"{audio_path} not found {str(e)}")
         speech, fs = librosa.load(
             '/data/data/intron/e809b58c-4f05-4754-b98c-fbf236a88fbc/544bbfe5e1c6f8afb80c4840b681908d.wav',
             sr=AudioConfig.sr)
@@ -185,17 +185,18 @@ def transform_labels(text):
 
 class CustomASRDataset(Dataset):
     def __init__(self, data_file, transform=None, transform_target=None, audio_dir=None,
-                 split='train', domain="all", max_audio_len_secs=-1, min_transcript_len=10,
+                 split=None, domain="all", max_audio_len_secs=-1, min_transcript_len=10,
                  prepare=False):
         self.asr_data = pd.read_csv(data_file)
         self.prepare = prepare
+        self.split = split
         if max_audio_len_secs != -1:
             self.asr_data = self.asr_data[self.asr_data.duration < max_audio_len_secs]
         if domain != 'all':
             self.asr_data = self.asr_data[self.asr_data.domain == domain]
         self.asr_data = self.asr_data[self.asr_data.transcript.str.len() >= min_transcript_len]
         self.asr_data["audio_paths"] = self.asr_data["audio_paths"].apply(
-            lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
+            lambda x: x.replace(f"/AfriSpeech-100/{self.split}/", audio_dir)
         )
         self.transform = transform
         self.target_transform = transform_target

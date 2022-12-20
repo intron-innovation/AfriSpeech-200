@@ -32,6 +32,8 @@ from src.inference.inference import write_pred
 
 set_seed(1778)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+temp_audio = '/data/data/intron/e809b58c-4f05-4754-b98c-fbf236a88fbc/544bbfe5e1c6f8afb80c4840b681908d.wav'
+wer_metric = load_metric("wer")
 
 
 def load_data(
@@ -49,13 +51,13 @@ def load_data(
     """
     load train/dev/test data from csv path.
     :param split: str
-    :param min_transcript_len:
+    :param min_transcript_len: int
     :param domain: str
     :param origin: str
     :param country: str
     :param age_group: str
     :param accent: str
-    :param duration: str
+    :param duration: int
     :param audio_dir: str
     :param data_path: str
     :return: Dataset instance
@@ -179,7 +181,7 @@ class DataCollatorSpeechSeq2SeqWithPadding:
         return batch
 
 
-def compute_metrics(pred, metric):
+def compute_metrics(pred):
     """
     compute metrics
     :param pred: Dataset instance
@@ -195,8 +197,10 @@ def compute_metrics(pred, metric):
     # We do not want to group tokens when computing the metrics
     pred_str = tokenizer.batch_decode(pred_ids, skip_special_tokens=True)
     label_str = tokenizer.batch_decode(label_ids, skip_special_tokens=True)
+    preds = [x.lower() for x in pred_str]
+    labels = [x.lower() for x in label_str]
 
-    wer = 100 * metric.compute(predictions=pred_str, references=label_str)
+    wer = wer_metric.compute(predictions=preds, references=labels)
 
     return {"wer": wer}
 
@@ -212,11 +216,14 @@ if __name__ == "__main__":
     feature_extractor = WhisperFeatureExtractor.from_pretrained(config['models']['model_path'])
     tokenizer = WhisperTokenizer.from_pretrained(config['models']['model_path'], language="en", task="transcribe")
 
-
     def transform_dataset(audio_path, text):
         # Load and resample audio data to 16KHz
-        speech = load_audio_file(audio_path)
-
+        try:
+            speech = load_audio_file(audio_path)
+        except Exception as e:
+            print(f"{audio_path} not found {str(e)}")
+            speech = load_audio_file(temp_audio)
+        
         # Compute log-Mel input features from input audio array
         audio = feature_extractor(speech, sampling_rate=AudioConfig.sr).input_features[0]
 
@@ -227,18 +234,17 @@ if __name__ == "__main__":
         return audio, labels
 
     # Load the dataset
-    dev_dataset = load_custom_dataset(data_config, 'dev', transform_dataset, prepare=True)
-    train_dataset = load_custom_dataset(data_config, 'train', transform_dataset, prepare=True)
+    dev_dataset = load_custom_dataset(data_config, data_config.val_path, 'dev', transform_dataset, prepare=True)
+    train_dataset = load_custom_dataset(data_config, data_config.train_path, 'train', transform_dataset, prepare=True)
 
-    sampling_rate = int(config['hyperparameters']['sampling_rate'])
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     last_checkpoint, checkpoint_ = get_checkpoint(checkpoints_path, config['models']['model_path'])
     print(f"model starting...from last checkpoint:{last_checkpoint}")
 
     if config['hyperparameters']['do_train'] == "True":
 
         # load model
-        w_config = WhisperConfig.from_pretrained(config['models']['model_path'], use_cache=False)
+        w_config = WhisperConfig.from_pretrained(config['models']['model_path'], 
+                                                 use_cache=False)
         model = WhisperForConditionalGeneration.from_pretrained(
             last_checkpoint if last_checkpoint else config['models']['model_path'],
             config=w_config
@@ -252,10 +258,6 @@ if __name__ == "__main__":
 
         # Instantiate data collator
         data_collator = DataCollatorSpeechSeq2SeqWithPadding(processor=processor)
-
-        # Load metric
-        metric = load_metric("wer")
-        compute_metrics = partial(compute_metrics, metric=metric)
 
         # Define the training configuration
         training_args = Seq2SeqTrainingArguments(
@@ -283,6 +285,8 @@ if __name__ == "__main__":
             metric_for_best_model='eval_wer',
             greater_is_better=False,
             push_to_hub=False,
+            logging_first_step=True,
+            dataloader_num_workers=int(config['hyperparameters']['dataloader_num_workers']),
         )
 
         # # Define the trainer
@@ -290,7 +294,7 @@ if __name__ == "__main__":
             args=training_args,
             model=model,
             train_dataset=train_dataset,
-            eval_dataset=train_dataset,
+            eval_dataset=dev_dataset,
             data_collator=data_collator,
             compute_metrics=compute_metrics,
             tokenizer=processor.feature_extractor,
