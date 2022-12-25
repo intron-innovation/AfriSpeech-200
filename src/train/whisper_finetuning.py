@@ -1,5 +1,7 @@
 #
 # Code mostly borrowed from https://huggingface.co/blog/fine-tune-whisper 🤗
+# import sys
+# sys.path.append('/home/mila/c/chris.emezue/AfriSpeech-Dataset-Paper')
 #
 
 import os
@@ -14,21 +16,22 @@ from transformers import (
     WhisperProcessor,
     WhisperFeatureExtractor,
     WhisperTokenizer,
+    WhisperConfig,
     set_seed,
     Seq2SeqTrainingArguments,
     Seq2SeqTrainer,
-    WhisperConfig
 )
 import librosa
 from dataclasses import dataclass
 from typing import Any, Dict, List, Union
 
 from src.train.train import parse_argument, train_setup, get_checkpoint, data_setup
+from src.utils.utils import cleanup
+from src.inference.inference import write_pred
 from src.utils.audio_processing import load_audio_file, AudioConfig
 from src.utils.prepare_dataset import load_custom_dataset
 from src.utils.text_processing import clean_text
-from src.utils.utils import cleanup
-from src.inference.inference import write_pred
+
 
 set_seed(1778)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -64,7 +67,7 @@ def load_data(
     """
     data = pd.read_csv(data_path)
     data["audio_paths"] = data["audio_paths"].apply(
-        lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
+        lambda x: x.replace(f"/AfriSpeech-100/", audio_dir)
     )
 
     if duration:
@@ -86,8 +89,10 @@ def load_data(
         data = data[data.domain == domain]
 
     data["text"] = data["transcript"]
+    data['audio_data'] = data['audio_paths']  # adding this to keep the `audio_path` saved for inference.
     print("before dedup", data.shape)
     data.drop_duplicates(subset=["audio_paths"], inplace=True)
+    #data = data.iloc[:3] for debugging
     print("after dedup", data.shape)
 
     return Dataset.from_pandas(data)
@@ -104,15 +109,13 @@ def transcribe_whisper(batch, processor, model, metric, sampling_rate, device):
     :param device: str
     :return: Dataset instance
     """
-
     speech, sampling_rate = librosa.load(batch["audio_paths"], sr=sampling_rate)
     input_features = processor(
         speech, sampling_rate=sampling_rate, return_tensors="pt"
     ).input_features.to(device)
+
     generated_ids = model.generate(inputs=input_features)
-    predicted_transcript = processor.batch_decode(
-        generated_ids, skip_special_tokens=True
-    )[0]
+    predicted_transcript = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
 
     batch["predictions"] = predicted_transcript
     batch["clean_predictions"] = cleanup(predicted_transcript)
@@ -128,7 +131,7 @@ def transcribe_whisper(batch, processor, model, metric, sampling_rate, device):
 
 def prepare_dataset(batch, feature_extractor, tokenizer):
     # Load and resample audio data to 16KHz
-    audio = batch["audio_paths"]
+    audio = batch["audio_data"]
 
     # Compute log-Mel input features from input audio array
     batch["input_features"] = feature_extractor(
@@ -151,7 +154,6 @@ class DataCollatorSpeechSeq2SeqWithPadding:
 
         # Split inputs and labels since they have to be of different lengths and need different padding methods
         # First treat the audio inputs by simply returning torch tensors
-
         input_features = [
             {"input_features": feature["input_features"]} for feature in features
         ]
@@ -185,7 +187,6 @@ def compute_metrics(pred):
     """
     compute metrics
     :param pred: Dataset instance
-    :param metric: object
     :return: dict
     """
     pred_ids = pred.predictions
@@ -213,8 +214,10 @@ if __name__ == "__main__":
 
     # Define processor, feature extractor, tokenizer and model
     processor = WhisperProcessor.from_pretrained(config['models']['model_path'], language="en", task="transcribe")
+    # language="english"
     feature_extractor = WhisperFeatureExtractor.from_pretrained(config['models']['model_path'])
     tokenizer = WhisperTokenizer.from_pretrained(config['models']['model_path'], language="en", task="transcribe")
+    # language="english"
 
     def transform_dataset(audio_path, text):
         # Load and resample audio data to 16KHz
@@ -246,11 +249,8 @@ if __name__ == "__main__":
         w_config = WhisperConfig.from_pretrained(config['models']['model_path'], 
                                                  use_cache=False)
         model = WhisperForConditionalGeneration.from_pretrained(
-            last_checkpoint if last_checkpoint else config['models']['model_path'],
-            config=w_config
+            last_checkpoint if last_checkpoint else config['models']['model_path']
         )
-
-        # fmt: on
 
         # Override generation arguments
         model.config.forced_decoder_ids = None
@@ -319,7 +319,7 @@ if __name__ == "__main__":
         )
         model = WhisperForConditionalGeneration.from_pretrained(
             last_checkpoint if last_checkpoint else config['models']['model_path']
-        )
+        ).to(device)
 
         # Define metric
         metric = load_metric("wer")
@@ -330,7 +330,7 @@ if __name__ == "__main__":
             processor=processor,
             model=model,
             metric=metric,
-            sampling_rate=sampling_rate,
+            sampling_rate=AudioConfig.sr,
             device=device,
         )
         dev_dataset = dev_dataset.map(transcribe_whisper)
@@ -344,7 +344,7 @@ if __name__ == "__main__":
 
         # fmt: off
         output_cols = [
-            "audio_paths", "accent", "text", "predictions",
+            "audio_paths", "accent", "text", "predictions", 
             "clean_wer", "clean_text", "clean_predictions", "wer"
         ]
         # fmt: on
@@ -355,5 +355,5 @@ if __name__ == "__main__":
             dev_dataset,
             all_wer,
             cols=output_cols,
-            output_dir=args.output_dir,
+            output_dir=config['logs']['predictions_path'],
         )
