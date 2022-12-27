@@ -1,6 +1,7 @@
 import os
 import argparse
-from src.inference.inference import run_benchmarks, load_data
+from src.inference.inference import run_benchmarks
+from src.utils.prepare_dataset import load_afri_speech_data
 
 
 def main():
@@ -38,7 +39,7 @@ def parse_argument():
         "--model_id_or_path",
         type=str,
         default="facebook/hubert-large-ls960-ft",
-        help="id of the model or path to huggyface model",
+        help="id of the model or path to huggingface model",
     )
     parser.add_argument(
         "--output_dir", type=str, default="./results", help="directory to store results"
@@ -69,14 +70,14 @@ if __name__ == "__main__":
 
     # Load dataset
     if "whisper" in args.model_id_or_path:
-        test_dataset = load_data(
+        test_dataset = load_afri_speech_data(
             data_path=args.data_csv_path,
             max_audio_len_secs=args.max_audio_len_secs,
             audio_dir=args.audio_dir,
             return_dataset=False,
         )
     else:
-        test_dataset = load_data(
+        test_dataset = load_afri_speech_data(
             data_path=args.data_csv_path,
             max_audio_len_secs=args.max_audio_len_secs,
             audio_dir=args.audio_dir,

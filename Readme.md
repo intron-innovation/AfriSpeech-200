@@ -244,10 +244,12 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 
 | Model | Dev WER |
 | ----------- | ----------- |
+| Whisper-small | 0.368 |
 | Whisper-large | 0.375 |
 | Whisper-medium | 0.383 |
 | nemo-conformer-ctc-large WER | 0.477 |
 | nemo-conformer-transducer-large WER | 0.481 |
+| Whisper-base | 0.509 |
 | AWS transcribe API | 0.5212 |
 | AWS transcribe Medical API (Primary Care) | 0.5544 |
 | wav2vec2-large-xlsr-53-english | 0.561 |

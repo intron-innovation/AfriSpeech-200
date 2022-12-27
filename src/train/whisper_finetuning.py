@@ -5,6 +5,11 @@
 #
 
 import os
+
+os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
+os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
+os.environ["WANDB_DISABLED"] = "true"
+
 import argparse
 import pandas as pd
 from pathlib import Path
@@ -39,65 +44,6 @@ temp_audio = '/data/data/intron/e809b58c-4f05-4754-b98c-fbf236a88fbc/544bbfe5e1c
 wer_metric = load_metric("wer")
 
 
-def load_data(
-    data_path,
-    audio_dir="./data/",
-    split="train",
-    duration=None,
-    accent=None,
-    age_group=None,
-    country=None,
-    origin=None,
-    domain='all',
-    min_transcript_len=None
-):
-    """
-    load train/dev/test data from csv path.
-    :param split: str
-    :param min_transcript_len: int
-    :param domain: str
-    :param origin: str
-    :param country: str
-    :param age_group: str
-    :param accent: str
-    :param duration: int
-    :param audio_dir: str
-    :param data_path: str
-    :return: Dataset instance
-    """
-    data = pd.read_csv(data_path)
-    data["audio_paths"] = data["audio_paths"].apply(
-        lambda x: x.replace(f"/AfriSpeech-100/", audio_dir)
-    )
-
-    if duration:
-        data = data[data.duration < duration]
-
-    if min_transcript_len:
-        data = data[data.transcript.str.len() >= min_transcript_len]
-
-    if accent:
-        data = data[data.accent == accent]
-
-    if country:
-        data = data[data.age_group == age_group]
-
-    if origin:
-        data = data[data.origin == origin]
-
-    if domain != 'all':
-        data = data[data.domain == domain]
-
-    data["text"] = data["transcript"]
-    data['audio_data'] = data['audio_paths']  # adding this to keep the `audio_path` saved for inference.
-    print("before dedup", data.shape)
-    data.drop_duplicates(subset=["audio_paths"], inplace=True)
-    #data = data.iloc[:3] for debugging
-    print("after dedup", data.shape)
-
-    return Dataset.from_pandas(data)
-
-
 def transcribe_whisper(batch, processor, model, metric, sampling_rate, device):
     """
     run inference on batch using whisper model
@@ -126,21 +72,6 @@ def transcribe_whisper(batch, processor, model, metric, sampling_rate, device):
     batch["wer"] = metric.compute(
         predictions=[batch["predictions"]], references=[batch["text"]]
     )
-    return batch
-
-
-def prepare_dataset(batch, feature_extractor, tokenizer):
-    # Load and resample audio data to 16KHz
-    audio = batch["audio_data"]
-
-    # Compute log-Mel input features from input audio array
-    batch["input_features"] = feature_extractor(
-        audio["array"], sampling_rate=audio["sampling_rate"]
-    ).input_features[0]
-
-    # Encode target text to label ids
-    batch["labels"] = tokenizer(batch["text"]).input_ids
-
     return batch
 
 
@@ -243,18 +174,19 @@ if __name__ == "__main__":
     last_checkpoint, checkpoint_ = get_checkpoint(checkpoints_path, config['models']['model_path'])
     print(f"model starting...from last checkpoint:{last_checkpoint}")
 
+    # load model
+    w_config = WhisperConfig.from_pretrained(config['models']['model_path'], 
+                                             use_cache=False)
+    model = WhisperForConditionalGeneration.from_pretrained(
+        last_checkpoint if last_checkpoint else config['models']['model_path'],
+    ).to(device)
+    
     if config['hyperparameters']['do_train'] == "True":
-
-        # load model
-        w_config = WhisperConfig.from_pretrained(config['models']['model_path'], 
-                                                 use_cache=False)
-        model = WhisperForConditionalGeneration.from_pretrained(
-            last_checkpoint if last_checkpoint else config['models']['model_path']
-        )
 
         # Override generation arguments
         model.config.forced_decoder_ids = None
         model.config.suppress_tokens = []
+        model.config.use_cache = False
 
         # Instantiate data collator
         data_collator = DataCollatorSpeechSeq2SeqWithPadding(processor=processor)
@@ -312,30 +244,18 @@ if __name__ == "__main__":
 
     if config['hyperparameters']['do_eval'] == "True":
 
-        # Define processor, feature extractor, tokenizer and model
-        # Define processor and model
-        processor = WhisperProcessor.from_pretrained(
-            config['models']['model_path'], language="en", task="transcribe"
-        )
-        model = WhisperForConditionalGeneration.from_pretrained(
-            last_checkpoint if last_checkpoint else config['models']['model_path']
-        ).to(device)
-
-        # Define metric
-        metric = load_metric("wer")
-
         # Run inference
         transcribe_whisper = partial(
             transcribe_whisper,
             processor=processor,
             model=model,
-            metric=metric,
+            metric=wer_metric,
             sampling_rate=AudioConfig.sr,
             device=device,
         )
         dev_dataset = dev_dataset.map(transcribe_whisper)
 
-        all_wer = metric.compute(
+        all_wer = wer_metric.compute(
             predictions=dev_dataset["predictions"],
             references=dev_dataset["text"],
         )

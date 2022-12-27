@@ -9,9 +9,8 @@ import subprocess
 
 os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
 
-from datasets import load_dataset, load_metric
+from datasets import load_dataset, load_metric, Dataset
 from dataclasses import dataclass
-from torch.utils.data import Dataset
 from typing import Dict, List, Optional, Union
 import librosa
 import torch
@@ -36,6 +35,7 @@ logger.setLevel(logging_level)
 
 PROCESSOR = None
 CONFIG = None
+MAX_MODEL_AUDIO_LEN_SECS = 87
 
 
 class DataConfig:
@@ -43,7 +43,51 @@ class DataConfig:
         for k, v in kwargs.items():
             setattr(self, k, v)
 
+            
+def load_afri_speech_data(
+    data_path, max_audio_len_secs=17, audio_dir="./data/", 
+    return_dataset=True, split="dev", gpu=-1
+):
+    """
+    load train/dev/test data from csv path.
+    :param max_audio_len_secs: int
+    :param data_path: str
+    :return: Dataset instance
+    """
+    data = pd.read_csv(data_path)
+    data["audio_paths"] = data["audio_paths"].apply(
+        lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
+    )
+    print(max_audio_len_secs, gpu)
+    if max_audio_len_secs > -1 and gpu != -1:
+        # when gpu is available, it cannot fit long samples
+        data = data[data.duration < max_audio_len_secs]
+    elif gpu == -1 and max_audio_len_secs > MAX_MODEL_AUDIO_LEN_SECS:
+        # if cpu, infer all samples, no filtering
+        pass
+    elif gpu == -1 and max_audio_len_secs != -1:
+        # if cpu, infer only long samples
+        # assuming gpu has inferred on all short samples
+        data = data[data.duration >= max_audio_len_secs]
+    else:
+        # Check if any of the sample is longer than
+        # the GPU global MAX_MODEL_AUDIO_LEN_SECS
+        if (gpu != -1) and (data.duration.to_numpy() > MAX_MODEL_AUDIO_LEN_SECS).any():
+            raise ValueError(
+                f"Detected speech longer than {MAX_MODEL_AUDIO_LEN_SECS} secs"
+                "-- set `max_audio_len_secs` to filter longer speech!"
+            )
 
+    data["text"] = data["transcript"]
+    print("before dedup", data.shape)
+    data.drop_duplicates(subset=["audio_paths"], inplace=True)
+    print("after dedup", data.shape)
+    if return_dataset:
+        return Dataset.from_pandas(data)
+    else:
+        return data
+            
+        
 def data_prep(config):
     # Prepare data for the model
     global CONFIG, PROCESSOR
@@ -183,7 +227,7 @@ def transform_labels(text):
     return labels
 
 
-class CustomASRDataset(Dataset):
+class CustomASRDataset(torch.utils.data.Dataset):
     def __init__(self, data_file, transform=None, transform_target=None, audio_dir=None,
                  split=None, domain="all", max_audio_len_secs=-1, min_transcript_len=10,
                  prepare=False):
