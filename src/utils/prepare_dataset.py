@@ -112,8 +112,9 @@ def data_prep(config):
 def load_custom_dataset(config, data_path, split, transform_audio_, transform_labels_=None, prepare=None):
     return CustomASRDataset(data_path, transform_audio_, transform_labels_,
                             config.audio_path, split=split, domain=config.domain,
-                            max_audio_len_secs=config.max_audio_len_secs, min_transcript_len=config.min_transcript_len,
-                            prepare=prepare)
+                            max_audio_len_secs=config.max_audio_len_secs,
+                            min_transcript_len=config.min_transcript_len,
+                            prepare=prepare, max_transcript_len=config.max_transcript_len)
 
 
 def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets):
@@ -230,7 +231,7 @@ def transform_labels(text):
 class CustomASRDataset(torch.utils.data.Dataset):
     def __init__(self, data_file, transform=None, transform_target=None, audio_dir=None,
                  split=None, domain="all", max_audio_len_secs=-1, min_transcript_len=10,
-                 prepare=False):
+                 prepare=False, max_transcript_len=-1):
         self.asr_data = pd.read_csv(data_file)
         self.prepare = prepare
         self.split = split
@@ -239,6 +240,8 @@ class CustomASRDataset(torch.utils.data.Dataset):
         if domain != 'all':
             self.asr_data = self.asr_data[self.asr_data.domain == domain]
         self.asr_data = self.asr_data[self.asr_data.transcript.str.len() >= min_transcript_len]
+        if max_transcript_len != -1:
+            self.asr_data = self.asr_data[self.asr_data.transcript.str.len() < max_transcript_len]
         self.asr_data["audio_paths"] = self.asr_data["audio_paths"].apply(
             lambda x: x.replace(f"/AfriSpeech-100/{self.split}/", audio_dir)
         )
@@ -251,6 +254,7 @@ class CustomASRDataset(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         audio_path = self.asr_data.iloc[idx, 8]  # audio_path
         text = self.asr_data.iloc[idx, 5]  # transcript
+        # print(audio_path, text)
         if self.prepare:
             input_audio, label = self.transform(audio_path, text)
             result = {'input_features': input_audio, 'labels': label}
