@@ -130,7 +130,6 @@ if __name__ == "__main__":
             speech = load_audio_file(temp_audio)
         
         # Compute log-Mel input features from input audio array
-        # speech = torch.tensor(speech).to(device)
         audio = feature_extractor(speech, sampling_rate=AudioConfig.sr).input_features[0]
 
         # Encode target text to label ids
@@ -149,8 +148,6 @@ if __name__ == "__main__":
     print(f"model starting...from last checkpoint:{last_checkpoint}")
 
     # load model
-    # w_config = WhisperConfig.from_pretrained(config['models']['model_path'], 
-    #                                          use_cache=False)
     model = WhisperForConditionalGeneration.from_pretrained(
         last_checkpoint if last_checkpoint else config['models']['model_path'],
     ).to(device)
@@ -160,7 +157,6 @@ if __name__ == "__main__":
         # Override generation arguments
         model.config.forced_decoder_ids = None
         model.config.suppress_tokens = []
-        # model.config.use_cache = False
 
         # Instantiate data collator
         data_collator = DataCollatorSpeechSeq2SeqWithPadding(processor=processor)
@@ -214,4 +210,4 @@ if __name__ == "__main__":
 
         model.save_pretrained(checkpoints_path)
         processor.save_pretrained(checkpoints_path)
-
+    

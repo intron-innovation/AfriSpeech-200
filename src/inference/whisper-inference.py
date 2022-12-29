@@ -19,6 +19,7 @@ from tqdm import tqdm
 
 from src.utils.audio_processing import load_audio_file
 from src.utils.prepare_dataset import load_afri_speech_data
+from src.utils.text_processing import clean_text
 
 temp_audio = '/data/data/intron/e809b58c-4f05-4754-b98c-fbf236a88fbc/544bbfe5e1c6f8afb80c4840b681908d.wav'
 
@@ -82,14 +83,20 @@ def transcribe_whisper(args, model, loader):
     data = pd.DataFrame(dict(hypothesis=hypotheses, reference=references, 
                              audio_paths=paths, accent=accents))
     
+    data["pred_clean"] = [clean_text(text) for text in data["hypothesis"]]
+    data["ref_clean"] = [clean_text(text) for text in data["reference"]]
+    
+    all_wer = jiwer.wer(list(data["ref_clean"]), list(data["pred_clean"]))
+    print(f"Cleanup WER: {all_wer * 100:.2f} %")
+    
     normalizer = EnglishTextNormalizer()
     
     data["hypothesis_clean"] = [normalizer(text) for text in data["hypothesis"]]
     data["reference_clean"] = [normalizer(text) for text in data["reference"]]
     
-    all_wer = jiwer.wer(list(data["reference_clean"]), list(data["hypothesis_clean"]))
+    whisper_wer = jiwer.wer(list(data["reference_clean"]), list(data["hypothesis_clean"]))
 
-    print(f"WER: {all_wer * 100:.2f} %")
+    print(f"EnglishTextNormalizer WER: {whisper_wer * 100:.2f} %")
     
     n_samples = len(loader.dataset)
     split = args.data_csv_path.split("-")[1]

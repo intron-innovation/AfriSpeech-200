@@ -230,14 +230,18 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 
 4. Install ffmpeg `sudo apt install ffmpeg`
 
-4. Install requirements `pip3 install -r requirements.txt`
+5. Install requirements `pip3 install -r requirements.txt`
 
-5. For Inference Run `python3 bin/run_benchmarks.py --audio_dir /data/data/intron/ --model_id_or_path facebook/wav2vec2-large-960h`
+6. For Inference Run `python3 bin/run_benchmarks.py --audio_dir /data/data/intron/ --model_id_or_path facebook/wav2vec2-large-960h`
 
-6. To train, create config in format like `src/config/config_xlsr.ini` and run `python3 src/train/train.py -c src/config/config_xlsr.ini`
+7. To train wav2vec2 models, create config in format like `src/config/config_xlsr.ini` and run `python3 src/train/train.py -c src/config/config_xlsr.ini`
 
-8. To run whisper, install transformers using `pip install git+https://github.com/huggingface/transformers` following
- the instructions at https://huggingface.co/blog/fine-tune-whisper
+8. To run whisper, install transformers using `pip install git+https://github.com/huggingface/transformers` and whisper using `pip install git+https://github.com/openai/whisper.git`
+
+9. To run whisper benchmarks, run `python3 src/inference/whisper-inference.py --model_id_or_path whisper_medium.en --gpu 1 --batchsize 8 --audio_dir /data/data/intron/`
+
+10. To fine-tune whisper, create a config file similar to `src/config/whisper_clinical-test.ini`, and run `python3 src/train/whisper-finetuning.py -c src/config/whisper_clinical-test.ini`
+
 
 
 ### Benchmark Results
