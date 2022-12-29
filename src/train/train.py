@@ -72,8 +72,7 @@ def data_setup(config):
         audio_path=config['audio']['audio_path'],
         max_audio_len_secs=int(config['hyperparameters']['max_audio_len_secs']),
         min_transcript_len=int(config['hyperparameters']['min_transcript_len']),
-        domain=config['data']['domain'],
-        max_transcript_len=int(config['hyperparameters']['max_label_len'])
+        domain=config['data']['domain']
     )
     return data_config
 

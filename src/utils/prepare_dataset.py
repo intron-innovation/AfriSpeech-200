@@ -125,7 +125,7 @@ def load_custom_dataset(config, data_path, split,
                             config.audio_path, split=split, domain=config.domain,
                             max_audio_len_secs=config.max_audio_len_secs,
                             min_transcript_len=config.min_transcript_len,
-                            prepare=prepare, max_transcript_len=config.max_transcript_len)
+                            prepare=prepare)
 
 
 def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets):
