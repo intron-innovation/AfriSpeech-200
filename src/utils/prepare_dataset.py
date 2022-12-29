@@ -279,8 +279,9 @@ class CustomASRDataset(torch.utils.data.Dataset):
         else:
             input_audio = self.transform(audio_path)
             label = self.target_transform(text)
-            result = {'input_values': input_audio[0], 'labels': label, 
-                      'input_lengths': len(input_audio[0])}
+            result = {'input_values': input_audio[0], 'labels': label}
+            # 'input_lengths': len(input_audio[0])
+            
         # print(audio_path, input_audio.shape)
         return result
 
