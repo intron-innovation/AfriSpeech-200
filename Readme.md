@@ -222,9 +222,9 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 
 ### How to run NeMo fine-tuning code
 
-1. The audio should be in 16KHz. Otherwise the script breaks.
-2. in `read_intron()` function, add the path to your dataset. 
-3. Move `src/utils/process_asr_text_tokenizer.py` in `scripts/` folder.
+1. Make sure the audio should be in 16KHz. Otherwise the script breaks.
+2. In `read_intron()` function, add the path to your dataset. 
+3. Move `src/utils/process_asr_text_tokenizer.py` to `scripts/` folder.
 4. Nemo installation instructions are here: https://github.com/NVIDIA/NeMo. Use the pip from source method. It works well with cuda/11.0 and cuda/11.3. 
 
 

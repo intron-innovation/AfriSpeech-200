@@ -23,12 +23,18 @@ from collections import defaultdict
 import torch
 import torch.nn as nn
 
+import argparse
+
 VERSION = "cv-corpus-6.1-2020-12-11"
 LANGUAGE = "en"
 
 tokenizer_dir = os.path.join('tokenizers', LANGUAGE)
 manifest_dir = os.path.join('manifests', LANGUAGE)
 
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--config", type=str, help="configuration for fine-tuning nemo")
+args = parser.parse_args()
 
 def read_manifest(path):
     manifest = []
@@ -39,38 +45,20 @@ def read_manifest(path):
             manifest.append(data)
     return manifest
 
-cmd = "ffmpeg -i "
-cmd1 = " -ac 1 -ar 16000 "
-
-def read_train_intron(path):
-  final = []
-  df = pd.read_csv(path)
-  for i in range(df.shape[0]):
-    data = {}
-    data["audio_filepath"] = df.iloc[i]["audio_paths"].replace("/AfriSpeech-100/", "/scratch/pbsjobs/axy327/")
-    data["duration"] = df.iloc[i]["duration"]
-    data["text"] = df.iloc[i]["transcript"]
-    data["domain"] = df.iloc[i]["domain"]
-    os.system(cmd + data["audio_filepath"] + cmd1 + "/scratch/pbsjobs/" + data["audio_filepath"].split("/")[-1])
-    os.system("mv /scratch/pbsjobs/" + data["audio_filepath"].split("/")[-1] + " " + data["audio_filepath"])
-    my_file = Path(data["audio_filepath"])
-    if data["duration"] <= 17 and len(data["text"]) >= 10 and my_file.exists():
-      final.append(data)
-  return final
+# cmd = "ffmpeg -i "
+# cmd1 = " -ac 1 -ar 16000 "
 
 def read_intron(path):
   final = []
   df = pd.read_csv(path)
   for i in range(df.shape[0]):
     data = {}
-    data["audio_filepath"] = df.iloc[i]["audio_paths"].replace("/AfriSpeech-100/", "/scratch/pbsjobs/axy327/")
+    data["audio_filepath"] = df.iloc[i]["audio_paths"].replace("/AfriSpeech-100/", args.config["audio"]["audio_path"])
     data["duration"] = df.iloc[i]["duration"]
     data["text"] = df.iloc[i]["transcript"]
     data["domain"] = df.iloc[i]["domain"]
-    # os.system(cmd + data["audio_filepath"] + cmd1 + "/scratch/pbsjobs/" + data["audio_filepath"].split("/")[-1])
-    # os.system("mv /scratch/pbsjobs/" + data["audio_filepath"].split("/")[-1] + " " + data["audio_filepath"])
     my_file = Path(data["audio_filepath"])
-    if data["duration"] <= 17 and len(data["text"]) >= 10 and my_file.exists():
+    if data["duration"] <= args.config["audio"]["max_audio_len_secs"] and len(data["text"]) >= args.config["hyperparameters"]["min_transcript_len"] and my_file.exists():
       final.append(data)
   return final
 
@@ -88,9 +76,9 @@ def write_processed_manifest(data, original_path):
     print(f"Finished writing manifest: {filepath}")
     return filepath
 
-train_intron_manifest = read_intron("intron-train-public-58001.csv")
+train_intron_manifest = read_intron(args.config["data"]["train"])
 # train_intron_manifest = read_intron("intron-dev-public-3232.csv")
-dev_intron_manifest = read_intron("intron-dev-public-3232.csv")
+dev_intron_manifest = read_intron(args.config["data"]["val"])
 
 intron_train_text = [data['text'] for data in train_intron_manifest]
 intron_dev_text = [data['text'] for data in dev_intron_manifest]
@@ -147,7 +135,7 @@ def apply_preprocessors(manifest, preprocessors):
         for idx in tqdm(range(len(manifest)), desc=f"Applying {processor.__name__}"):
             manifest[idx] = processor(manifest[idx])
 
-    print("Finished processing manifest !")
+    print("Finished processing manifest!")
     return manifest
 
 # List of pre-processing functions
@@ -157,22 +145,22 @@ PREPROCESSORS = [
 ]
 
 # Load manifests
-intron_train_data = read_intron("intron-train-public-58001.csv")
+intron_train_data = read_intron(args.config["data"]["train"])
 # intron_train_data = read_intron("intron-dev-public-3232.csv")
-intron_dev_data = read_intron("intron-dev-public-3232.csv")
+intron_dev_data = read_intron(args.config["data"]["val"])
 
 # Apply preprocessing
 intron_train_data_processed = apply_preprocessors(intron_train_data, PREPROCESSORS)
 intron_dev_data_processed = apply_preprocessors(intron_dev_data, PREPROCESSORS)
 
 # Write new manifests
-intron_train_manifest_cleaned = write_processed_manifest(intron_train_data_processed, "intron-train-public-58001.json")
+intron_train_manifest_cleaned = write_processed_manifest(intron_train_data_processed, args.config["data"]["train"][:-4] + ".json")
 # intron_train_manifest_cleaned = write_processed_manifest(intron_dev_data_processed, "intron-dev-public-3232.json")
-intron_dev_manifest_cleaned = write_processed_manifest(intron_dev_data_processed, "intron-dev-public-3232.json")
+intron_dev_manifest_cleaned = write_processed_manifest(intron_dev_data_processed, args.config["data"]["val"][:-4] + ".json")
 
-intron_train_data = read_intron("intron-train-public-58001.csv")
+intron_train_data = read_intron(args.config["data"]["train"])
 # intron_train_data = read_intron("intron-dev-public-3232.csv")
-intron_dev_data = read_intron("intron-dev-public-3232.csv")
+intron_dev_data = read_intron(args.config["data"]["val"])
 
 def enable_bn_se(m):
     if type(m) == nn.BatchNorm1d:
@@ -192,7 +180,7 @@ TOKENIZER_TYPE = "bpe" #@param ["bpe", "unigram"]
 
 INTRON_VOCAB_SIZE = len(intron_train_set) + 2
 
-os.system("python3 scripts/process_asr_text_tokenizer.py \
+os.system("python3 src/utils/process_asr_text_tokenizer.py \
   --manifest=" + intron_train_manifest_cleaned + "\
   --vocab_size=" + str(INTRON_VOCAB_SIZE) + " \
   --data_root=" + tokenizer_dir + " \
@@ -202,7 +190,7 @@ os.system("python3 scripts/process_asr_text_tokenizer.py \
   --no_lower_case \
   --log")
 
-TOKENIZER_DIR = f"{tokenizer_dir}/tokenizer_spe_{TOKENIZER_TYPE}_v{INTRON_VOCAB_SIZE}/"
+TOKENIZER_DIR = f"{args.config["experiment"]["dir"]}{tokenizer_dir}/tokenizer_spe_{TOKENIZER_TYPE}_v{INTRON_VOCAB_SIZE}/"
 print("Tokenizer directory :", TOKENIZER_DIR)
 
 # Number of tokens in tokenizer - 
@@ -219,7 +207,7 @@ if num_tokens < INTRON_VOCAB_SIZE:
         f"Please reconstruct the tokenizer with fewer tokens"
     )
 
-model = nemo_asr.models.ASRModel.from_pretrained("stt_en_conformer_ctc_large", map_location='cpu')
+model = nemo_asr.models.ASRModel.from_pretrained(args.config["model"]["finetune"], map_location=args.config["experiment"]["map_location"])
 
 # Preserve the decoder parameters in case weight matching can be done later
 pretrained_decoder = model.decoder.state_dict()
@@ -267,8 +255,8 @@ print(OmegaConf.to_yaml(cfg.train_ds))
 with open_dict(cfg):
   # Train dataset
   cfg.train_ds.manifest_filepath = intron_train_manifest_cleaned
-  cfg.train_ds.batch_size = 16
-  cfg.train_ds.num_workers = 4
+  cfg.train_ds.batch_size = args.config["hyperparameters"]["train_batch_size"]
+  cfg.train_ds.num_workers = args.config["hyperparameters"]["dataloader_num_workers"]
   cfg.train_ds.is_tarred: False # If set to true, uses the tarred version of the Dataset
   cfg.tarred_audio_filepaths: None
   cfg.train_ds.pin_memory = True
@@ -277,16 +265,16 @@ with open_dict(cfg):
 
   # Validation dataset
   cfg.validation_ds.manifest_filepath = intron_dev_manifest_cleaned
-  cfg.validation_ds.batch_size = 8
-  cfg.validation_ds.num_workers = 4
+  cfg.validation_ds.batch_size = args.config["hyperparameters"]["val_batch_size"]
+  cfg.validation_ds.num_workers = args.config["hyperparameters"]["dataloader_num_workers"]
   cfg.validation_ds.pin_memory = True
   cfg.validation_ds.use_start_end_token = True
   cfg.validation_ds.trim_silence = True
 
   # Test dataset
   cfg.test_ds.manifest_filepath = intron_dev_manifest_cleaned
-  cfg.test_ds.batch_size = 8
-  cfg.test_ds.num_workers = 4
+  cfg.test_ds.batch_size = args.config["hyperparameters"]["val_batch_size"]
+  cfg.test_ds.num_workers = args.config["hyperparameters"]["dataloader_num_workers"]
   cfg.test_ds.pin_memory = True
   cfg.test_ds.use_start_end_token = True
   cfg.test_ds.trim_silence = True
@@ -339,19 +327,19 @@ print(OmegaConf.to_yaml(cfg.optim))
 ##Reduce learning rate and warmup if required
 
 with open_dict(model.cfg.optim):
-  model.cfg.optim.lr = 0.025
-  model.cfg.optim.weight_decay = 0.001
+  model.cfg.optim.lr = args.config["hyperparameters"]["learning_rate"]
+  model.cfg.optim.weight_decay = args.config["hyperparameters"]["weight_decay"]
   model.cfg.optim.sched.warmup_steps = None  # Remove default number of steps of warmup
-  model.cfg.optim.sched.warmup_ratio = 0.10  # 10 % warmup
-  model.cfg.optim.sched.min_lr = 1e-9
+  model.cfg.optim.sched.warmup_ratio = args.config["hyperparameters"]["warmup_ratio"]  # 10 % warmup
+  model.cfg.optim.sched.min_lr = args.config["hyperparameters"]["min_learning_rate"]
 
 ### Setup data augmentation
 
 with open_dict(model.cfg.spec_augment):
-  model.cfg.spec_augment.freq_masks = 2
-  model.cfg.spec_augment.freq_width = 25
-  model.cfg.spec_augment.time_masks = 10
-  model.cfg.spec_augment.time_width = 0.05
+  model.cfg.spec_augment.freq_masks = args.config["hyperparameters"]["freq_mask"]
+  model.cfg.spec_augment.freq_width = args.config["hyperparameters"]["freq_width"]
+  model.cfg.spec_augment.time_masks = args.config["hyperparameters"]["time_mask"]
+  model.cfg.spec_augment.time_width = args.config["hyperparameters"]["time_width"]
 
 model.spec_augmentation = model.from_config_dict(model.cfg.spec_augment)
 
@@ -385,11 +373,11 @@ EPOCHS = 10  # 100 epochs would provide better results
 
 trainer = ptl.Trainer(devices=1, 
                       accelerator=accelerator, 
-                      max_epochs=EPOCHS, 
-                      accumulate_grad_batches=4,
+                      max_epochs=args.config["hyperparameters"]["num_epochs"], 
+                      accumulate_grad_batches=args.config["hyperparameters"]["gradient_accumulation_steps"],
                       enable_checkpointing=False,
                       logger=False,
-                      log_every_n_steps=5,
+                      log_every_n_steps=args.config["hyperparameters"]["logging_steps"],
                       check_val_every_n_epoch=10)
 
 # Setup model with the trainer
@@ -405,7 +393,7 @@ from nemo.utils import exp_manager
 os.environ.pop('NEMO_EXPM_VERSION', None)
 
 config = exp_manager.ExpManagerConfig(
-    exp_dir=f'experiments/lang-{LANGUAGE}/',
+    exp_dir=f'{args.config["experiment"]["dir"]}experiments/lang-{LANGUAGE}/',
     name=f"ASR-Model-Language-{LANGUAGE}",
     checkpoint_callback_params=exp_manager.CallbackParams(
         monitor="val_wer",
@@ -423,6 +411,6 @@ trainer.fit(model)
 
 # Save the final model
 
-save_path = f"Model-{LANGUAGE}.nemo"
+save_path = f"{args.config["experiment"]["dir"]}Model-{LANGUAGE}.nemo"
 model.save_to(f"{save_path}")
 print(f"Model saved at path : {os.getcwd() + os.path.sep + save_path}")
