@@ -70,11 +70,11 @@ def data_setup(config):
         ckpt_path=config['checkpoints']['checkpoints_path'],
         model_path=config['models']['model_path'],
         audio_path=config['audio']['audio_path'],
-        max_audio_len_secs=float(config['hyperparameters']['max_audio_len_secs']),
-        min_transcript_len=float(config['hyperparameters']['min_transcript_len']),
+        max_audio_len_secs=int(config['hyperparameters']['max_audio_len_secs']),
+        min_transcript_len=int(config['hyperparameters']['min_transcript_len']),
         domain=config['data']['domain']
     )
-    return data_prep(data_config)
+    return data_config
 
 
 def get_data_collator():
@@ -100,28 +100,43 @@ def compute_wer(logits, label_ids):
     return {"wer": wer}, target_transcription, predicted_transcription
 
 
+def get_checkpoint(checkpoint_path, model_path):
+    last_checkpoint_ = None
+    if os.path.isdir(checkpoint_path):
+        last_checkpoint_ = get_last_checkpoint(checkpoint_path)
+        if last_checkpoint_ is None and len(os.listdir(checkpoint_path)) > 0:
+            print(
+                f"Output directory ({checkpoint_path}) already exists and is not empty. "
+                "Use --overwrite_output_dir to overcome."
+            )
+        elif last_checkpoint_ is not None:
+            print(
+                f"Checkpoint detected, resuming training at {last_checkpoint_}. To avoid this behavior, change "
+                "the `--output_dir` or add `--overwrite_output_dir` to train from scratch."
+            )
+
+    # use last checkpoint if exist
+    if last_checkpoint_:
+        checkpoint = last_checkpoint_
+    elif os.path.isdir(model_path):
+        checkpoint = None
+    else:
+        checkpoint = None
+
+    return last_checkpoint_, checkpoint
+
+
 if __name__ == "__main__":
 
     args, config = parse_argument()
     checkpoints_path = train_setup(config, args)
-    train_dataset, val_dataset, PROCESSOR = data_setup(config)
+    data_config = data_setup(config)
+    train_dataset, val_dataset, PROCESSOR = data_prep(data_config)
     data_collator = get_data_collator()
 
     start = time.time()
     # Detecting last checkpoint.
-    last_checkpoint = None
-    if os.path.isdir(checkpoints_path):
-        last_checkpoint = get_last_checkpoint(checkpoints_path)
-        if last_checkpoint is None and len(os.listdir(checkpoints_path)) > 0:
-            print(
-                f"Output directory ({checkpoints_path}) already exists and is not empty. "
-                "Use --overwrite_output_dir to overcome."
-            )
-        elif last_checkpoint is not None:
-            print(
-                f"Checkpoint detected, resuming training at {last_checkpoint}. To avoid this behavior, change "
-                "the `--output_dir` or add `--overwrite_output_dir` to train from scratch."
-            )
+    last_checkpoint, checkpoint_ = get_checkpoint(checkpoints_path, config['models']['model_path'])
 
     CTC_model_class = Wav2Vec2ForCTC if 'hubert' not in config['models']['model_path'] else HubertForCTC
 
@@ -191,6 +206,7 @@ if __name__ == "__main__":
         per_device_train_batch_size=int(config['hyperparameters']['train_batch_size']),
         per_device_eval_batch_size=int(config['hyperparameters']['val_batch_size']),
         gradient_accumulation_steps=int(config['hyperparameters']['gradient_accumulation_steps']),
+        gradient_checkpointing=True if config['hyperparameters']['gradient_checkpointing'] == "True" else False,
         ddp_find_unused_parameters=True if config['hyperparameters']['ddp_find_unused_parameters'] == "True" else False,
         evaluation_strategy="steps",
         num_train_epochs=int(config['hyperparameters']['num_epochs']),
@@ -220,19 +236,11 @@ if __name__ == "__main__":
         tokenizer=PROCESSOR.feature_extractor,
     )
 
-    # use last checkpoint if exist
-    if last_checkpoint is not None:
-        checkpoint = last_checkpoint
-    elif os.path.isdir(config['models']['model_path']):
-        checkpoint = None
-    else:
-        checkpoint = None
-
     PROCESSOR.save_pretrained(checkpoints_path)
 
     print(f"\n...Model Args loaded in {time.time() - start:.4f}. Start training...\n")
 
-    trainer.train(resume_from_checkpoint=checkpoint)
+    trainer.train(resume_from_checkpoint=checkpoint_)
 
     model.save_pretrained(checkpoints_path)
     PROCESSOR.save_pretrained(checkpoints_path)

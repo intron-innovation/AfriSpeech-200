@@ -8,10 +8,10 @@ import pandas as pd
 import subprocess
 
 os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
+os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
 
-from datasets import load_dataset, load_metric
+from datasets import load_dataset, load_metric, Dataset
 from dataclasses import dataclass
-from torch.utils.data import Dataset
 from typing import Dict, List, Optional, Union
 import librosa
 import torch
@@ -36,6 +36,7 @@ logger.setLevel(logging_level)
 
 PROCESSOR = None
 CONFIG = None
+MAX_MODEL_AUDIO_LEN_SECS = 87
 
 
 class DataConfig:
@@ -43,7 +44,59 @@ class DataConfig:
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-
+            
+def load_afri_speech_data(
+    data_path, max_audio_len_secs=17, audio_dir="./data/", 
+    return_dataset=True, split="dev", gpu=-1, domain='all',
+    max_transcript_len=-1, min_transcript_len=10
+):
+    """
+    load train/dev/test data from csv path.
+    :param max_audio_len_secs: int
+    :param data_path: str
+    :return: Dataset instance
+    """
+    data = pd.read_csv(data_path)
+    data["audio_paths"] = data["audio_paths"].apply(
+        lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
+    )
+    
+    if max_audio_len_secs > -1 and gpu != -1:
+        # when gpu is available, it cannot fit long samples
+        data = data[data.duration < max_audio_len_secs]
+    elif gpu == -1 and max_audio_len_secs > MAX_MODEL_AUDIO_LEN_SECS:
+        # if cpu, infer all samples, no filtering
+        pass
+    elif gpu == -1 and max_audio_len_secs != -1:
+        # if cpu, infer only long samples
+        # assuming gpu has inferred on all short samples
+        data = data[data.duration >= max_audio_len_secs]
+    else:
+        # Check if any of the sample is longer than
+        # the GPU global MAX_MODEL_AUDIO_LEN_SECS
+        if (gpu != -1) and (data.duration.to_numpy() > MAX_MODEL_AUDIO_LEN_SECS).any():
+            raise ValueError(
+                f"Detected speech longer than {MAX_MODEL_AUDIO_LEN_SECS} secs"
+                "-- set `max_audio_len_secs` to filter longer speech!"
+            )
+    
+    if domain != 'all':
+        data = data[data.domain == domain]
+    if min_transcript_len != -1:
+        data = data[data.transcript.str.len() >= min_transcript_len]
+    if max_transcript_len != -1:
+        data = data[data.transcript.str.len() < max_transcript_len]
+    
+    data["text"] = data["transcript"]
+    print("before dedup", data.shape)
+    data.drop_duplicates(subset=["audio_paths"], inplace=True)
+    print("after dedup", data.shape)
+    if return_dataset:
+        return Dataset.from_pandas(data)
+    else:
+        return data
+            
+        
 def data_prep(config):
     # Prepare data for the model
     global CONFIG, PROCESSOR
@@ -58,14 +111,21 @@ def data_prep(config):
     logger.debug(f"...Load vocab and processor complete in {time.time() - start:.4f}.\n"
                  f"Loading dataset...")
 
-    train_dataset = CustomASRDataset(config.train_path, transform_audio, transform_labels, 
-                                     config.audio_path, 'train', config.domain, 
-                                     config.max_audio_len_secs, config.min_transcript_len)
-    val_dataset = CustomASRDataset(config.val_path, transform_audio, transform_labels, 
-                                   config.audio_path, 'dev', config.domain, 
-                                   config.max_audio_len_secs, config.min_transcript_len)
+    train_dataset = load_custom_dataset(config, config.train_path, 'train', transform_audio, transform_labels)
+    val_dataset = load_custom_dataset(config, config.val_path, 'dev', transform_audio, transform_labels)
+
     logger.debug(f"Load train and val dataset done in {time.time() - start:.4f}.")
     return train_dataset, val_dataset, PROCESSOR
+
+
+def load_custom_dataset(config, data_path, split, 
+                        transform_audio_, transform_labels_=None, 
+                        prepare=None):
+    return CustomASRDataset(data_path, transform_audio_, transform_labels_,
+                            config.audio_path, split=split, domain=config.domain,
+                            max_audio_len_secs=config.max_audio_len_secs,
+                            min_transcript_len=config.min_transcript_len,
+                            prepare=prepare)
 
 
 def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets):
@@ -164,9 +224,10 @@ def transform_audio(audio_path):
     try:
         speech = load_audio_file(audio_path)
     except Exception as e:
-        print(e)
-        speech, fs = librosa.load('/data/data/intron/e809b58c-4f05-4754-b98c-fbf236a88fbc/544bbfe5e1c6f8afb80c4840b681908d.wav',
-                                  sr=AudioConfig.sr)
+        print(f"{audio_path} not found {str(e)}")
+        speech, fs = librosa.load(
+            '/data/data/intron/e809b58c-4f05-4754-b98c-fbf236a88fbc/544bbfe5e1c6f8afb80c4840b681908d.wav',
+            sr=AudioConfig.sr)
 
     return PROCESSOR(speech, sampling_rate=AudioConfig.sr).input_values
 
@@ -178,31 +239,50 @@ def transform_labels(text):
     return labels
 
 
-class CustomASRDataset(Dataset):
-    def __init__(self, data_file, transform=None, transform_target=None, audio_dir=None, 
-                 split='train', domain="all", max_audio_len_secs=-1, min_transcript_len=10):
-        self.asr_data = pd.read_csv(data_file)
-        if max_audio_len_secs != -1:
-            self.asr_data = self.asr_data[self.asr_data.duration < max_audio_len_secs]
-        if domain != 'all':
-            self.asr_data = self.asr_data[self.asr_data.domain == domain]
-        self.asr_data = self.asr_data[self.asr_data.transcript.str.len() >= min_transcript_len]
-        self.asr_data["audio_paths"] = self.asr_data["audio_paths"].apply(
-            lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
-        )
+class CustomASRDataset(torch.utils.data.Dataset):
+    def __init__(self, data_file, transform=None, transform_target=None, audio_dir=None,
+                 split=None, domain="all", max_audio_len_secs=-1, min_transcript_len=10,
+                 prepare=False, max_transcript_len=-1, gpu=1, 
+                 length_column_name='duration'):
+        
+        self.prepare = prepare
+        self.split = split
+        self.asr_data = load_afri_speech_data(data_file, min_transcript_len=min_transcript_len,
+                                              max_audio_len_secs=max_audio_len_secs, 
+                                              split=split, gpu=gpu, 
+                                              audio_dir=audio_dir,
+                                              max_transcript_len=max_transcript_len,
+                                              domain=domain)
         self.transform = transform
         self.target_transform = transform_target
+        self.lengths = self.__get_lengths__(length_column_name)
 
     def __len__(self):
         return len(self.asr_data)
+    
+    def __get_lengths__(self, length_column_name):
+        self.lengths = (
+                self.asr_data[length_column_name]
+                if length_column_name in self.asr_data.column_names
+                else None
+            )
 
     def __getitem__(self, idx):
-        audio_path = self.asr_data.iloc[idx, 8]  # audio_path
-        text = self.asr_data.iloc[idx, 5]  # transcript
-        input_audio = self.transform(audio_path)
-        label = self.target_transform(text)
-
-        return {'input_values': input_audio[0], 'labels': label, 'input_lengths': len(input_audio[0])}
+        audio_path = self.asr_data[idx]['audio_paths']
+        text = self.asr_data[idx]['transcript']
+        accent = self.asr_data[idx]['accent']
+        
+        # print(audio_path, text, accent)
+        if self.prepare:
+            input_audio, label = self.transform(audio_path, text)
+            result = {'input_features': input_audio, 'labels': label}
+        else:
+            input_audio = self.transform(audio_path)
+            label = self.target_transform(text)
+            result = {'input_values': input_audio[0], 'labels': label, 
+                      'input_lengths': len(input_audio[0])}
+        # print(audio_path, input_audio.shape)
+        return result
 
 
 @dataclass
