@@ -226,25 +226,34 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 
 2. Activate the virtual environment `conda activate afrispeech`
 
-3. Install pytorch for your operating system by following https://pytorch.org/, e.g. `conda install pytorch==1.13.0 torchaudio==0.13.0 cudatoolkit=10.0 -c pytorch`
+3. Install pytorch for your operating system by following https://pytorch.org/, e.g. `pytorch==1.8.1 torchaudio==0.8.1 cudatoolkit=10.2 -c pytorch`
 
 4. Install ffmpeg `sudo apt install ffmpeg`
 
-4. Install requirements `pip3 install -r requirements.txt`
+5. Install requirements `pip3 install -r requirements.txt`
 
-5. For Inference Run `python3 bin/run_benchmarks.py --audio_dir /data/data/intron/ --model_id_or_path facebook/wav2vec2-large-960h`
+6. For Inference Run `python3 bin/run_benchmarks.py --audio_dir /data/data/intron/ --model_id_or_path facebook/wav2vec2-large-960h`
 
-6. To train, create config in format like `src/config/config_xlsr.ini` and run `python3 src/train/train.py -c src/config/config_xlsr.ini`
+7. To train wav2vec2 models, create config in format like `src/config/config_xlsr.ini` and run `python3 src/train/train.py -c src/config/config_xlsr.ini`
+
+8. To run whisper, install transformers using `pip install git+https://github.com/huggingface/transformers` and whisper using `pip install git+https://github.com/openai/whisper.git`
+
+9. To run whisper benchmarks, run `python3 src/inference/whisper-inference.py --model_id_or_path whisper_medium.en --gpu 1 --batchsize 8 --audio_dir /data/data/intron/`
+
+10. To fine-tune whisper, create a config file similar to `src/config/whisper_clinical-test.ini`, and run `python3 src/train/whisper-finetuning.py -c src/config/whisper_clinical-test.ini`
+
 
 
 ### Benchmark Results
 
 | Model | Dev WER |
 | ----------- | ----------- |
+| Whisper-small | 0.368 |
 | Whisper-large | 0.375 |
 | Whisper-medium | 0.383 |
 | nemo-conformer-ctc-large WER | 0.477 |
 | nemo-conformer-transducer-large WER | 0.481 |
+| Whisper-base | 0.509 |
 | AWS transcribe API | 0.5212 |
 | AWS transcribe Medical API (Primary Care) | 0.5544 |
 | wav2vec2-large-xlsr-53-english | 0.561 |

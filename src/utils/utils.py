@@ -1,49 +1,35 @@
 import re
 import os
+import pandas as pd
 from pathlib import Path
 import librosa
 import json
 
 
-def cleanup(text):
+def write_pred(model_id_or_path, results, wer, cols=None, output_dir="./results", split="dev"):
     """
-    post processing to normalized reference and predicted transcripts
-    :param text: str
-    :return: str
+    Write model predictions to file
+    :param cols: List[str]
+    :param output_dir: str
+    :param model_id_or_path: str
+    :param results: Dataset instance
+    :param wer: float
+    :return: DataFrame
     """
-    text = text.replace('>', '')
-    text = text.replace('\t', ' ')
-    text = text.replace('\n', '')
-    text = text.lower()
-    text = text.replace(" comma,", ",") \
-        .replace(" koma,", " ") \
-        .replace(" coma,", " ") \
-        .replace(" full stop.", ".") \
-        .replace(" full stop", ".") \
-        .replace(",.", ".") \
-        .replace(",,", ",") \
-        .strip()
-    text = " ".join(text.split())
-    text = re.sub(r"[^a-zA-Z0-9\s\.\,\-\?\:\'\/\(\)\[\]\+\%]", '', text)
-    return text
+    model_id_or_path = model_id_or_path.replace("/", "-")
+    if cols is None:
+        cols = ["audio_paths", "text", "reference", "predictions", "wer", "accent"]
+    predictions_data = {col: results[col] for col in cols}
+    predictions_df = pd.DataFrame(data=predictions_data)
 
-
-def speech_file_to_array_fn(batch):
-    """
-    load speech array from wav file
-    :param batch: dict
-    :return: dict
-    """
-    speech_array, sampling_rate = librosa.load(batch["audio_paths"], sr=16_000)
-    if sampling_rate != 16000:
-        speech_array = librosa.resample(speech_array, sampling_rate, 16000)
-    batch["speech"] = speech_array
-    batch["sentence"] = batch["sentence"].upper()
-    return batch
+    output_path = f"{output_dir}/intron-open-{split}-{model_id_or_path}-wer-{round(wer, 4)}-{len(predictions_df)}.csv"
+    predictions_df.to_csv(output_path, index=False)
+    print(output_path)
+    return predictions_df
 
 
 def get_s3_file(s3_file_name,
-                s3_prefix="http://speech-app.s3.amazonaws.com/static/audio/uploads",
+                s3_prefix="http://bucket-name.s3.amazonaws.com/",
                 local_prefix="s3",
                 bucket_name=None, s3=None):
     """
