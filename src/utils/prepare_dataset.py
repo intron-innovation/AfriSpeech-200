@@ -48,10 +48,17 @@ class DataConfig:
 def load_afri_speech_data(
     data_path, max_audio_len_secs=17, audio_dir="./data/", 
     return_dataset=True, split="dev", gpu=-1, domain='all',
-    max_transcript_len=-1, min_transcript_len=10
+    max_transcript_len=-1, min_transcript_len=-1
 ):
     """
     load train/dev/test data from csv path.
+    :param max_transcript_len:
+    :param min_transcript_len:
+    :param domain:
+    :param gpu:
+    :param split:
+    :param return_dataset:
+    :param audio_dir:
     :param max_audio_len_secs: int
     :param data_path: str
     :return: Dataset instance
@@ -102,8 +109,9 @@ def data_prep(config):
     global CONFIG, PROCESSOR
     CONFIG = config
     start = time.time()
+    aug_dataset = None
 
-    raw_dataset = load_data(config.train_path, config.val_path)
+    raw_dataset = load_data(config.train_path, config.val_path, config.aug_path)
     logger.debug(f"...Data Read Complete in {time.time() - start:.4f}. Starting Tokenizer...")
 
     vocab_file_name = load_vocab(config.model_path, config.ckpt_path, config.exp_dir, raw_dataset)
@@ -113,9 +121,11 @@ def data_prep(config):
 
     train_dataset = load_custom_dataset(config, config.train_path, 'train', transform_audio, transform_labels)
     val_dataset = load_custom_dataset(config, config.val_path, 'dev', transform_audio, transform_labels)
+    if config.aug_path:
+        aug_dataset = load_custom_dataset(config, config.aug_path, 'aug', transform_audio, transform_labels)
 
     logger.debug(f"Load train and val dataset done in {time.time() - start:.4f}.")
-    return train_dataset, val_dataset, PROCESSOR
+    return train_dataset, val_dataset, aug_dataset, PROCESSOR
 
 
 def load_custom_dataset(config, data_path, split, 
@@ -169,8 +179,11 @@ def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets):
     return vocab_file_name
 
 
-def load_data(train_path, val_path):
-    return load_dataset('csv', data_files={'train': train_path, 'val': val_path})
+def load_data(train_path, val_path, aug_path=None):
+    if aug_path:
+        return load_dataset('csv', data_files={'train': train_path, 'val': val_path, 'aug': aug_path})
+    else:
+        return load_dataset('csv', data_files={'train': train_path, 'val': val_path})
 
 
 def remove_special_characters(batch):
@@ -255,33 +268,31 @@ class CustomASRDataset(torch.utils.data.Dataset):
                                               domain=domain)
         self.transform = transform
         self.target_transform = transform_target
-        self.lengths = self.__get_lengths__(length_column_name)
+
+    def set_dataset(self, new_data):
+        self.asr_data = Dataset.from_pandas(new_data)
+
+    def get_dataset(self):
+        return pd.DataFrame(self.asr_data)
 
     def __len__(self):
         return len(self.asr_data)
-    
-    def __get_lengths__(self, length_column_name):
-        self.lengths = (
-                self.asr_data[length_column_name]
-                if length_column_name in self.asr_data.column_names
-                else None
-            )
 
     def __getitem__(self, idx):
         audio_path = self.asr_data[idx]['audio_paths']
         text = self.asr_data[idx]['transcript']
         accent = self.asr_data[idx]['accent']
+        audio_idx = self.asr_data[idx]['audio_ids']
         
-        # print(audio_path, text, accent)
         if self.prepare:
             input_audio, label = self.transform(audio_path, text)
-            result = {'input_features': input_audio, 'labels': label}
+            result = {'input_features': input_audio, 'input_lengths': len(input_audio)}
         else:
             input_audio = self.transform(audio_path)
             label = self.target_transform(text)
-            result = {'input_values': input_audio[0], 'labels': label, 
-                      'input_lengths': len(input_audio[0])}
-        # print(audio_path, input_audio.shape)
+            result = {'input_values': input_audio[0], 'input_lengths': len(input_audio[0])}
+
+        result.update({'labels': label, 'accent': accent, 'audio_idx': audio_idx})
         return result
 
 
