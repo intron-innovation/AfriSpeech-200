@@ -275,7 +275,6 @@ if __name__ == "__main__":
         report_to=None
     )
 
-
     if 'aug' in config['data']:
 
         print(f"\n...Model Args loaded in {time.time() - start:.4f}. Start training with Active Learning...\n")
@@ -308,12 +307,12 @@ if __name__ == "__main__":
                 eval_dataset=val_dataset,
                 tokenizer=PROCESSOR.feature_extractor,
             )
-            PROCESSOR.save_pretrained(checkpoints_path)
+            PROCESSOR.save_pretrained(new_al_round_checkpoint_path)
 
             trainer.train(resume_from_checkpoint=checkpoint_)
 
             # define path for checkpoints for new AL round
-            model.save_pretrained(checkpoints_path)
+            model.save_pretrained(new_al_round_checkpoint_path)
 
             # McDropout for uncertainty computation
             set_dropout(model)
