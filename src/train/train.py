@@ -27,6 +27,7 @@ from transformers.trainer_utils import get_last_checkpoint, is_main_process
 import warnings
 
 from src.utils.prepare_dataset import DataConfig, data_prep, DataCollatorCTCWithPaddingGroupLen
+from src.utils.sampler import IntronTrainer
 
 warnings.filterwarnings('ignore')
 wer_metric = load_metric("wer")
@@ -226,7 +227,7 @@ if __name__ == "__main__":
         report_to=None,
     )
 
-    trainer = Trainer(
+    trainer = IntronTrainer(
         model=model,
         data_collator=data_collator,
         args=training_args,
@@ -234,6 +235,7 @@ if __name__ == "__main__":
         train_dataset=train_dataset,
         eval_dataset=val_dataset,
         tokenizer=PROCESSOR.feature_extractor,
+        sampler=config['data']['sampler']
     )
 
     PROCESSOR.save_pretrained(checkpoints_path)
