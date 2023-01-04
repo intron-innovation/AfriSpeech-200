@@ -7,8 +7,8 @@ from datetime import datetime
 import pandas as pd
 import subprocess
 
-os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
-os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
+os.environ['TRANSFORMERS_CACHE'] = '/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/results/'
+os.environ['XDG_CACHE_HOME'] = '/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/results/'
 
 from datasets import load_dataset, load_metric, Dataset
 from dataclasses import dataclass
@@ -46,7 +46,7 @@ class DataConfig:
 
             
 def load_afri_speech_data(
-    data_path, max_audio_len_secs=17, audio_dir="./data/", 
+    data_path, max_audio_len_secs=17, audio_dir="/network/scratch/b/bonaventure.dossou/AfriSpeech-100/", 
     return_dataset=True, split="dev", gpu=-1, domain='all',
     max_transcript_len=-1, min_transcript_len=-1
 ):
@@ -66,11 +66,11 @@ def load_afri_speech_data(
     data = pd.read_csv(data_path)
     if split == 'aug':
         data["audio_paths"] = data["audio_paths"].apply(
-            lambda x: x.replace(f"/AfriSpeech-100/train/", audio_dir)
+            lambda x: x.replace(f"/AfriSpeech-100/", audio_dir)
         )
     else:
         data["audio_paths"] = data["audio_paths"].apply(
-            lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
+            lambda x: x.replace(f"/AfriSpeech-100/", audio_dir)
         )
     
     if max_audio_len_secs > -1 and gpu != -1:

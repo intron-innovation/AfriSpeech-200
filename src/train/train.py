@@ -13,7 +13,6 @@ from tqdm import tqdm
 os.environ['TRANSFORMERS_CACHE'] = '/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/results/'
 os.environ['XDG_CACHE_HOME'] = '/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/results/'
 os.environ["WANDB_DISABLED"] = "true"
-os.environ["CUDA_VISIBLE_DEVICES"] = 0, 1
 
 import torch
 from torch.utils.data import DataLoader
@@ -27,6 +26,11 @@ from transformers.trainer_utils import get_last_checkpoint
 from src.utils.text_processing import clean_text
 from src.utils.prepare_dataset import DataConfig, data_prep, DataCollatorCTCWithPaddingGroupLen
 from src.utils.sampler import IntronTrainer
+
+num_gpus = [i for i in range(torch.cuda.device_count())]
+if len(num_gpus) > 1:
+    print("Let's use", num_gpus, "GPUs!")
+    os.environ["CUDA_VISIBLE_DEVICES"] = ','.join(str(x) for x in num_gpus)
 
 warnings.filterwarnings('ignore')
 wer_metric = load_metric("wer")
@@ -186,7 +190,6 @@ def get_pretrained_model(checkpoint_pretrained, config_):
         )
     if config_['hyperparameters']['gradient_checkpointing'] == "True":
         model_.gradient_checkpointing_enable()
-
     if config_['hyperparameters']['ctc_zero_infinity'] == "True":
         model_.config.ctc_zero_infinity = True
 
@@ -194,7 +197,9 @@ def get_pretrained_model(checkpoint_pretrained, config_):
 
     if config['hyperparameters']['freeze_feature_encoder'] == "True":
         model_.freeze_feature_encoder()
-    model_ = torch.nn.DataParallel(model_)
+
+    if len(num_gpus) > 1:
+      model_ = torch.nn.DataParallel(model_, device_ids=num_gpus)
     model_.to(device)
     return model_
 
@@ -293,7 +298,7 @@ if __name__ == "__main__":
     print(f"\n...Model Args loaded in {time.time() - start:.4f}. Start training...\n")
 
     trainer = IntronTrainer(
-        model=model,
+        model=model.module if len(num_gpus)>1 else model,
         data_collator=data_collator,
         args=training_args,
         compute_metrics=compute_metric,
