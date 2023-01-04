@@ -10,9 +10,10 @@ from pathlib import Path
 import numpy as np
 from tqdm import tqdm
 
-os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
-os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
+os.environ['TRANSFORMERS_CACHE'] = '/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/results/'
+os.environ['XDG_CACHE_HOME'] = '/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/results/'
 os.environ["WANDB_DISABLED"] = "true"
+os.environ["CUDA_VISIBLE_DEVICES"] = 0, 1
 
 import torch
 from torch.utils.data import DataLoader
@@ -20,9 +21,7 @@ from datasets import load_metric
 from transformers import (
     Wav2Vec2ForCTC,
     HubertForCTC,
-    TrainingArguments,
-    Trainer,
-    )
+    TrainingArguments)
 from transformers.trainer_utils import get_last_checkpoint
 
 from src.utils.text_processing import clean_text
@@ -139,6 +138,67 @@ def set_dropout(trained_model):
             module.train()
 
 
+def get_pretrained_model(checkpoint_pretrained, config_):
+    models_with_different_vocab = ['jonatasgrosman/wav2vec2-large-xlsr-53-english',
+                                   'facebook/wav2vec2-large-960h-lv60-self',
+                                   'Harveenchadha/vakyansh-wav2vec2-hindi-him-4200'
+                                   ]
+    CTC_model_class = Wav2Vec2ForCTC if 'hubert' not in config_['models']['model_path'] else HubertForCTC
+    if config_['models']['model_path'] in models_with_different_vocab:
+        from transformers.file_utils import hf_bucket_url, cached_path
+
+        archive_file = hf_bucket_url(
+            config_['models']['model_path'],
+            filename='pytorch_model.bin'
+        )
+        resolved_archive_file = cached_path(archive_file)
+
+        state_dict = torch.load(resolved_archive_file, map_location='cpu')
+        state_dict.pop('lm_head.weight')
+        state_dict.pop('lm_head.bias')
+
+        model_ = CTC_model_class.from_pretrained(
+            config_['models']['model_path'],
+            state_dict=state_dict,
+            attention_dropout=float(config_['hyperparameters']['attention_dropout']),
+            hidden_dropout=float(config_['hyperparameters']['hidden_dropout']),
+            feat_proj_dropout=float(config_['hyperparameters']['feat_proj_dropout']),
+            mask_time_prob=float(config_['hyperparameters']['mask_time_prob']),
+            layerdrop=float(config_['hyperparameters']['layerdrop']),
+            ctc_loss_reduction=config_['hyperparameters']['ctc_loss_reduction'],
+            ctc_zero_infinity=True,
+            pad_token_id=PROCESSOR.tokenizer.pad_token_id,
+            vocab_size=len(PROCESSOR.tokenizer)
+        )
+
+    else:
+        model_ = CTC_model_class.from_pretrained(
+            checkpoint_pretrained if checkpoint_pretrained else config_['models']['model_path'],
+            attention_dropout=float(config_['hyperparameters']['attention_dropout']),
+            hidden_dropout=float(config_['hyperparameters']['hidden_dropout']),
+            feat_proj_dropout=float(config_['hyperparameters']['feat_proj_dropout']),
+            mask_time_prob=float(config_['hyperparameters']['mask_time_prob']),
+            layerdrop=float(config_['hyperparameters']['layerdrop']),
+            ctc_loss_reduction=config_['hyperparameters']['ctc_loss_reduction'],
+            ctc_zero_infinity=True,
+            pad_token_id=PROCESSOR.tokenizer.pad_token_id,
+            vocab_size=len(PROCESSOR.tokenizer)
+        )
+    if config_['hyperparameters']['gradient_checkpointing'] == "True":
+        model_.gradient_checkpointing_enable()
+
+    if config_['hyperparameters']['ctc_zero_infinity'] == "True":
+        model_.config.ctc_zero_infinity = True
+
+    print(f"\n...Model loaded in {time.time() - start:.4f}.\n")
+
+    if config['hyperparameters']['freeze_feature_encoder'] == "True":
+        model_.freeze_feature_encoder()
+    model_ = torch.nn.DataParallel(model_)
+    model_.to(device)
+    return model_
+
+
 def run_inference(trained_model, dataloader, mode='most', mc_dropout_rounds=10):
     if mode == 'random':
         # we do not need to compute the WER here
@@ -155,7 +215,7 @@ def run_inference(trained_model, dataloader, mode='most', mc_dropout_rounds=10):
             # run 10 steps of mc dropout
             wer_list = []
             batch["reference"] = clean_text(PROCESSOR.batch_decode(batch["labels"])[0])
-            
+
             for mc_dropout_round in range(mc_dropout_rounds):
                 with torch.no_grad():
                     logits = trained_model(input_val).logits
@@ -170,7 +230,7 @@ def run_inference(trained_model, dataloader, mode='most', mc_dropout_rounds=10):
                 wer_list.append(batch['wer'])
             uncertainty_score = np.array(wer_list).std()
             audio_wers[batch['audio_idx'][0]] = uncertainty_score
-        
+
         if mode == 'most':
             # we select most uncertain samples
             return dict(sorted(audio_wers.items(), key=lambda item: item[1]), reverse=True)
@@ -178,6 +238,7 @@ def run_inference(trained_model, dataloader, mode='most', mc_dropout_rounds=10):
             # we select the least uncertain samples
             return dict(sorted(audio_wers.items(), key=lambda item: item[1]), reverse=False)
         raise NotImplementedError
+
 
 if __name__ == "__main__":
 
@@ -199,57 +260,7 @@ if __name__ == "__main__":
                                    ]
 
     print(f"model starting...from last checkpoint:{last_checkpoint}")
-    if config['models']['model_path'] in models_with_different_vocab:
-        from transformers.file_utils import hf_bucket_url, cached_path
-
-        archive_file = hf_bucket_url(
-            config['models']['model_path'],
-            filename='pytorch_model.bin'
-        )
-        resolved_archive_file = cached_path(archive_file)
-
-        state_dict = torch.load(resolved_archive_file, map_location='cpu')
-        state_dict.pop('lm_head.weight')
-        state_dict.pop('lm_head.bias')
-
-        model = CTC_model_class.from_pretrained(
-            config['models']['model_path'],
-            state_dict=state_dict,
-            attention_dropout=float(config['hyperparameters']['attention_dropout']),
-            hidden_dropout=float(config['hyperparameters']['hidden_dropout']),
-            feat_proj_dropout=float(config['hyperparameters']['feat_proj_dropout']),
-            mask_time_prob=float(config['hyperparameters']['mask_time_prob']),
-            layerdrop=float(config['hyperparameters']['layerdrop']),
-            ctc_loss_reduction=config['hyperparameters']['ctc_loss_reduction'],
-            ctc_zero_infinity=True,
-            pad_token_id=PROCESSOR.tokenizer.pad_token_id,
-            vocab_size=len(PROCESSOR.tokenizer)
-        )
-
-    else:
-        model = CTC_model_class.from_pretrained(
-            last_checkpoint if last_checkpoint else config['models']['model_path'],
-            attention_dropout=float(config['hyperparameters']['attention_dropout']),
-            hidden_dropout=float(config['hyperparameters']['hidden_dropout']),
-            feat_proj_dropout=float(config['hyperparameters']['feat_proj_dropout']),
-            mask_time_prob=float(config['hyperparameters']['mask_time_prob']),
-            layerdrop=float(config['hyperparameters']['layerdrop']),
-            ctc_loss_reduction=config['hyperparameters']['ctc_loss_reduction'],
-            ctc_zero_infinity=True,
-            pad_token_id=PROCESSOR.tokenizer.pad_token_id,
-            vocab_size=len(PROCESSOR.tokenizer)
-        )
-    if config['hyperparameters']['gradient_checkpointing'] == "True":
-        model.gradient_checkpointing_enable()
-
-    if config['hyperparameters']['ctc_zero_infinity'] == "True":
-        model.config.ctc_zero_infinity = True
-
-    print(f"\n...Model loaded in {time.time() - start:.4f}.\n")
-
-    if config['hyperparameters']['freeze_feature_encoder'] == "True":
-        model.freeze_feature_encoder()
-
+    model = get_pretrained_model(last_checkpoint, config)
     training_args = TrainingArguments(
         output_dir=checkpoints_path,
         overwrite_output_dir=True if config['hyperparameters']['overwrite_output_dir'] == "True" else False,
@@ -278,7 +289,7 @@ if __name__ == "__main__":
         ignore_data_skip=True if config['hyperparameters']['ignore_data_skip'] == 'True' else False,
         report_to=None
     )
-    
+
     print(f"\n...Model Args loaded in {time.time() - start:.4f}. Start training...\n")
 
     trainer = IntronTrainer(
@@ -301,7 +312,7 @@ if __name__ == "__main__":
 
     if 'aug' in config['data']:
         # after baseline is completed
-        
+
         print(f"\n...Baseline model trained in {time.time() - start:.4f}. Start training with Active Learning...\n")
 
         active_learning_rounds = int(config['hyperparameters']['active_learning_rounds'])
@@ -309,13 +320,13 @@ if __name__ == "__main__":
         sampling_mode = config['hyperparameters']['sampling_mode']
         k = float(config['hyperparameters']['top_k'])
         if k < 1:
-            k = len(aug_dataset)/active_learning_rounds
+            k = len(aug_dataset) / active_learning_rounds
         k = int(k)
         mc_dropout_round = int(config['hyperparameters']['mc_dropout_round'])
 
         # AL rounds
-        for active_learning_round in range(active_learning_rounds):
-            print('Active Learning Round: {}\n'.format(active_learning_round))
+        for active_learning_round in range(active_learning_rounds - 1):
+            print('Performing McDropout for AL Round: {}\n'.format(active_learning_round))
 
             # McDropout for uncertainty computation
             set_dropout(model)
@@ -347,9 +358,11 @@ if __name__ == "__main__":
             train_dataset.set_dataset(new_training_data)
             print('New training set size: {} - New Augmenting Size: {}'.format(len(train_dataset), len(aug_dataset)))
 
-            # set model back to eval before training mode
-            model.eval()
+            # delete current model from memory and empty cache
+            del model
+            torch.cuda.empty_cache()
 
+            model = get_pretrained_model(last_checkpoint, config)
             # reset the trainer with the updated training and augmenting dataset
             new_al_round_checkpoint_path = os.path.join(checkpoints_path, f"AL_Round_{active_learning_round}")
             Path(new_al_round_checkpoint_path).mkdir(parents=True, exist_ok=True)
@@ -370,9 +383,7 @@ if __name__ == "__main__":
                 tokenizer=PROCESSOR.feature_extractor,
             )
             PROCESSOR.save_pretrained(new_al_round_checkpoint_path)
-
+            print('Active Learning Round: {}\n'.format(active_learning_round + 1))
             trainer.train(resume_from_checkpoint=checkpoint_)
-
             # define path for checkpoints for new AL round
             model.save_pretrained(new_al_round_checkpoint_path)
-
