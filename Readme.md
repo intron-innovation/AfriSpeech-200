@@ -242,6 +242,8 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 
 10. To fine-tune whisper, create a config file similar to `src/config/whisper_clinical-test.ini`, and run `python3 src/train/whisper-finetuning.py -c src/config/whisper_clinical-test.ini`
 
+11. To run Active Learning code, create a config file similar to `src/config/config_al_xlsr_general.ini`, and run
+ `python3 src/train/train.py -c src/config/config_al_xlsr_general.ini`
 
 
 ### Benchmark Results
