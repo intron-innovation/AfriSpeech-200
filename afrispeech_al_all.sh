@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=afrispeech_al
-#SBATCH --gres=gpu:rtx8000:4
+#SBATCH --gres=gpu:rtx8000:3
 #SBATCH --cpus-per-gpu=18
 #SBATCH --mem=180G
 #SBATCH --time=168:00:00         
