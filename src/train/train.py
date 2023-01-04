@@ -309,7 +309,8 @@ if __name__ == "__main__":
         sampling_mode = config['hyperparameters']['sampling_mode']
         k = float(config['hyperparameters']['top_k'])
         if k < 1:
-            k = int(len(aug_dataset)/active_learning_round)
+            k = len(aug_dataset)/active_learning_round
+        k = int(k)
         mc_dropout_round = int(config['hyperparameters']['mc_dropout_round'])
 
         # AL rounds
