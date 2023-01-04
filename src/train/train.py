@@ -289,7 +289,7 @@ if __name__ == "__main__":
         train_dataset=train_dataset,
         eval_dataset=val_dataset,
         tokenizer=PROCESSOR.feature_extractor,
-        sampler=config['data']['sampler']
+        sampler=config['data']['sampler'] if 'sampler' in config['data'] else None
     )
 
     PROCESSOR.save_pretrained(checkpoints_path)
@@ -304,17 +304,17 @@ if __name__ == "__main__":
         
         print(f"\n...Baseline model trained in {time.time() - start:.4f}. Start training with Active Learning...\n")
 
-        active_learning_round = int(config['hyperparameters']['active_learning_rounds'])
+        active_learning_rounds = int(config['hyperparameters']['active_learning_rounds'])
         aug_batch_size = int(config['hyperparameters']['aug_batch_size'])
         sampling_mode = config['hyperparameters']['sampling_mode']
         k = float(config['hyperparameters']['top_k'])
         if k < 1:
-            k = len(aug_dataset)/active_learning_round
+            k = len(aug_dataset)/active_learning_rounds
         k = int(k)
         mc_dropout_round = int(config['hyperparameters']['mc_dropout_round'])
 
         # AL rounds
-        for active_learning_round in range():
+        for active_learning_round in range(active_learning_rounds):
             print('Active Learning Round: {}\n'.format(active_learning_round))
 
             # McDropout for uncertainty computation
@@ -360,7 +360,7 @@ if __name__ == "__main__":
             # update training arg with new output path
             training_args.output_dir = new_al_round_checkpoint_path
 
-            trainer = Trainer(
+            trainer = IntronTrainer(
                 model=model,
                 data_collator=data_collator,
                 args=training_args,
