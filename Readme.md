@@ -289,10 +289,9 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 | AWS transcribe Medical API (Primary Care) | 0.536 |
 | wav2vec2-large-xlsr-53-english |  |
 | wav2vec2-xls-r-1b-english |  |
-| GCP Speech API (cleanup) |  |
+| GCP Speech API | 0.599 |
 | facebook/wav2vec2-large-960h-lv60-self |  |
 | GCP medical transcription API |  |
-| GCP Speech API |  |
 | facebook/hubert-large-ls960-ft |  | 
 | wavlm-libri-clean-100h-large | 
 | facebook/hubert-large-ls960-ft (cleanup) |  |
