@@ -242,7 +242,7 @@ def run_inference(trained_model, dataloader, mode='most', mc_dropout_rounds=10):
         if mode == 'least':
             # we select the least uncertain samples
             return dict(sorted(audio_wers.items(), key=lambda item: item[1]), reverse=False)
-        raise NotImplementedError
+        # raise NotImplementedError
 
 
 if __name__ == "__main__":
