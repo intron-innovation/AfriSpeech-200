@@ -285,8 +285,8 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 | Whisper-medium | 0.349 |
 | nemo-conformer-ctc-large WER | 0.550 |
 | nemo-conformer-transducer-large WER | 0.525 |
-| AWS transcribe API |  |
-| AWS transcribe Medical API (Primary Care) |  |
+| AWS transcribe API | 0.499 |
+| AWS transcribe Medical API (Primary Care) | 0.536 |
 | wav2vec2-large-xlsr-53-english |  |
 | wav2vec2-xls-r-1b-english |  |
 | GCP Speech API (cleanup) |  |
