@@ -250,59 +250,27 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 
 | Model | Dev WER |
 | ----------- | ----------- |
-| Whisper-small | 0.368 |
-| Whisper-large | 0.375 |
-| Whisper-medium | 0.383 |
-| nemo-conformer-ctc-large WER | 0.477 |
-| nemo-conformer-transducer-large WER | 0.481 |
-| Whisper-base | 0.509 |
-| AWS transcribe API | 0.5212 |
-| AWS transcribe Medical API (Primary Care) | 0.5544 |
-| wav2vec2-large-xlsr-53-english | 0.561 |
-| wav2vec2-xls-r-1b-english | 0.576 |
-| GCP Speech API (cleanup) | 0.577 |
-| facebook/wav2vec2-large-960h-lv60-self | 0.594 |
-| GCP medical transcription API | 0.598 |
-| GCP Speech API | 0.604 |
-| facebook/hubert-large-ls960-ft | 0.628 | 
-| wavlm-libri-clean-100h-large | 0.673
-| facebook/hubert-large-ls960-ft (cleanup) | 0.682 |
-| facebook/wav2vec2-large-960h | 0.693 |
-| facebook/hubert-xlarge-ls960-ft (cleanup) | 0.692 |
-| facebook/hubert-large-ls960-ft | 0.738 |
-| facebook/hubert-xlarge-ls960-ft | 0.747 |
-| facebook/wav2vec2-large-robust-ft-swbd-300h | 0.765 |
-| wavlm-libri-clean-100h-base-plus (cleanup) | 0.840 |
-| wavlm-libri-clean-100h-base-plus | 0.870 |
-| speechbrain-crdnn-rnnlm-librispeech WER | 0.899 |
-
-### Benchmark Results Clean
-
-| Model | Dev WER |
-| ----------- | ----------- |
-| Whisper-small | 0.431 |
-| Whisper-large | 0.411 |
-| Whisper-medium | 0.349 |
-| nemo-conformer-ctc-large WER | 0.550 |
-| nemo-conformer-transducer-large WER | 0.525 |
-| AWS transcribe API | 0.499 |
-| AWS transcribe Medical API (Primary Care) | 0.536 |
-| wav2vec2-large-xlsr-53-english |  |
-| wav2vec2-xls-r-1b-english |  |
-| GCP Speech API | 0.599 |
-| facebook/wav2vec2-large-960h-lv60-self |  |
-| GCP medical transcription API |  |
-| facebook/hubert-large-ls960-ft |  | 
-| wavlm-libri-clean-100h-large | 
-| facebook/hubert-large-ls960-ft (cleanup) |  |
-| facebook/wav2vec2-large-960h |  |
-| facebook/hubert-xlarge-ls960-ft (cleanup) |  |
-| facebook/hubert-large-ls960-ft |  |
-| facebook/hubert-xlarge-ls960-ft |  |
-| facebook/wav2vec2-large-robust-ft-swbd-300h |  |
-| wavlm-libri-clean-100h-base-plus (cleanup) |  |
-| wavlm-libri-clean-100h-base-plus |  |
-| speechbrain-crdnn-rnnlm-librispeech WER | 0.976 |
+| openai/Whisper-medium |	0.349 |
+| openai/Whisper-medium-en | 0.368 |
+| openai/Whisper-large |	0.411 |
+| openai/Whisper-small |	0.431 |
+| openai/Whisper-small-en |	0.434 |
+| amazon/AWS transcribe API |	0.499 |
+| microsoft/Azure Speech API |	0.517 |
+| nvidia/nemo-conformer-transducer-large |	0.525 |
+| amazon/ AWS transcribe Medical API (Primary Care) |	0.536 |
+| nvidia/nemo-conformer-ctc-large |	0.550 |
+| google/GCP Speech API |	0.599 |
+| facebook/wav2vec2-large-xlsr-53-english |	0.640 |
+| facebook/wav2vec2-xls-r-1b-english |	0.651 |
+| facebook/wav2vec2-large-960h-lv60-self |	0.671 |
+| facebook/hubert-large-ls960-ft |	0.709 |
+| facebook/hubert-xlarge-ls960-ft |	0.715 |
+| microsoft/wavlm-libri-clean-100h-large |	0.769 |
+| facebook/wav2vec2-large-960h |	0.790 |
+| microsoft/wavlm-libri-clean-100h-base-plus |	0.855 |
+| facebook/wav2vec2-large-robust-ft-swbd-300h |	0.864 |
+| speechbrain/speechbrain-crdnn-rnnlm-librispeech |	0.976 |
 
 --------
  
