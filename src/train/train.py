@@ -312,7 +312,7 @@ if __name__ == "__main__":
 
     trainer.train(resume_from_checkpoint=checkpoint_)
 
-    model.save_pretrained(checkpoints_path)
+    model.module.save_pretrained(checkpoints_path) if len(num_gpus)>1 else model.save_pretrained(checkpoints_path)
     PROCESSOR.save_pretrained(checkpoints_path)
 
     if 'aug' in config['data']:
@@ -379,7 +379,7 @@ if __name__ == "__main__":
             training_args.output_dir = new_al_round_checkpoint_path
 
             trainer = IntronTrainer(
-                model=model,
+                model=model.module if len(num_gpus)>1 else model,
                 data_collator=data_collator,
                 args=training_args,
                 compute_metrics=compute_metric,
@@ -391,4 +391,4 @@ if __name__ == "__main__":
             print('Active Learning Round: {}\n'.format(active_learning_round + 1))
             trainer.train(resume_from_checkpoint=checkpoint_)
             # define path for checkpoints for new AL round
-            model.save_pretrained(new_al_round_checkpoint_path)
+            model.module.save_pretrained(new_al_round_checkpoint_path) if len(num_gpus)>1 else model.save_pretrained(new_al_round_checkpoint_path)
