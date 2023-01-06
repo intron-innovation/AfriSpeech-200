@@ -4,6 +4,10 @@
 ################################
 
 import os
+
+os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
+os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
+
 import numpy as np
 import torch
 import time
@@ -12,14 +16,15 @@ import whisper
 import jiwer
 from whisper.normalizers import EnglishTextNormalizer
 from tqdm import tqdm
-from transformers import AutoProcessor, AutoModelForCTC
+from transformers import Wav2Vec2Processor, AutoModelForCTC
 
 from src.utils.audio_processing import load_audio_file, AudioConfig
 from src.utils.prepare_dataset import load_afri_speech_data
 from src.utils.text_processing import clean_text
-from src.utils.utils import parse_argument
+from src.utils.utils import parse_argument, write_pred_inference_df
 
 processor = None
+device = None
 
 
 class AfriSpeechWhisperDataset(torch.utils.data.Dataset):
@@ -54,15 +59,15 @@ class AfriSpeechWhisperDataset(torch.utils.data.Dataset):
             audio = whisper.log_mel_spectrogram(audio)
         else:
             input_features = processor(
-                audio, sampling_rate=AudioConfig.sr, max_length=AudioConfig.sr*17,
-                padding='max_length'
+                audio, sampling_rate=AudioConfig.sr, padding='max_length', 
+                max_length=AudioConfig.sr*17, truncation=True
             )
-            audio = input_features.input_values.to(self.device)
+            audio = input_features.input_values[0]
 
         return (audio, text, audio_path, accent)
 
 
-def transcribe_whisper(args, model, loader, model_id=None):
+def transcribe_whisper(args, model, loader):
     tsince = int(round(time.time()))
     hypotheses = []
     references = []
@@ -76,23 +81,17 @@ def transcribe_whisper(args, model, loader, model_id=None):
     # transcription = model.transcribe(audio, **transcribe_options)["text"]
 
     for audio_or_mels, texts, audio_path, accent in tqdm(loader):
-        if 'whisper' in model_id:
+        if 'whisper' in args.model_id_or_path:
             results = model.decode(audio_or_mels, options)
+            hypotheses.extend([result.text for result in results])
         else:
-            input_features = [{"input_values": feature["input_values"]} for feature in audio_or_mels]
-            batch = processor.pad(
-                input_features,
-                padding=True,
-                max_length=None,
-                pad_to_multiple_of=None,
-                return_tensors="pt",
-            )
+            audio_or_mels = audio_or_mels.to(device)
             with torch.no_grad():
                 logits = model(audio_or_mels).logits
             pred_ids = torch.argmax(torch.tensor(logits), dim=-1)
-            results = processor.batch_decode(pred_ids)[0]
-
-        hypotheses.extend([result.text for result in results])
+            results = processor.batch_decode(pred_ids)
+            hypotheses.extend([result for result in results])
+        
         references.extend(texts)
         paths.extend(audio_path)
         accents.extend(accent)
@@ -121,17 +120,14 @@ def transcribe_whisper(args, model, loader, model_id=None):
 
     data["hypothesis_clean"] = [normalizer(text) for text in data["hypothesis"]]
     data["reference_clean"] = [normalizer(text) for text in data["reference"]]
-
-    n_samples = len(loader.dataset)
+    
     split = args.data_csv_path.split("-")[1]
-    output_path = f"{args.output_dir}/intron-open-{split}-{args.model_id_or_path}-wer-{round(all_wer, 4)}-{n_samples}.csv"
-    data.to_csv(output_path, index=False)
-    print(output_path)
-
+    write_pred_inference_df(args.model_id_or_path, data, all_wer, split=split)
+    
     time_elapsed = int(round(time.time())) - tsince
     print(
         f"{args.model_id_or_path}-- Inference Time: {time_elapsed / 60:.4f}m | "
-        f"{time_elapsed / n_samples:.4f}s per sample"
+        f"{time_elapsed / len(data):.4f}s per sample"
     )
 
 
@@ -161,9 +157,9 @@ if __name__ == "__main__":
             f"and has {sum(np.prod(p.shape) for p in model.parameters()):,} parameters."
         )
     else:
-        processor = AutoProcessor.from_pretrained(args.model_id_or_path)
+        processor = Wav2Vec2Processor.from_pretrained(args.model_id_or_path)
         model = AutoModelForCTC.from_pretrained(args.model_id_or_path).to(device)
 
     model.to(device)
 
-    transcribe_whisper(args, model, data_loader, args.model_id_or_path)
+    transcribe_whisper(args, model, data_loader)

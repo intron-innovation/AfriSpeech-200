@@ -24,7 +24,7 @@ s3 = boto3.resource(
     region_name='eu-west-2',
 )
 
-UNIQUE_JOB_NUM=35
+UNIQUE_JOB_NUM=36
 
 def get_aws_transcript_medical(job_name, job_uri, service):
     """
