@@ -199,13 +199,15 @@ def get_pretrained_model(checkpoint_pretrained, config_):
         model_.freeze_feature_encoder()
 
     if len(num_gpus) > 1:
-      model_ = torch.nn.DataParallel(model_, device_ids=num_gpus)
+        model_ = torch.nn.DataParallel(model_, device_ids=num_gpus)
     model_.to(device)
     return model_
 
 
 def run_inference(trained_model, dataloader, mode='most', mc_dropout_rounds=10):
+    # print('In inference:', type(mode))
     if mode == 'random':
+        # print('Gets in random')
         # we do not need to compute the WER here
         # we shuffle randomly the dictionary (this will display a random order) - the selecting the strict first top-k
         audios_ids = [batch['audio_idx'] for batch in dataloader]
@@ -214,7 +216,8 @@ def run_inference(trained_model, dataloader, mode='most', mc_dropout_rounds=10):
                 audios_ids}  # these values are just dummy ones, to have a format similar to the two other cases
     else:
         audio_wers = {}
-        for batch in tqdm(dataloader, desc="AL inference"):
+        final_dict = {}
+        for batch in tqdm(dataloader, desc="Uncertainty Inference"):
             input_val = batch['input_values'].to(device)
 
             # run 10 steps of mc dropout
@@ -235,15 +238,12 @@ def run_inference(trained_model, dataloader, mode='most', mc_dropout_rounds=10):
                 wer_list.append(batch['wer'])
             uncertainty_score = np.array(wer_list).std()
             audio_wers[batch['audio_idx'][0]] = uncertainty_score
-
-        if mode == 'most':
+        if 'most' in mode.lower():
             # we select most uncertain samples
             return dict(sorted(audio_wers.items(), key=lambda item: item[1]), reverse=True)
-        if mode == 'least':
+        if 'least' in mode.lower():
             # we select the least uncertain samples
             return dict(sorted(audio_wers.items(), key=lambda item: item[1]), reverse=False)
-        # raise NotImplementedError
-
 
 if __name__ == "__main__":
 
@@ -298,7 +298,7 @@ if __name__ == "__main__":
     print(f"\n...Model Args loaded in {time.time() - start:.4f}. Start training...\n")
 
     trainer = IntronTrainer(
-        model=model.module if len(num_gpus)>1 else model,
+        model=model.module if len(num_gpus) > 1 else model,
         data_collator=data_collator,
         args=training_args,
         compute_metrics=compute_metric,
@@ -312,7 +312,7 @@ if __name__ == "__main__":
 
     trainer.train(resume_from_checkpoint=checkpoint_)
 
-    model.module.save_pretrained(checkpoints_path) if len(num_gpus)>1 else model.save_pretrained(checkpoints_path)
+    model.module.save_pretrained(checkpoints_path) if len(num_gpus) > 1 else model.save_pretrained(checkpoints_path)
     PROCESSOR.save_pretrained(checkpoints_path)
 
     if 'aug' in config['data']:
@@ -322,7 +322,7 @@ if __name__ == "__main__":
 
         active_learning_rounds = int(config['hyperparameters']['active_learning_rounds'])
         aug_batch_size = int(config['hyperparameters']['aug_batch_size'])
-        sampling_mode = config['hyperparameters']['sampling_mode']
+        sampling_mode = str(config['hyperparameters']['sampling_mode']).strip()
         k = float(config['hyperparameters']['top_k'])
         if k < 1:
             k = len(aug_dataset) / active_learning_rounds
@@ -340,6 +340,12 @@ if __name__ == "__main__":
 
             samples_uncertainty = run_inference(model, augmentation_dataloader,
                                                 mode=sampling_mode, mc_dropout_rounds=mc_dropout_round)
+            uncertainties = list(samples_uncertainty.values())
+            min_uncertainty, max_uncertainty = min(uncertainties), max(uncertainties)
+            print('AL Round: {} with SM: {} - Max Uncertainty: {} - Min Uncertainty: {}'.format(active_learning_round,
+                                                                                                sampling_mode,
+                                                                                                max_uncertainty,
+                                                                                                min_uncertainty))
             # top-k samples (select top-3k)
             most_uncertain_samples_idx = list(samples_uncertainty.keys())[:k]
 
@@ -347,7 +353,7 @@ if __name__ == "__main__":
             filename = 'Top-{}_AL_Round_{}_Mode_{}'.format(k, active_learning_round, sampling_mode)
             # write the top-k to the disk
             filepath = os.path.join(checkpoints_path, filename)
-            np.save(filepath, np.array(most_uncertain_samples_idx))
+            np.save(filepath, np.array(most_uncertain_samples_idx + [max_uncertainty,min_uncertainty])) # appending uncertainties to keep track
             print(f"saved audio ids for round {active_learning_round} to {filepath}")
 
             print('Old training set size: {} - Old Augmenting Size: {}'.format(len(train_dataset), len(aug_dataset)))
@@ -379,7 +385,7 @@ if __name__ == "__main__":
             training_args.output_dir = new_al_round_checkpoint_path
 
             trainer = IntronTrainer(
-                model=model.module if len(num_gpus)>1 else model,
+                model=model.module if len(num_gpus) > 1 else model,
                 data_collator=data_collator,
                 args=training_args,
                 compute_metrics=compute_metric,
@@ -391,4 +397,5 @@ if __name__ == "__main__":
             print('Active Learning Round: {}\n'.format(active_learning_round + 1))
             trainer.train(resume_from_checkpoint=checkpoint_)
             # define path for checkpoints for new AL round
-            model.module.save_pretrained(new_al_round_checkpoint_path) if len(num_gpus)>1 else model.save_pretrained(new_al_round_checkpoint_path)
+            model.module.save_pretrained(new_al_round_checkpoint_path) if len(num_gpus) > 1 else model.save_pretrained(
+                new_al_round_checkpoint_path)
