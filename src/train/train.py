@@ -206,7 +206,7 @@ def get_pretrained_model(checkpoint_pretrained, config_):
 
 def run_inference(trained_model, dataloader, mode='most', mc_dropout_rounds=10):
     # print('In inference:', type(mode))
-    if mode == 'random':
+    if 'random' in mode.lower():
         # print('Gets in random')
         # we do not need to compute the WER here
         # we shuffle randomly the dictionary (this will display a random order) - the selecting the strict first top-k
