@@ -323,10 +323,12 @@ if __name__ == "__main__":
         active_learning_rounds = int(config['hyperparameters']['active_learning_rounds'])
         aug_batch_size = int(config['hyperparameters']['aug_batch_size'])
         sampling_mode = str(config['hyperparameters']['sampling_mode']).strip()
-        k = float(config['hyperparameters']['top_k'])
-        if k < 1:
-            k = len(aug_dataset) / active_learning_rounds
-        k = int(k)
+        sampling_size_dict = {'general': 3000, 'clinical': 5000, 'all': 8000}
+        # k = float(config['hyperparameters']['top_k'])
+        # if k < 1:
+        #     k = len(aug_dataset) / active_learning_rounds
+        # k = int(k)
+        k = int(sampling_size_dict[config['data']['domain']])
         mc_dropout_round = int(config['hyperparameters']['mc_dropout_round'])
 
         # AL rounds
@@ -340,8 +342,10 @@ if __name__ == "__main__":
 
             samples_uncertainty = run_inference(model, augmentation_dataloader,
                                                 mode=sampling_mode, mc_dropout_rounds=mc_dropout_round)
-            uncertainties = list(samples_uncertainty.values())
-            min_uncertainty, max_uncertainty, mean_uncertainty = min(uncertainties), max(uncertainties), np.array(uncertainties).mean()
+            uncertainties = np.array(list(samples_uncertainty.values()))
+            min_uncertainty = uncertainties.min()
+            max_uncertainty = uncertainties.max()
+            mean_uncertainty = uncertainties.mean()
             print('AL Round: {} with SM: {} - Max Uncertainty: {} - Min Uncertainty: {} - Mean Uncertainty: {}'.format(active_learning_round,
                                                                                                 sampling_mode,
                                                                                                 max_uncertainty,
@@ -371,31 +375,36 @@ if __name__ == "__main__":
 
             # delete current model from memory and empty cache
             del model
+
             torch.cuda.empty_cache()
 
-            model = get_pretrained_model(last_checkpoint, config)
-            # reset the trainer with the updated training and augmenting dataset
-            new_al_round_checkpoint_path = os.path.join(checkpoints_path, f"AL_Round_{active_learning_round}")
-            Path(new_al_round_checkpoint_path).mkdir(parents=True, exist_ok=True)
+            if len(aug_dataset) == 0:
+                print('Stopping AL because the augmentation dataset is now empty')
+                break
+            else:
+                model = get_pretrained_model(last_checkpoint, config)
+                # reset the trainer with the updated training and augmenting dataset
+                new_al_round_checkpoint_path = os.path.join(checkpoints_path, f"AL_Round_{active_learning_round}")
+                Path(new_al_round_checkpoint_path).mkdir(parents=True, exist_ok=True)
 
-            # Detecting last checkpoint.
-            last_checkpoint, checkpoint_ = get_checkpoint(new_al_round_checkpoint_path,
-                                                          config['models']['model_path'])
-            # update training arg with new output path
-            training_args.output_dir = new_al_round_checkpoint_path
+                # Detecting last checkpoint.
+                last_checkpoint, checkpoint_ = get_checkpoint(new_al_round_checkpoint_path,
+                                                              config['models']['model_path'])
+                # update training arg with new output path
+                training_args.output_dir = new_al_round_checkpoint_path
 
-            trainer = IntronTrainer(
-                model=model.module if len(num_gpus) > 1 else model,
-                data_collator=data_collator,
-                args=training_args,
-                compute_metrics=compute_metric,
-                train_dataset=train_dataset,
-                eval_dataset=val_dataset,
-                tokenizer=PROCESSOR.feature_extractor,
-            )
-            PROCESSOR.save_pretrained(new_al_round_checkpoint_path)
-            print('Active Learning Round: {}\n'.format(active_learning_round + 1))
-            trainer.train(resume_from_checkpoint=checkpoint_)
-            # define path for checkpoints for new AL round
-            model.module.save_pretrained(new_al_round_checkpoint_path) if len(num_gpus) > 1 else model.save_pretrained(
-                new_al_round_checkpoint_path)
+                trainer = IntronTrainer(
+                    model=model.module if len(num_gpus) > 1 else model,
+                    data_collator=data_collator,
+                    args=training_args,
+                    compute_metrics=compute_metric,
+                    train_dataset=train_dataset,
+                    eval_dataset=val_dataset,
+                    tokenizer=PROCESSOR.feature_extractor,
+                )
+                PROCESSOR.save_pretrained(new_al_round_checkpoint_path)
+                print('Active Learning Round: {}\n'.format(active_learning_round + 1))
+                trainer.train(resume_from_checkpoint=checkpoint_)
+                # define path for checkpoints for new AL round
+                model.module.save_pretrained(new_al_round_checkpoint_path) if len(num_gpus) > 1 else model.save_pretrained(
+                    new_al_round_checkpoint_path)
