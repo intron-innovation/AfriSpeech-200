@@ -55,7 +55,7 @@ class AfriSpeechWhisperDataset(torch.utils.data.Dataset):
         else:
             input_features = processor(
                 audio, sampling_rate=AudioConfig.sr, max_length=AudioConfig.sr*17,
-                padding='max_length', return_tensors="pt"
+                padding='max_length'
             )
             audio = input_features.input_values.to(self.device)
 
@@ -79,6 +79,14 @@ def transcribe_whisper(args, model, loader, model_id=None):
         if 'whisper' in model_id:
             results = model.decode(audio_or_mels, options)
         else:
+            input_features = [{"input_values": feature["input_values"]} for feature in audio_or_mels]
+            batch = processor.pad(
+                input_features,
+                padding=True,
+                max_length=None,
+                pad_to_multiple_of=None,
+                return_tensors="pt",
+            )
             with torch.no_grad():
                 logits = model(audio_or_mels).logits
             pred_ids = torch.argmax(torch.tensor(logits), dim=-1)

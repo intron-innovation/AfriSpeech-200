@@ -7,15 +7,9 @@ os.environ["WANDB_DISABLED"] = "true"
 import pandas as pd
 import time
 from datasets import load_metric, Dataset
-import librosa
 import torch
 from transformers import AutoProcessor, AutoModelForCTC
-from transformers import (
-    Wav2Vec2ForCTC,
-    HubertForCTC,
-    Wav2Vec2Processor,
-    set_seed,
-)
+from transformers import set_seed
 import whisper
 from src.utils.utils import write_pred, write_pred_inference_df
 from src.utils.text_processing import clean_text
@@ -95,7 +89,8 @@ def transcribe_whisper(dataframe, model_size="medium"):
     return dataframe
 
 
-def run_benchmarks(model_id_or_path, test_dataset, output_dir="./results", gpu=-1):
+def run_benchmarks(model_id_or_path, test_dataset,
+                   output_dir="./results", gpu=-1, batchsize=8):
     """
     Pipeline for running benchmarks for huggingface models on dev/test data
     :param output_dir: str
@@ -128,6 +123,7 @@ def run_benchmarks(model_id_or_path, test_dataset, output_dir="./results", gpu=-
         PROCESSOR = AutoProcessor.from_pretrained(model_id_or_path)
         MODEL = AutoModelForCTC.from_pretrained(model_id_or_path).to(device)
         test_dataset = test_dataset.map(compute_benchmarks)
+        # test_dataset = test_dataset.map(compute_benchmarks, batched=True, batch_size=batchsize)
 
     # test_dataset = compute_wer_dataset(test_dataset)
     n_samples = len(test_dataset)

@@ -1,5 +1,4 @@
 import os
-import argparse
 from src.inference.inference import run_benchmarks
 from src.utils.prepare_dataset import load_afri_speech_data
 from src.utils.utils import parse_argument
@@ -36,5 +35,6 @@ if __name__ == "__main__":
         model_id_or_path=args.model_id_or_path,
         test_dataset=test_dataset,
         output_dir=args.output_dir,
-        gpu=args.gpu
+        gpu=args.gpu,
+        batchsize=args.batchsize
     )
