@@ -54,7 +54,8 @@ class AfriSpeechWhisperDataset(torch.utils.data.Dataset):
             audio = whisper.log_mel_spectrogram(audio)
         else:
             input_features = processor(
-                audio, sampling_rate=AudioConfig.sr, padding='max_length', return_tensors="pt"
+                audio, sampling_rate=AudioConfig.sr, max_length=AudioConfig.sr*17,
+                padding='max_length', return_tensors="pt"
             )
             audio = input_features.input_values.to(self.device)
 
