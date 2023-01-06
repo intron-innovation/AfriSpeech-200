@@ -341,11 +341,11 @@ if __name__ == "__main__":
             samples_uncertainty = run_inference(model, augmentation_dataloader,
                                                 mode=sampling_mode, mc_dropout_rounds=mc_dropout_round)
             uncertainties = list(samples_uncertainty.values())
-            min_uncertainty, max_uncertainty = min(uncertainties), max(uncertainties)
-            print('AL Round: {} with SM: {} - Max Uncertainty: {} - Min Uncertainty: {}'.format(active_learning_round,
+            min_uncertainty, max_uncertainty, mean_uncertainty = min(uncertainties), max(uncertainties), np.array(uncertainties).mean()
+            print('AL Round: {} with SM: {} - Max Uncertainty: {} - Min Uncertainty: {} - Mean Uncertainty: {}'.format(active_learning_round,
                                                                                                 sampling_mode,
                                                                                                 max_uncertainty,
-                                                                                                min_uncertainty))
+                                                                                                min_uncertainty, mean_uncertainty))
             # top-k samples (select top-3k)
             most_uncertain_samples_idx = list(samples_uncertainty.keys())[:k]
 
@@ -353,7 +353,7 @@ if __name__ == "__main__":
             filename = 'Top-{}_AL_Round_{}_Mode_{}'.format(k, active_learning_round, sampling_mode)
             # write the top-k to the disk
             filepath = os.path.join(checkpoints_path, filename)
-            np.save(filepath, np.array(most_uncertain_samples_idx + [max_uncertainty,min_uncertainty])) # appending uncertainties to keep track
+            np.save(filepath, np.array(most_uncertain_samples_idx + [max_uncertainty, min_uncertainty, mean_uncertainty])) # appending uncertainties stats to keep track
             print(f"saved audio ids for round {active_learning_round} to {filepath}")
 
             print('Old training set size: {} - Old Augmenting Size: {}'.format(len(train_dataset), len(aug_dataset)))
