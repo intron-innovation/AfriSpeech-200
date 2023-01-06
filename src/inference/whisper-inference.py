@@ -78,6 +78,14 @@ def transcribe_whisper(args, model, loader, model_id=None):
         if 'whisper' in model_id:
             results = model.decode(audio_or_mels, options)
         else:
+            input_features = [{"input_values": audio} for audio in audio_or_mels]
+            audio_or_mels = processor.pad(
+                input_features,
+                padding=True,
+                max_length=None,
+                pad_to_multiple_of=None,
+                return_tensors="pt",
+            )
             with torch.no_grad():
                 logits = model(audio_or_mels).logits
             pred_ids = torch.argmax(torch.tensor(logits), dim=-1)
