@@ -9,6 +9,7 @@ import time
 from datasets import load_metric, Dataset
 import librosa
 import torch
+from transformers import AutoProcessor, AutoModelForCTC
 from transformers import (
     Wav2Vec2ForCTC,
     HubertForCTC,
@@ -18,6 +19,7 @@ from transformers import (
 import whisper
 from src.utils.utils import write_pred
 from src.utils.text_processing import clean_text
+from src.utils.audio_processing import load_audio_file
 
 set_seed(1778)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -37,9 +39,7 @@ def compute_benchmarks(batch):
     :param batch:
     :return:
     """
-    speech, fs = librosa.load(batch["audio_paths"], sr=SAMPLING_RATE)
-    if fs != SAMPLING_RATE:
-        speech = librosa.resample(speech, fs, SAMPLING_RATE)
+    speech = load_audio_file(batch["audio_paths"])
 
     input_features = PROCESSOR(
         speech, sampling_rate=SAMPLING_RATE, padding=True, return_tensors="pt"
@@ -51,11 +51,12 @@ def compute_benchmarks(batch):
 
     pred_ids = torch.argmax(torch.tensor(batch["logits"]), dim=-1)
     pred = PROCESSOR.batch_decode(pred_ids)[0]
-    batch["predictions"] = clean_text(pred)
-    batch["reference"] = clean_text(batch["text"]).lower()
-    batch["wer"] = wer_metric.compute(
-        predictions=[batch["predictions"]], references=[batch["reference"]]
-    )
+    batch["predictions"] = pred
+#     batch["predictions"] = clean_text(pred)
+#     batch["reference"] = clean_text(batch["text"]).lower()
+#     batch["wer"] = wer_metric.compute(
+#         predictions=[batch["predictions"]], references=[batch["reference"]]
+#     )
     return batch
 
 
@@ -129,10 +130,20 @@ def run_benchmarks(model_id_or_path, test_dataset, output_dir="./results", gpu=-
         ]
 
     else:
-        PROCESSOR = Wav2Vec2Processor.from_pretrained(model_id_or_path)
-        MODEL = Wav2Vec2ForCTC.from_pretrained(model_id_or_path).to(device)
+        PROCESSOR = AutoProcessor.from_pretrained(model_id_or_path)
+        MODEL = AutoModelForCTC.from_pretrained(model_id_or_path).to(device)
         test_dataset = test_dataset.map(compute_benchmarks)
 
+    
+    test_dataset["predictions"] = [clean_text(pred) for pred in test_dataset["predictions"]]
+    test_dataset["reference"] = [clean_text(ref) for ref in test_dataset["text"]]
+    wers = []
+    for i, row in test_dataset.iterrows():
+        wer_metric.compute(
+            predictions=[batch["predictions"]], references=[batch["reference"]]
+        )
+    test_dataset["wer"] = wers
+        
     n_samples = len(test_dataset)
     all_wer = wer_metric.compute(
         predictions=test_dataset["predictions"],

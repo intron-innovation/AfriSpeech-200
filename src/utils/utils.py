@@ -1,5 +1,6 @@
 import re
 import os
+import argparse
 import pandas as pd
 from pathlib import Path
 import librosa
@@ -16,7 +17,10 @@ def write_pred(model_id_or_path, results, wer, cols=None, output_dir="./results"
     :param wer: float
     :return: DataFrame
     """
-    model_id_or_path = model_id_or_path.replace("/", "-")
+    if "checkpoints" in model_id_or_path:
+        model_id_or_path = model_id_or_path.split("/")[3]
+    else:
+        model_id_or_path = model_id_or_path.replace("/", "-")
     if cols is None:
         cols = ["audio_paths", "text", "reference", "predictions", "wer", "accent"]
     predictions_data = {col: results[col] for col in cols}
@@ -54,3 +58,53 @@ def get_json_result(local_file_name):
         result = json.load(f)
     pred = result['results']['transcripts'][0]['transcript']
     return pred
+
+
+def parse_argument():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--data_csv_path",
+        type=str,
+        default="./data/intron-dev-public-3232.csv",
+        help="path to data csv file",
+    )
+    parser.add_argument(
+        "--audio_dir",
+        type=str,
+        default="./data/",
+        help="directory to locate the audio",
+    )
+    parser.add_argument(
+        "--model_id_or_path",
+        type=str,
+        default="whisper_small.en",
+        help="id of the whisper model",
+    )
+    parser.add_argument(
+        "--output_dir", type=str, default="./results", help="directory to store results"
+    )
+    parser.add_argument(
+        "--max_audio_len_secs",
+        type=int,
+        default=17,
+        help="maximum audio length passed to the inference model should",
+    )
+    parser.add_argument(
+        "--gpu",
+        type=int,
+        default=-1,
+        help="set gpu to -1 to use cpu",
+    )
+    parser.add_argument(
+        "--batchsize",
+        type=int,
+        default=8,
+        help="batch size",
+    )
+    parser.add_argument(
+        "--mode",
+        default="call",
+        help="mode for remote endpoints [call, get]",
+    )
+
+    return parser.parse_args()

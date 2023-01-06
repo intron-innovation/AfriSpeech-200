@@ -20,6 +20,7 @@ from tqdm import tqdm
 from src.utils.audio_processing import load_audio_file
 from src.utils.prepare_dataset import load_afri_speech_data
 from src.utils.text_processing import clean_text
+from src.utils.utils import parse_argument
 
 temp_audio = '/data/data/intron/e809b58c-4f05-4754-b98c-fbf236a88fbc/544bbfe5e1c6f8afb80c4840b681908d.wav'
 
@@ -48,11 +49,7 @@ class AfriSpeechWhisperDataset(torch.utils.data.Dataset):
         text = self.dataset[item]['text']
         accent = self.dataset[item]['accent']
         
-        try:
-            audio = load_audio_file(audio_path)
-        except Exception as e:
-            print(f"{audio_path} not found {str(e)}")
-            audio = load_audio_file(temp_audio)
+        audio = load_audio_file(audio_path)
 
         audio = whisper.pad_or_trim(torch.tensor(audio.flatten())).to(self.device)
         mel = whisper.log_mel_spectrogram(audio)
@@ -91,12 +88,19 @@ def transcribe_whisper(args, model, loader):
     
     normalizer = EnglishTextNormalizer()
     
+    gt_normalized, pred_normalized = [], []
+    for i, (gt_text, pred_text) in enumerate(zip(data["reference"], data["hypothesis"])):
+        gt = normalizer(gt_text)
+        pred = normalizer(pred_text)
+        if gt != "":
+            gt_normalized.append(gt)
+            pred_normalized.append(pred)
+    
+    whisper_wer = jiwer.wer(gt_normalized, pred_normalized)
+    print(f"EnglishTextNormalizer WER: {whisper_wer * 100:.2f} %")
+    
     data["hypothesis_clean"] = [normalizer(text) for text in data["hypothesis"]]
     data["reference_clean"] = [normalizer(text) for text in data["reference"]]
-    
-    whisper_wer = jiwer.wer(list(data["reference_clean"]), list(data["hypothesis_clean"]))
-
-    print(f"EnglishTextNormalizer WER: {whisper_wer * 100:.2f} %")
     
     n_samples = len(loader.dataset)
     split = args.data_csv_path.split("-")[1]
@@ -109,51 +113,6 @@ def transcribe_whisper(args, model, loader):
         f"{args.model_id_or_path}-- Inference Time: {ttime_elapsed / 60:.4f}m | "
         f"{ttime_elapsed / n_samples:.4f}s per sample"
     )
-    
-
-def parse_argument():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--data_csv_path",
-        type=str,
-        default="./data/intron-dev-public-3232.csv",
-        help="path to data csv file",
-    )
-    parser.add_argument(
-        "--audio_dir",
-        type=str,
-        default="./data/",
-        help="directory to locate the audio",
-    )
-    parser.add_argument(
-        "--model_id_or_path",
-        type=str,
-        default="whisper_small.en",
-        help="id of the whisper model",
-    )
-    parser.add_argument(
-        "--output_dir", type=str, default="./results", help="directory to store results"
-    )
-    parser.add_argument(
-        "--max_audio_len_secs",
-        type=int,
-        default=17,
-        help="maximum audio length passed to the inference model should",
-    )
-    parser.add_argument(
-        "--gpu",
-        type=int,
-        default=-1,
-        help="set gpu to -1 to use cpu",
-    )
-    parser.add_argument(
-        "--batchsize",
-        type=int,
-        default=8,
-        help="batch size",
-    )
-
-    return parser.parse_args()
 
 
 if __name__ == "__main__":
