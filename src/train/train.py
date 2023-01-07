@@ -340,7 +340,7 @@ if __name__ == "__main__":
         mc_dropout_round = int(config['hyperparameters']['mc_dropout_round'])
 
         # AL rounds
-        for active_learning_round in range(active_learning_rounds - 1):
+        for active_learning_round in range(active_learning_rounds):
             print('Performing McDropout for AL Round: {}\n'.format(active_learning_round))
 
             # McDropout for uncertainty computation
@@ -386,13 +386,13 @@ if __name__ == "__main__":
 
             torch.cuda.empty_cache()
 
-            if len(aug_dataset) == 0:
-                print('Stopping AL because the augmentation dataset is now empty')
+            if len(aug_dataset) == 0 or len(aug_dataset) < k:
+                print('Stopping AL because the augmentation dataset is now empty or less than top-k ({})'.format(k))
                 break
             else:
                 model = get_pretrained_model(last_checkpoint, config)
                 # reset the trainer with the updated training and augmenting dataset
-                new_al_round_checkpoint_path = os.path.join(checkpoints_path, f"AL_Round_{active_learning_round}")
+                new_al_round_checkpoint_path = os.path.join(checkpoints_path, f"AL_Round_{active_learning_round+1}")
                 Path(new_al_round_checkpoint_path).mkdir(parents=True, exist_ok=True)
 
                 # Detecting last checkpoint.
@@ -411,7 +411,7 @@ if __name__ == "__main__":
                     tokenizer=PROCESSOR.feature_extractor,
                 )
                 PROCESSOR.save_pretrained(new_al_round_checkpoint_path)
-                print('Active Learning Round: {}\n'.format(active_learning_round + 1))
+                print('Active Learning Round: {}\n'.format(active_learning_round+1))
                 trainer.train(resume_from_checkpoint=checkpoint_)
                 # define path for checkpoints for new AL round
                 model.module.save_pretrained(new_al_round_checkpoint_path) if len(num_gpus) > 1 else model.save_pretrained(
