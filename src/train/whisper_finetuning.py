@@ -6,10 +6,15 @@
 # https://colab.research.google.com/drive/1P4ClLkPmfsaKn2tBbRp0nVjGMRKR-EWz
 #
 
-import os
 
-os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
-os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
+import sys,os
+CURR_WORKING_DIR = os.getcwd()
+if CURR_WORKING_DIR not in sys.path:
+    sys.path.append(CURR_WORKING_DIR) 
+
+
+#os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
+#os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
 os.environ["WANDB_DISABLED"] = "true"
 
 import argparse
@@ -115,10 +120,10 @@ if __name__ == "__main__":
     data_config = data_setup(config)
 
     # Define processor, feature extractor, tokenizer and model
-    processor = WhisperProcessor.from_pretrained(config['models']['model_path'], language="en", task="transcribe")
+    processor = WhisperProcessor.from_pretrained(config['models']['model_path'], language="english", task="transcribe")
     # language="english"
     feature_extractor = WhisperFeatureExtractor.from_pretrained(config['models']['model_path'])
-    tokenizer = WhisperTokenizer.from_pretrained(config['models']['model_path'], language="en", task="transcribe")
+    tokenizer = WhisperTokenizer.from_pretrained(config['models']['model_path'], language="english", task="transcribe")
     # language="english"
 
     def transform_dataset(audio_path, text):
@@ -157,6 +162,7 @@ if __name__ == "__main__":
         # Override generation arguments
         model.config.forced_decoder_ids = None
         model.config.suppress_tokens = []
+        model.config.use_cache = False
 
         # Instantiate data collator
         data_collator = DataCollatorSpeechSeq2SeqWithPadding(processor=processor)

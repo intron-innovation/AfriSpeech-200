@@ -10,3 +10,4 @@ run.sh
 #Chris
 awscliv2.zip
 slurm*
+src/__pycache__/*

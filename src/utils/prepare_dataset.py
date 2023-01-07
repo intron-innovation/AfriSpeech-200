@@ -58,8 +58,11 @@ def load_afri_speech_data(
     """
     data = pd.read_csv(data_path)
     data["audio_paths"] = data["audio_paths"].apply(
-        lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
+        lambda x: x.replace(f"/AfriSpeech-100/", audio_dir)
     )
+    
+    #import pdb;pdb.set_trace()
+    #data = data.iloc[:15] #for debugging
     
     if max_audio_len_secs > -1 and gpu != -1:
         # when gpu is available, it cannot fit long samples
@@ -271,8 +274,6 @@ class CustomASRDataset(torch.utils.data.Dataset):
         audio_path = self.asr_data[idx]['audio_paths']
         text = self.asr_data[idx]['transcript']
         accent = self.asr_data[idx]['accent']
-        
-        # print(audio_path, text, accent)
         if self.prepare:
             input_audio, label = self.transform(audio_path, text)
             result = {'input_features': input_audio, 'labels': label}
@@ -281,7 +282,6 @@ class CustomASRDataset(torch.utils.data.Dataset):
             label = self.target_transform(text)
             result = {'input_values': input_audio[0], 'labels': label, 
                       'input_lengths': len(input_audio[0])}
-        # print(audio_path, input_audio.shape)
         return result
 
 
