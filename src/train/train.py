@@ -232,12 +232,20 @@ def run_inference(trained_model, dataloader, mode='most', mc_dropout_rounds=10):
                 pred_ids = torch.argmax(torch.tensor(batch["logits"]), dim=-1)
                 pred = PROCESSOR.batch_decode(pred_ids)[0]
                 batch["predictions"] = clean_text(pred)
-                batch["wer"] = wer_metric.compute(
-                    predictions=[batch["predictions"]], references=[batch["reference"]]
-                )
-                wer_list.append(batch['wer'])
-            uncertainty_score = np.array(wer_list).std()
-            audio_wers[batch['audio_idx'][0]] = uncertainty_score
+                # the following block is against cases where we have empty reference
+                # leading to the error: "ValueError: one or more groundtruths are empty strings"
+                try:
+                    batch["wer"] = wer_metric.compute(
+                        predictions=[batch["predictions"]], references=[batch["reference"]]
+                    )
+                    wer_list.append(batch['wer'])
+                except:
+                    pass
+
+            if len(wer_list) > 0:
+                uncertainty_score = np.array(wer_list).std()
+                audio_wers[batch['audio_idx'][0]] = uncertainty_score
+
         if 'most' in mode.lower():
             # we select most uncertain samples
             return dict(sorted(audio_wers.items(), key=lambda item: item[1]), reverse=True)
