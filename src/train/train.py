@@ -212,7 +212,7 @@ def run_inference(trained_model, dataloader, mode='most', mc_dropout_rounds=10):
         # we shuffle randomly the dictionary (this will display a random order) - the selecting the strict first top-k
         audios_ids = [batch['audio_idx'] for batch in dataloader]
         random.shuffle(audios_ids)
-        return {key: 1.0 for key in
+        return {key[0]: 1.0 for key in
                 audios_ids}  # these values are just dummy ones, to have a format similar to the two other cases
     else:
         audio_wers = {}
