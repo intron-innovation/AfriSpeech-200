@@ -11,7 +11,14 @@ Contributor List: []
 #### Progress
 - [x] Select & Publish and splits
 - [x] Upload audio
-- [x] Start experiments
+- [x] Start experimentsfor Official partnership,
+Awareness
+they help us promote the competition,
+allow us to co-brand with them as partners, using their logo
+These 2 help us increase participation and awareness
+Compute:
+uploading to datasets and streaming helps participants solve the compute problem (but ONLY for participants who want to use HF models)
+Compute for spaces is also nice-to-have
 
 
 #### Abstract [draft]

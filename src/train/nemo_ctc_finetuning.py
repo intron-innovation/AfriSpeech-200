@@ -2,15 +2,16 @@ import os
 import glob
 import subprocess
 import tarfile
-import wget
 import copy
 from omegaconf import OmegaConf, open_dict
 from pathlib import Path
-
+import pytorch_lightning as ptl
 import nemo
 import nemo.collections.asr as nemo_asr
 from nemo.collections.asr.metrics.wer import word_error_rate
 from nemo.utils import logging, exp_manager
+from nemo.utils import exp_manager
+
 import re
 import unicodedata
 
@@ -19,10 +20,9 @@ import json
 import pandas as pd
 
 from collections import defaultdict
-
+import configparser
 import torch
 import torch.nn as nn
-
 import argparse
 
 VERSION = "cv-corpus-6.1-2020-12-11"
@@ -32,9 +32,21 @@ tokenizer_dir = os.path.join('tokenizers', LANGUAGE)
 manifest_dir = os.path.join('manifests', LANGUAGE)
 
 
+def parse_argument():
+    config = configparser.ConfigParser()
+    parser = argparse.ArgumentParser(prog="Train")
+    parser.add_argument("-c", "--config", dest="config_file",
+                        help="Pass a training config file", metavar="FILE")
+    parser.add_argument("--local_rank", type=int,
+                        default=0)
+    args = parser.parse_args()
+    config.read(args.config_file)
+    return args, config
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--config", type=str, help="configuration for fine-tuning nemo")
-args = parser.parse_args()
+args, config = parse_argument()
+#args = parser.parse_args()
 
 def read_manifest(path):
     manifest = []
@@ -53,12 +65,12 @@ def read_intron(path):
   df = pd.read_csv(path)
   for i in range(df.shape[0]):
     data = {}
-    data["audio_filepath"] = df.iloc[i]["audio_paths"].replace("/AfriSpeech-100/", args.config["audio"]["audio_path"])
+    data["audio_filepath"] = df.iloc[i]["audio_paths"].replace("/AfriSpeech-100/", config["audio"]["audio_path"])
     data["duration"] = df.iloc[i]["duration"]
     data["text"] = df.iloc[i]["transcript"]
     data["domain"] = df.iloc[i]["domain"]
     my_file = Path(data["audio_filepath"])
-    if data["duration"] <= args.config["audio"]["max_audio_len_secs"] and len(data["text"]) >= args.config["hyperparameters"]["min_transcript_len"] and my_file.exists():
+    if data["duration"] <= float(config["audio"]["max_audio_len_secs"]) and len(data["text"]) >= int(config["hyperparameters"]["min_transcript_len"]) and my_file.exists():
       final.append(data)
   return final
 
@@ -76,9 +88,9 @@ def write_processed_manifest(data, original_path):
     print(f"Finished writing manifest: {filepath}")
     return filepath
 
-train_intron_manifest = read_intron(args.config["data"]["train"])
+train_intron_manifest = read_intron(config["data"]["train"])
 # train_intron_manifest = read_intron("intron-dev-public-3232.csv")
-dev_intron_manifest = read_intron(args.config["data"]["val"])
+dev_intron_manifest = read_intron(config["data"]["val"])
 
 intron_train_text = [data['text'] for data in train_intron_manifest]
 intron_dev_text = [data['text'] for data in dev_intron_manifest]
@@ -145,22 +157,21 @@ PREPROCESSORS = [
 ]
 
 # Load manifests
-intron_train_data = read_intron(args.config["data"]["train"])
+intron_train_data = read_intron(config["data"]["train"])
 # intron_train_data = read_intron("intron-dev-public-3232.csv")
-intron_dev_data = read_intron(args.config["data"]["val"])
+intron_dev_data = read_intron(config["data"]["val"])
 
 # Apply preprocessing
 intron_train_data_processed = apply_preprocessors(intron_train_data, PREPROCESSORS)
 intron_dev_data_processed = apply_preprocessors(intron_dev_data, PREPROCESSORS)
 
 # Write new manifests
-intron_train_manifest_cleaned = write_processed_manifest(intron_train_data_processed, args.config["data"]["train"][:-4] + ".json")
+intron_train_manifest_cleaned = write_processed_manifest(intron_train_data_processed, config["data"]["train"][:-4] + ".json")
 # intron_train_manifest_cleaned = write_processed_manifest(intron_dev_data_processed, "intron-dev-public-3232.json")
-intron_dev_manifest_cleaned = write_processed_manifest(intron_dev_data_processed, args.config["data"]["val"][:-4] + ".json")
+intron_dev_manifest_cleaned = write_processed_manifest(intron_dev_data_processed, config["data"]["val"][:-4] + ".json")
 
-intron_train_data = read_intron(args.config["data"]["train"])
-# intron_train_data = read_intron("intron-dev-public-3232.csv")
-intron_dev_data = read_intron(args.config["data"]["val"])
+intron_train_data = read_intron(config["data"]["train"])
+intron_dev_data = read_intron(config["data"]["val"])
 
 def enable_bn_se(m):
     if type(m) == nn.BatchNorm1d:
@@ -173,24 +184,24 @@ def enable_bn_se(m):
         for param in m.parameters():
             param.requires_grad_(True)
 
-import torch
-import pytorch_lightning as ptl
-
 TOKENIZER_TYPE = "bpe" #@param ["bpe", "unigram"]
 
 INTRON_VOCAB_SIZE = len(intron_train_set) + 2
 
+'''
 os.system("python3 src/utils/process_asr_text_tokenizer.py \
   --manifest=" + intron_train_manifest_cleaned + "\
   --vocab_size=" + str(INTRON_VOCAB_SIZE) + " \
-  --data_root=" + tokenizer_dir + " \
+  --data_root=" + f"{config['experiment']['dir']}{tokenizer_dir}" + " \
   --tokenizer=\"spe\" \
   --spe_type=\"bpe\" \
   --spe_character_coverage=1.0 \
   --no_lower_case \
   --log")
+'''
 
-TOKENIZER_DIR = f"{args.config["experiment"]["dir"]}{tokenizer_dir}/tokenizer_spe_{TOKENIZER_TYPE}_v{INTRON_VOCAB_SIZE}/"
+
+TOKENIZER_DIR = f"{config['experiment']['dir']}{tokenizer_dir}/tokenizer_spe_{TOKENIZER_TYPE}_v{INTRON_VOCAB_SIZE}/"
 print("Tokenizer directory :", TOKENIZER_DIR)
 
 # Number of tokens in tokenizer - 
@@ -207,19 +218,19 @@ if num_tokens < INTRON_VOCAB_SIZE:
         f"Please reconstruct the tokenizer with fewer tokens"
     )
 
-model = nemo_asr.models.ASRModel.from_pretrained(args.config["model"]["finetune"], map_location=args.config["experiment"]["map_location"])
+#model = nemo_asr.models.ASRModel.from_pretrained(config["models"]["finetune"], map_location=config["experiment"]["map_location"])
 
-# Preserve the decoder parameters in case weight matching can be done later
-pretrained_decoder = model.decoder.state_dict()
+if 'transducer' in config["models"]["finetune"]:
+  model = nemo_asr.models.EncDecRNNTBPEModel.from_pretrained(config["models"]["finetune"], map_location=config["experiment"]["map_location"])
+  # "nvidia/stt_en_conformer_transducer_large"
+elif 'conformer' in config["models"]["finetune"]:
+  model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(config["models"]["finetune"], map_location=config["experiment"]["map_location"])
+  # "nvidia/stt_en_conformer_ctc_large"
+
+
 
 model.change_vocabulary(new_tokenizer_dir=TOKENIZER_DIR, new_tokenizer_type="bpe")
 
-# Insert preserved model weights if shapes match
-if model.decoder.decoder_layers[0].weight.shape == pretrained_decoder['decoder_layers.0.weight'].shape:
-    model.decoder.load_state_dict(pretrained_decoder)
-    logging.info("Decoder shapes matched - restored weights from pre-trained model")
-else:
-    logging.info("\nDecoder shapes did not match - could not restore decoder weights from pre-trained model.")
 
 freeze_encoder = True #@param ["False", "True"] {type:"raw"}
 freeze_encoder = bool(freeze_encoder)
@@ -255,8 +266,8 @@ print(OmegaConf.to_yaml(cfg.train_ds))
 with open_dict(cfg):
   # Train dataset
   cfg.train_ds.manifest_filepath = intron_train_manifest_cleaned
-  cfg.train_ds.batch_size = args.config["hyperparameters"]["train_batch_size"]
-  cfg.train_ds.num_workers = args.config["hyperparameters"]["dataloader_num_workers"]
+  cfg.train_ds.batch_size = int(config["hyperparameters"]["train_batch_size"])
+  cfg.train_ds.num_workers = int(config["hyperparameters"]["dataloader_num_workers"])
   cfg.train_ds.is_tarred: False # If set to true, uses the tarred version of the Dataset
   cfg.tarred_audio_filepaths: None
   cfg.train_ds.pin_memory = True
@@ -265,16 +276,16 @@ with open_dict(cfg):
 
   # Validation dataset
   cfg.validation_ds.manifest_filepath = intron_dev_manifest_cleaned
-  cfg.validation_ds.batch_size = args.config["hyperparameters"]["val_batch_size"]
-  cfg.validation_ds.num_workers = args.config["hyperparameters"]["dataloader_num_workers"]
+  cfg.validation_ds.batch_size = int(config["hyperparameters"]["val_batch_size"])
+  cfg.validation_ds.num_workers = int(config["hyperparameters"]["dataloader_num_workers"])
   cfg.validation_ds.pin_memory = True
   cfg.validation_ds.use_start_end_token = True
   cfg.validation_ds.trim_silence = True
 
   # Test dataset
   cfg.test_ds.manifest_filepath = intron_dev_manifest_cleaned
-  cfg.test_ds.batch_size = args.config["hyperparameters"]["val_batch_size"]
-  cfg.test_ds.num_workers = args.config["hyperparameters"]["dataloader_num_workers"]
+  cfg.test_ds.batch_size = int(config["hyperparameters"]["val_batch_size"])
+  cfg.test_ds.num_workers = int(config["hyperparameters"]["dataloader_num_workers"])
   cfg.test_ds.pin_memory = True
   cfg.test_ds.use_start_end_token = True
   cfg.test_ds.trim_silence = True
@@ -327,19 +338,19 @@ print(OmegaConf.to_yaml(cfg.optim))
 ##Reduce learning rate and warmup if required
 
 with open_dict(model.cfg.optim):
-  model.cfg.optim.lr = args.config["hyperparameters"]["learning_rate"]
-  model.cfg.optim.weight_decay = args.config["hyperparameters"]["weight_decay"]
+  model.cfg.optim.lr = config["hyperparameters"]["learning_rate"]
+  model.cfg.optim.weight_decay = config["hyperparameters"]["weight_decay"]
   model.cfg.optim.sched.warmup_steps = None  # Remove default number of steps of warmup
-  model.cfg.optim.sched.warmup_ratio = args.config["hyperparameters"]["warmup_ratio"]  # 10 % warmup
-  model.cfg.optim.sched.min_lr = args.config["hyperparameters"]["min_learning_rate"]
+  model.cfg.optim.sched.warmup_ratio = config["hyperparameters"]["warmup_ratio"]  # 10 % warmup
+  model.cfg.optim.sched.min_lr = config["hyperparameters"]["min_learning_rate"]
 
 ### Setup data augmentation
 
 with open_dict(model.cfg.spec_augment):
-  model.cfg.spec_augment.freq_masks = args.config["hyperparameters"]["freq_mask"]
-  model.cfg.spec_augment.freq_width = args.config["hyperparameters"]["freq_width"]
-  model.cfg.spec_augment.time_masks = args.config["hyperparameters"]["time_mask"]
-  model.cfg.spec_augment.time_width = args.config["hyperparameters"]["time_width"]
+  model.cfg.spec_augment.freq_masks = config["hyperparameters"]["freq_mask"]
+  model.cfg.spec_augment.freq_width = config["hyperparameters"]["freq_width"]
+  model.cfg.spec_augment.time_masks = config["hyperparameters"]["time_mask"]
+  model.cfg.spec_augment.time_width = config["hyperparameters"]["time_width"]
 
 model.spec_augmentation = model.from_config_dict(model.cfg.spec_augment)
 
@@ -359,8 +370,6 @@ And that's it! Now we can train the model by simply using the Pytorch Lightning 
 For demonstration purposes, the number of epochs can be reduced. Reasonable results can be obtained in around 100 epochs (approximately 25 minutes on Colab GPUs).
 """
 
-import torch
-import pytorch_lightning as ptl
 
 if torch.cuda.is_available():
   accelerator = 'gpu'
@@ -373,11 +382,11 @@ EPOCHS = 10  # 100 epochs would provide better results
 
 trainer = ptl.Trainer(devices=1, 
                       accelerator=accelerator, 
-                      max_epochs=args.config["hyperparameters"]["num_epochs"], 
-                      accumulate_grad_batches=args.config["hyperparameters"]["gradient_accumulation_steps"],
+                      max_epochs=config["hyperparameters"]["num_epochs"], 
+                      accumulate_grad_batches=config["hyperparameters"]["gradient_accumulation_steps"],
                       enable_checkpointing=False,
                       logger=False,
-                      log_every_n_steps=args.config["hyperparameters"]["logging_steps"],
+                      log_every_n_steps=config["hyperparameters"]["logging_steps"],
                       check_val_every_n_epoch=10)
 
 # Setup model with the trainer
@@ -386,14 +395,12 @@ model.set_trainer(trainer)
 # finally, update the model's internal config
 model.cfg = model._cfg
 
-from nemo.utils import exp_manager
-
 # Environment variable generally used for multi-node multi-gpu training.
 # In notebook environments, this flag is unnecessary and can cause logs of multiple training runs to overwrite each other.
 os.environ.pop('NEMO_EXPM_VERSION', None)
 
-config = exp_manager.ExpManagerConfig(
-    exp_dir=f'{args.config["experiment"]["dir"]}experiments/lang-{LANGUAGE}/',
+exp_config = exp_manager.ExpManagerConfig(
+    exp_dir=f'{config["experiment"]["dir"]}experiments/lang-{LANGUAGE}/',
     name=f"ASR-Model-Language-{LANGUAGE}",
     checkpoint_callback_params=exp_manager.CallbackParams(
         monitor="val_wer",
@@ -403,14 +410,25 @@ config = exp_manager.ExpManagerConfig(
     ),
 )
 
-config = OmegaConf.structured(config)
+exp_config = OmegaConf.structured(exp_config)
 
-logdir = exp_manager.exp_manager(trainer, config)
+logdir = exp_manager.exp_manager(trainer, exp_config)
 
 trainer.fit(model)
 
 # Save the final model
 
-save_path = f"{args.config["experiment"]["dir"]}Model-{LANGUAGE}.nemo"
+save_path = f"{config['experiment']['dir']}Model-{LANGUAGE}.nemo"
 model.save_to(f"{save_path}")
 print(f"Model saved at path : {os.getcwd() + os.path.sep + save_path}")
+
+
+
+'''
+if 'transducer' in args.model_id_or_path:
+        asr_model = nemo_asr.models.EncDecRNNTBPEModel.from_pretrained(args.model_id_or_path, map_location=device)
+        # "nvidia/stt_en_conformer_transducer_large"
+    elif 'conformer' in args.model_id_or_path:
+        asr_model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(args.model_id_or_path, map_location=device)
+        # "nvidia/stt_en_conformer_ctc_large"
+'''
