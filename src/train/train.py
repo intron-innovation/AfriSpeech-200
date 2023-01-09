@@ -248,10 +248,10 @@ def run_inference(trained_model, dataloader, mode='most', mc_dropout_rounds=10):
 
         if 'most' in mode.lower():
             # we select most uncertain samples
-            return dict(sorted(audio_wers.items(), key=lambda item: item[1]), reverse=True)
+            return dict(sorted(audio_wers.items(), key=lambda item: item[1], reverse=True))
         if 'least' in mode.lower():
             # we select the least uncertain samples
-            return dict(sorted(audio_wers.items(), key=lambda item: item[1]), reverse=False)
+            return dict(sorted(audio_wers.items(), key=lambda item: item[1], reverse=False))
 
 if __name__ == "__main__":
 
