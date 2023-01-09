@@ -1,4 +1,4 @@
-idx,user_ids,accent,age_group,country,transcript,nchars,audio_ids,audio_path,duration,origin,domain,split,gender
+idx,user_ids,accent,age_group,country,transcript,nchars,audio_ids,audio_paths,duration,origin,domain,split,gender
 155349,659e36c14baaf7fa7bb197f951251f4b,setswana,26-40,BW,"We should be asking ourselves whether we want a heavy-handed approach or a harm reduction approach, she added.
 ",110,86ad3ef21e469217f28a749c990c81fd,/AfriSpeech-100/dev/92d2b94e-3e31-40be-b479-50062e90d1e4/04c03ed2a1e3a5cf4270463f7a0969ea.wav,8.400997732426303,african,general,dev,Male
 60812,1fd5f717cede9a867bf37d03c7d2166b,siswati,26-40,ZA,Other sagittal planes parallel to this off center divide the body into unequal portions.,88,5409734bcc4a0f053e73f405d0f135da,/AfriSpeech-100/dev/127bdba1-8bc8-44a4-9c37-8e5eef438450/86895d1ce73b08bb010ddf63273c333e.wav,5.236984126984127,african,clinical,dev,Female
