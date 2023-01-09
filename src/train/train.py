@@ -331,12 +331,7 @@ if __name__ == "__main__":
         active_learning_rounds = int(config['hyperparameters']['active_learning_rounds'])
         aug_batch_size = int(config['hyperparameters']['aug_batch_size'])
         sampling_mode = str(config['hyperparameters']['sampling_mode']).strip()
-        sampling_size_dict = {'general': 3000, 'clinical': 5000, 'all': 8000}
-        # k = float(config['hyperparameters']['top_k'])
-        # if k < 1:
-        #     k = len(aug_dataset) / active_learning_rounds
-        # k = int(k)
-        k = int(sampling_size_dict[config['data']['domain']])
+        k = int(config['hyperparameters']['top_k'])
         mc_dropout_round = int(config['hyperparameters']['mc_dropout_round'])
 
         # AL rounds
@@ -409,6 +404,7 @@ if __name__ == "__main__":
                     train_dataset=train_dataset,
                     eval_dataset=val_dataset,
                     tokenizer=PROCESSOR.feature_extractor,
+                    sampler=config['data']['sampler'] if 'sampler' in config['data'] else None
                 )
                 PROCESSOR.save_pretrained(new_al_round_checkpoint_path)
                 print('Active Learning Round: {}\n'.format(active_learning_round+1))
