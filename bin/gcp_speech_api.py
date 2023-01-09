@@ -50,20 +50,20 @@ def azure_asr(fname, speech_config):
     audio_config = speechsdk.audio.AudioConfig(filename=fname)
     speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
 
-    # speech_recognition_result = speech_recognizer.recognize_once_async().get()
+    speech_recognition_result = speech_recognizer.recognize_once_async().get()
     
-    # speech_recognizer.recognizing.connect(lambda evt: print('RECOGNIZING: {}'.format(evt)))
-    speech_recognizer.recognized.connect(lambda evt: print('RECOGNIZED: {}'.format(evt)))
-    # speech_recognizer.session_started.connect(lambda evt: print('SESSION STARTED: {}'.format(evt)))
-    # speech_recognizer.session_stopped.connect(lambda evt: print('SESSION STOPPED {}'.format(evt)))
-    speech_recognizer.canceled.connect(lambda evt: print('CANCELED {}'.format(evt)))
+#     # speech_recognizer.recognizing.connect(lambda evt: print('RECOGNIZING: {}'.format(evt)))
+#     speech_recognizer.recognized.connect(lambda evt: print('RECOGNIZED: {}'.format(evt)))
+#     # speech_recognizer.session_started.connect(lambda evt: print('SESSION STARTED: {}'.format(evt)))
+#     # speech_recognizer.session_stopped.connect(lambda evt: print('SESSION STOPPED {}'.format(evt)))
+#     speech_recognizer.canceled.connect(lambda evt: print('CANCELED {}'.format(evt)))
 
-    speech_recognizer.session_stopped.connect(stop_cb)
-    speech_recognizer.canceled.connect(stop_cb)
+#     speech_recognizer.session_stopped.connect(stop_cb)
+#     speech_recognizer.canceled.connect(stop_cb)
     
-    speech_recognizer.start_continuous_recognition()
-    while not done:
-        time.sleep(.5)
+#     speech_recognizer.start_continuous_recognition()
+#     while not done:
+#         time.sleep(.5)
 
     if speech_recognition_result.reason == speechsdk.ResultReason.RecognizedSpeech:
         result = speech_recognition_result.text
@@ -132,7 +132,8 @@ def main_transcribe_medical(data, service):
     preds_raw = []
     preds_clean = []
     wers = []
-
+    pause = 400 if 'gcp' in service else 10
+    
     for idx, row in tqdm(data.iterrows(), total=data.shape[0]):
         if not os.path.isfile(row['audio_paths']):
             preds_raw.append("")
@@ -156,7 +157,7 @@ def main_transcribe_medical(data, service):
         preds_clean.append(pred_clean)
         
         wers.append(wer_metric.compute(predictions=[pred_clean], references=[clean_text(row['transcript'])]))
-        if idx % 400 == 0:
+        if idx % pause == 0:
             # avoid RateLimitExceeded error
             time.sleep(60)
 
