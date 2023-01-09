@@ -18,22 +18,22 @@ for dataset in ${datasets[@]};
 do
     echo dataset: $dataset
 
-    for domain in ${domains[@]}; 
-    do
-        echo model: $domain
-        python3 src/inference/whisper-inference.py --audio_dir $audio_dir --gpu 1 \
-            --model_id_or_path ./src/experiments/wav2vec2-large-xlsr-53-$domain/checkpoints/ \
-            --data_csv_path $dataset --batchsize 8
-    done
+#     for domain in ${domains[@]}; 
+#     do
+#         echo model: $domain
+#         python3 src/inference/whisper-inference.py --audio_dir $audio_dir --gpu 1 \
+#             --model_id_or_path ./src/experiments/wav2vec2-large-xlsr-53-$domain/checkpoints/ \
+#             --data_csv_path $dataset --batchsize 8
+#     done
     
     
     
-    for model in ${models_list[@]}; 
-    do
-        echo model: $model
-        python3 src/inference/whisper-inference.py --audio_dir $audio_dir --gpu 1 \
-            --model_id_or_path $model --data_csv_path $dataset --batchsize 8
-    done
+#     for model in ${models_list[@]}; 
+#     do
+#         echo model: $model
+#         python3 src/inference/whisper-inference.py --audio_dir $audio_dir --gpu 1 \
+#             --model_id_or_path $model --data_csv_path $dataset --batchsize 8
+#     done
     
     
     
@@ -46,12 +46,12 @@ do
     
     
     
-    for model in ${gcp_azure_models[@]}; 
-    do
-        echo model: $model
-        python3 bin/gcp_speech_api.py --model_id_or_path $model \
-            --audio_dir $audio_dir --data_csv_path $dataset
-    done
+#     for model in ${gcp_azure_models[@]}; 
+#     do
+#         echo model: $model
+#         python3 bin/gcp_speech_api.py --model_id_or_path $model \
+#             --audio_dir $audio_dir --data_csv_path $dataset
+#     done
 
 
     # python3 src/train/train.py -c src/config/config_xlsr_group_lengths.ini
