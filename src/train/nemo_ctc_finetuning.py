@@ -64,20 +64,21 @@ def read_intron(path):
   final = []
   df = pd.read_csv(path)
   for i in range(df.shape[0]):
-    data = {}
-    data["audio_filepath"] = df.iloc[i]["audio_paths"].replace("/AfriSpeech-100/", config["audio"]["audio_path"])
-    data["duration"] = df.iloc[i]["duration"]
-    data["text"] = df.iloc[i]["transcript"]
-    data["domain"] = df.iloc[i]["domain"]
-    my_file = Path(data["audio_filepath"])
-    if data["duration"] <= float(config["audio"]["max_audio_len_secs"]) and len(data["text"]) >= int(config["hyperparameters"]["min_transcript_len"]) and my_file.exists():
-      final.append(data)
+    if df.iloc[i]["domain"].strip() == config["data"]["domain"]:
+      data = {}
+      data["audio_filepath"] = df.iloc[i]["audio_paths"].replace("/AfriSpeech-100/", config["audio"]["audio_path"])
+      data["duration"] = df.iloc[i]["duration"]
+      data["text"] = df.iloc[i]["transcript"]
+      data["domain"] = df.iloc[i]["domain"]
+      my_file = Path(data["audio_filepath"])
+      if data["duration"] <= float(config["audio"]["max_audio_len_secs"]) and len(data["text"]) >= int(config["hyperparameters"]["min_transcript_len"]) and my_file.exists():
+        final.append(data)
   return final
 
 
-def write_processed_manifest(data, original_path):
+def write_processed_manifest(data, original_path,domain):
     original_manifest_name = os.path.basename(original_path)
-    new_manifest_name = original_manifest_name.replace(".json", "_processed.json")
+    new_manifest_name = original_manifest_name.replace(".json", f"_processed_{domain}.json")
 
     manifest_dir = os.path.split(original_path)[0]
     filepath = os.path.join(manifest_dir, new_manifest_name)
@@ -156,8 +157,7 @@ PREPROCESSORS = [
     remove_special_characters,
     remove_dakuten,
 ]
-''' 
-# We only need to do this once
+
 # Load manifests
 intron_train_data = read_intron(config["data"]["train"])
 # intron_train_data = read_intron("intron-dev-public-3232.csv")
@@ -166,15 +166,15 @@ intron_dev_data = read_intron(config["data"]["val"])
 # Apply preprocessing
 intron_train_data_processed = apply_preprocessors(intron_train_data, PREPROCESSORS)
 intron_dev_data_processed = apply_preprocessors(intron_dev_data, PREPROCESSORS)
-'''
+
 
 # Write new manifests
-#intron_train_manifest_cleaned = write_processed_manifest(intron_train_data_processed, config["data"]["train"][:-4] + ".json")
-intron_train_manifest_cleaned = write_processed_manifest(None, config["data"]["train"][:-4] + ".json")
+intron_train_manifest_cleaned = write_processed_manifest(intron_train_data_processed, config["data"]["train"][:-4] + ".json",config["data"]["domain"])
+#intron_train_manifest_cleaned = write_processed_manifest(None, config["data"]["train"][:-4] + ".json",config["data"]["domain"])
 
 # intron_train_manifest_cleaned = write_processed_manifest(intron_dev_data_processed, "intron-dev-public-3232.json")
-#intron_dev_manifest_cleaned = write_processed_manifest(intron_dev_data_processed, config["data"]["val"][:-4] + ".json")
-intron_dev_manifest_cleaned = write_processed_manifest(None, config["data"]["val"][:-4] + ".json")
+intron_dev_manifest_cleaned = write_processed_manifest(intron_dev_data_processed, config["data"]["val"][:-4] + ".json",config["data"]["domain"])
+#intron_dev_manifest_cleaned = write_processed_manifest(None, config["data"]["val"][:-4] + ".json",config["data"]["domain"])
 
 def enable_bn_se(m):
     if type(m) == nn.BatchNorm1d:
