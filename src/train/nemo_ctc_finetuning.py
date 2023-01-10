@@ -57,14 +57,16 @@ def read_manifest(path):
             manifest.append(data)
     return manifest
 
-# cmd = "ffmpeg -i "
-# cmd1 = " -ac 1 -ar 16000 "
-
 def read_intron(path):
   final = []
   df = pd.read_csv(path)
+  COMBINE = False
+  if config["data"]["domain"].strip()=='all':
+    COMBINE = True
+
+
   for i in range(df.shape[0]):
-    if df.iloc[i]["domain"].strip() == config["data"]["domain"]:
+    if df.iloc[i]["domain"].strip() == config["data"]["domain"].strip() or COMBINE:
       data = {}
       data["audio_filepath"] = df.iloc[i]["audio_paths"].replace("/AfriSpeech-100/", config["audio"]["audio_path"])
       data["duration"] = df.iloc[i]["duration"]
@@ -91,7 +93,6 @@ def write_processed_manifest(data, original_path,domain):
     return filepath
 
 train_intron_manifest = read_intron(config["data"]["train"])
-# train_intron_manifest = read_intron("intron-dev-public-3232.csv")
 dev_intron_manifest = read_intron(config["data"]["val"])
 
 intron_train_text = [data['text'] for data in train_intron_manifest]
@@ -170,11 +171,8 @@ intron_dev_data_processed = apply_preprocessors(intron_dev_data, PREPROCESSORS)
 
 # Write new manifests
 intron_train_manifest_cleaned = write_processed_manifest(intron_train_data_processed, config["data"]["train"][:-4] + ".json",config["data"]["domain"])
-#intron_train_manifest_cleaned = write_processed_manifest(None, config["data"]["train"][:-4] + ".json",config["data"]["domain"])
 
-# intron_train_manifest_cleaned = write_processed_manifest(intron_dev_data_processed, "intron-dev-public-3232.json")
 intron_dev_manifest_cleaned = write_processed_manifest(intron_dev_data_processed, config["data"]["val"][:-4] + ".json",config["data"]["domain"])
-#intron_dev_manifest_cleaned = write_processed_manifest(None, config["data"]["val"][:-4] + ".json",config["data"]["domain"])
 
 def enable_bn_se(m):
     if type(m) == nn.BatchNorm1d:
