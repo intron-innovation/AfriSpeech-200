@@ -150,3 +150,47 @@ fig_bars_variance.suptitle(
     'Variational Distribution of Accents Frequencies Across all AL rounds (from the top-{} samples)'.format(k))
 fig_bars_variance.savefig('/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/src/experiments/wav2vec2-large-xlsr-53-general_most/figures/most_varying_accents.png', bbox_inches='tight', pad_inches=.3)
 plt.show()
+
+# descending/ascending for the first AL rounds transition
+descending_one = {accent: variation for accent, variation in most_variance_accents_one.items() if variation < 0}
+ascending_one = {accent: variation for accent, variation in most_variance_accents_one.items() if variation > 0}
+
+# descending/ascending for the second AL round
+descending_two = {accent: variation for accent, variation in most_variance_accents_two.items() if variation < 0}
+ascending_two = {accent: variation for accent, variation in most_variance_accents_two.items() if variation > 0}
+
+descending_accents = set(list(descending_one.keys())).intersection(
+    set(list(descending_two.keys())))
+descending_accents = list(descending_accents)
+
+descending_variance_one = [descending_one[accent] for accent in descending_accents]
+descending_variance_two = [descending_two[accent] for accent in descending_accents]
+
+df_descending_variance = pd.DataFrame(
+    {'Round 1 $\\rightarrow$ Round 2': descending_variance_one,
+     'Round 2 $\\rightarrow$ Round 3': descending_variance_two},
+    index=descending_accents)
+
+ascending_accents = set(list(ascending_one.keys())).intersection(
+    set(list(ascending_two.keys())))
+ascending_accents = list(ascending_accents)
+
+ascending_variance_one = [ascending_one[accent] for accent in ascending_accents]
+ascending_variance_two = [ascending_two[accent] for accent in ascending_accents]
+
+df_ascending_variance = pd.DataFrame(
+    {'Round 1 $\\rightarrow$ Round 2': ascending_variance_one,
+     'Round 2 $\\rightarrow$ Round 3': ascending_variance_two},
+    index=ascending_accents)
+
+fig_bars_variances, axs_bars_variances = plt.subplots(1, 2, figsize=(20, 20))
+df_descending_variance.plot.bar(rot=90, ax=axs_bars_variances[0])
+df_ascending_variance.plot.bar(rot=90, ax=axs_bars_variances[1])
+axs_bars_variances[0].set_ylabel('Frequency')
+axs_bars_variances[1].set_ylabel('Frequency')
+
+axs_bars_variances[0].set_title("Descending Accents Across Top-{} '{}' Uncertain Samples".format(k, mode))
+axs_bars_variances[1].set_title("Ascending Accents Across Top-{} '{}' Uncertain Samples".format(k, mode))
+
+fig_bars_variances.savefig('/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/src/experiments/wav2vec2-large-xlsr-53-general_most/figures/descending_ascending_accents.png', bbox_inches='tight', pad_inches=.3)
+plt.show()
