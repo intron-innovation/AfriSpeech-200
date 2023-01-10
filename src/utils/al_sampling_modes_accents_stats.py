@@ -107,7 +107,7 @@ frequencies_round_2 = [al_1[accent] for accent in common_accents_list]
 frequencies_round_3 = [al_2[accent] for accent in common_accents_list]
 
 df = pd.DataFrame(
-    {'AL Round 0': frequencies_round_1, 'Al Round 1': frequencies_round_2, 'Al Round 2': frequencies_round_3},
+    {'AL Round 1': frequencies_round_1, 'Al Round 2': frequencies_round_2, 'Al Round 3': frequencies_round_3},
     index=common_accents_list)
 
 fig_bars, axs_bars = plt.subplots(1, 1, figsize=(15, 15))
@@ -116,4 +116,37 @@ axs_bars.set_ylabel('Frequency')
 fig_bars.suptitle(
     'Distribution of Most Uncertain Accents Appearing Across all 3 AL rounds (from the top-{} samples)'.format(k))
 fig_bars.savefig('/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/src/experiments/wav2vec2-large-xlsr-53-general_most/figures/most_common_accents_distributions.png', bbox_inches='tight', pad_inches=.3)
+plt.show()
+
+all_common_accents = set(list(al_0.keys())).intersection(
+    set(list(al_1.keys()))).intersection(set(list(al_2.keys())))
+
+all_common_accents_list = list(all_common_accents)
+frequencies_difference_round_0_round_1 = [al_0[accent] - al_1[accent] for accent in all_common_accents_list]
+frequencies_difference_round_1_round_2 = [al_1[accent] - al_2[accent] for accent in all_common_accents_list]
+difference_one = {accent: difference for accent, difference in
+                  zip(all_common_accents_list, frequencies_difference_round_0_round_1)}
+
+difference_two = {accent: difference for accent, difference in
+                  zip(all_common_accents_list, frequencies_difference_round_1_round_2)}
+
+most_variance_accents_one = dict(sorted(difference_one.items(), key=lambda item: item[1], reverse=True))
+most_variance_accents_two = dict(sorted(difference_two.items(), key=lambda item: item[1], reverse=True))
+all_most_variant_accents = set(list(most_variance_accents_one.keys())).intersection(
+    set(list(most_variance_accents_two.keys())))
+all_most_variant_accents_list = list(all_most_variant_accents)
+
+most_variance_one = [most_variance_accents_one[accent] for accent in all_most_variant_accents_list]
+most_variance_two = [most_variance_accents_two[accent] for accent in all_most_variant_accents_list]
+
+df_variance = pd.DataFrame(
+    {'Round 1 $\\rightarrow$ Round 2': most_variance_one, 'Round 2 $\\rightarrow$ Round 3': most_variance_two},
+    index=all_most_variant_accents_list)
+
+fig_bars_variance, axs_bars_variance = plt.subplots(1, 1, figsize=(20, 20))
+df_variance.plot.bar(rot=90, ax=axs_bars_variance)
+axs_bars_variance.set_ylabel('Frequency')
+fig_bars_variance.suptitle(
+    'Variational Distribution of Accents Frequencies Across all AL rounds (from the top-{} samples)'.format(k))
+fig_bars_variance.savefig('/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/src/experiments/wav2vec2-large-xlsr-53-general_most/figures/most_varying_accents.png', bbox_inches='tight', pad_inches=.3)
 plt.show()
