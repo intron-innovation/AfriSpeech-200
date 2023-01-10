@@ -96,3 +96,24 @@ fig.savefig(
     "/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/src/experiments/wav2vec2-large-xlsr-53-general_most/figures/AL_{}_Sampling_Accents_Stats.png",
     bbox_inches='tight', pad_inches=.3)
 plt.show()
+
+# get the intersection of the top-15 for the three runs
+al_0, al_1, al_2 = rounds_difference_stats
+common_accents = set(list(al_0.keys())[:top_k_accents]).intersection(
+    set(list(al_1.keys())[:top_k_accents])).intersection(set(list(al_2.keys())[:top_k_accents]))
+common_accents_list = list(common_accents)
+frequencies_round_1 = [al_0[accent] for accent in common_accents_list]
+frequencies_round_2 = [al_1[accent] for accent in common_accents_list]
+frequencies_round_3 = [al_2[accent] for accent in common_accents_list]
+
+df = pd.DataFrame(
+    {'AL Round 0': frequencies_round_1, 'Al Round 1': frequencies_round_2, 'Al Round 2': frequencies_round_3},
+    index=common_accents_list)
+
+fig_bars, axs_bars = plt.subplots(1, 1, figsize=(15, 15))
+df.plot.bar(rot=0, ax=axs_bars)
+axs_bars.set_ylabel('Frequency')
+fig_bars.suptitle(
+    'Distribution of Most Uncertain Accents Appearing Across all 3 AL rounds (from the top-{} samples)'.format(k))
+fig_bars.savefig('/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/src/experiments/wav2vec2-large-xlsr-53-general_most/figures/most_common_accents_distributions.png', bbox_inches='tight', pad_inches=.3)
+plt.show()
