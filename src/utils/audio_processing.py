@@ -27,5 +27,5 @@ def load_audio_file(file_path):
             data = pad_zeros(data, AudioConfig.sr, AudioConfig.sr)
     except Exception as e:
         print(f"{file_path} not found {str(e)}")
-        data = np.zeros(AudioConfig.sr * 3).astype(np.float32)
+        data = np.random.rand(AudioConfig.sr * 3).astype(np.float32)
     return data
