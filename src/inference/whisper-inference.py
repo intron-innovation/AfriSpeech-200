@@ -57,15 +57,11 @@ class AfriSpeechWhisperDataset(torch.utils.data.Dataset):
         audio = load_audio_file(audio_path)
         if 'whisper' in self.model_id and os.path.isdir(args.model_id_or_path):
             input_features = processor(
-                audio, #.flatten(), 
+                audio,
                 sampling_rate=AudioConfig.sr, 
                 return_tensors="pt",
-                # max_length=AudioConfig.sr*17,
             )
             audio = input_features.input_features.squeeze()
-            # print(input_features.input_features)
-            # print(audio.shape)
-            # print(type(audio))
         elif 'whisper' in self.model_id:
             audio = whisper.pad_or_trim(torch.tensor(audio.flatten())).to(self.device)
             audio = whisper.log_mel_spectrogram(audio)
@@ -85,6 +81,8 @@ def transcribe_whisper(args, model, loader):
     references = []
     paths = []
     accents = []
+    if "whisper" in args.model_id_or_path and os.path.isdir(args.model_id_or_path):
+        model.config.forced_decoder_ids = processor.get_decoder_prompt_ids(language = "en", task = "transcribe")
     options = whisper.DecodingOptions(language="en", fp16=args.gpu > -1,
                                       without_timestamps=True)
 
@@ -94,19 +92,10 @@ def transcribe_whisper(args, model, loader):
 
     for audio_or_mels, texts, audio_path, accent in tqdm(loader):
         if "whisper" in args.model_id_or_path and os.path.isdir(args.model_id_or_path):
-            # audio_or_mels = audio_or_mels.to(device)
-            # Generate logits
-            print(audio_or_mels.shape)
+            audio_or_mels = audio_or_mels.to(device)
             with torch.no_grad():
-                # logits = model(audio_or_mels.to(device)).logits
-                logits = model(audio_or_mels, decoder_input_ids = torch.tensor([[50258]])).logits
-            # take argmax and decode
-            pred_ids = torch.argmax(torch.tensor(logits), dim=-1)
-            # results = processor.batch_decode(pred_ids, normalize = True)
+                pred_ids = model.generate(audio_or_mels)
             results = processor.batch_decode(pred_ids, skip_special_tokens = True)
-            print(results)
-            
-            # texts = processor.tokenizer._normalize(texts)
             hypotheses.extend([result for result in results])
         elif 'whisper' in args.model_id_or_path:
             results = model.decode(audio_or_mels, options)
@@ -166,9 +155,7 @@ if __name__ == "__main__":
     # Make output directory if does not already exist
     os.makedirs(args.output_dir, exist_ok=True)
 
-    # device = torch.device("cuda" if (torch.cuda.is_available() and args.gpu > -1) else "cpu")
-    device = "cuda" if (torch.cuda.is_available() and args.gpu > -1) else "cpu"
-    device = "cpu"
+    device = torch.device("cuda" if (torch.cuda.is_available() and args.gpu > -1) else "cpu")
 
     dataset = AfriSpeechWhisperDataset(data_path=args.data_csv_path,
                                        max_audio_len_secs=args.max_audio_len_secs,
@@ -181,9 +168,9 @@ if __name__ == "__main__":
     if "whisper" in args.model_id_or_path and os.path.isdir(args.model_id_or_path):
         # load model and processor
         processor = WhisperProcessor.from_pretrained(args.model_id_or_path)
-        model = WhisperForConditionalGeneration.from_pretrained(args.model_id_or_path) #.to("cuda")
+        model = WhisperForConditionalGeneration.from_pretrained(args.model_id_or_path)
     elif "whisper" in args.model_id_or_path:
-        whisper_model = args.model_id_or_path.split("_")[1]  # "base.en"
+        whisper_model = args.model_id_or_path.split("_")[1]
         model = whisper.load_model(whisper_model)
         print(
             f"Model {whisper_model} is {'multilingual' if model.is_multilingual else 'English-only'} "
@@ -193,6 +180,6 @@ if __name__ == "__main__":
         processor = Wav2Vec2Processor.from_pretrained(args.model_id_or_path)
         model = AutoModelForCTC.from_pretrained(args.model_id_or_path).to(device)
 
-    # model = model.to(device)
+    model = model.to(device)
 
     transcribe_whisper(args, model, data_loader)
