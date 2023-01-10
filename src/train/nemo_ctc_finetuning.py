@@ -81,11 +81,12 @@ def write_processed_manifest(data, original_path):
 
     manifest_dir = os.path.split(original_path)[0]
     filepath = os.path.join(manifest_dir, new_manifest_name)
-    with open(filepath, 'w') as f:
-        for datum in tqdm(data, desc="Writing manifest data"):
-            datum = json.dumps(datum)
-            f.write(f"{datum}\n")
-    print(f"Finished writing manifest: {filepath}")
+    if not os.path.exists(filepath):
+      with open(filepath, 'w') as f:
+          for datum in tqdm(data, desc="Writing manifest data"):
+              datum = json.dumps(datum)
+              f.write(f"{datum}\n")
+      print(f"Finished writing manifest: {filepath}")
     return filepath
 
 train_intron_manifest = read_intron(config["data"]["train"])
@@ -155,7 +156,8 @@ PREPROCESSORS = [
     remove_special_characters,
     remove_dakuten,
 ]
-
+''' 
+# We only need to do this once
 # Load manifests
 intron_train_data = read_intron(config["data"]["train"])
 # intron_train_data = read_intron("intron-dev-public-3232.csv")
@@ -164,21 +166,21 @@ intron_dev_data = read_intron(config["data"]["val"])
 # Apply preprocessing
 intron_train_data_processed = apply_preprocessors(intron_train_data, PREPROCESSORS)
 intron_dev_data_processed = apply_preprocessors(intron_dev_data, PREPROCESSORS)
+'''
 
 # Write new manifests
-intron_train_manifest_cleaned = write_processed_manifest(intron_train_data_processed, config["data"]["train"][:-4] + ".json")
-# intron_train_manifest_cleaned = write_processed_manifest(intron_dev_data_processed, "intron-dev-public-3232.json")
-intron_dev_manifest_cleaned = write_processed_manifest(intron_dev_data_processed, config["data"]["val"][:-4] + ".json")
+#intron_train_manifest_cleaned = write_processed_manifest(intron_train_data_processed, config["data"]["train"][:-4] + ".json")
+intron_train_manifest_cleaned = write_processed_manifest(None, config["data"]["train"][:-4] + ".json")
 
-intron_train_data = read_intron(config["data"]["train"])
-intron_dev_data = read_intron(config["data"]["val"])
+# intron_train_manifest_cleaned = write_processed_manifest(intron_dev_data_processed, "intron-dev-public-3232.json")
+#intron_dev_manifest_cleaned = write_processed_manifest(intron_dev_data_processed, config["data"]["val"][:-4] + ".json")
+intron_dev_manifest_cleaned = write_processed_manifest(None, config["data"]["val"][:-4] + ".json")
 
 def enable_bn_se(m):
     if type(m) == nn.BatchNorm1d:
         m.train()
         for param in m.parameters():
             param.requires_grad_(True)
-
     if 'SqueezeExcite' in type(m).__name__:
         m.train()
         for param in m.parameters():
@@ -188,17 +190,18 @@ TOKENIZER_TYPE = "bpe" #@param ["bpe", "unigram"]
 
 INTRON_VOCAB_SIZE = len(intron_train_set) + 2
 
-'''
-os.system("python3 src/utils/process_asr_text_tokenizer.py \
-  --manifest=" + intron_train_manifest_cleaned + "\
-  --vocab_size=" + str(INTRON_VOCAB_SIZE) + " \
-  --data_root=" + f"{config['experiment']['dir']}{tokenizer_dir}" + " \
-  --tokenizer=\"spe\" \
-  --spe_type=\"bpe\" \
-  --spe_character_coverage=1.0 \
-  --no_lower_case \
-  --log")
-'''
+TOKENIZER_DATA_ROOT = f"{config['experiment']['dir']}{tokenizer_dir}"
+
+if not os.path.exists(TOKENIZER_DATA_ROOT):
+  os.system("python3 src/utils/process_asr_text_tokenizer.py \
+    --manifest=" + intron_train_manifest_cleaned + "\
+    --vocab_size=" + str(INTRON_VOCAB_SIZE) + " \
+    --data_root=" + TOKENIZER_DATA_ROOT + " \
+    --tokenizer=\"spe\" \
+    --spe_type=\"bpe\" \
+    --spe_character_coverage=1.0 \
+    --no_lower_case \
+    --log")
 
 
 TOKENIZER_DIR = f"{config['experiment']['dir']}{tokenizer_dir}/tokenizer_spe_{TOKENIZER_TYPE}_v{INTRON_VOCAB_SIZE}/"
@@ -226,7 +229,6 @@ if 'transducer' in config["models"]["finetune"]:
 elif 'conformer' in config["models"]["finetune"]:
   model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(config["models"]["finetune"], map_location=config["experiment"]["map_location"])
   # "nvidia/stt_en_conformer_ctc_large"
-
 
 
 model.change_vocabulary(new_tokenizer_dir=TOKENIZER_DIR, new_tokenizer_type="bpe")
@@ -260,7 +262,9 @@ model.cfg.tokenizer = cfg.tokenizer
 
 # Setup train/val/test configs
 cfg.train_ds.is_tarred = False
+print('='*80+'Train DS details'+'='*80)
 print(OmegaConf.to_yaml(cfg.train_ds))
+print('='*160)
 
 # Setup train, validation, test configs
 with open_dict(cfg):
@@ -282,6 +286,7 @@ with open_dict(cfg):
   cfg.validation_ds.use_start_end_token = True
   cfg.validation_ds.trim_silence = True
 
+'''
   # Test dataset
   cfg.test_ds.manifest_filepath = intron_dev_manifest_cleaned
   cfg.test_ds.batch_size = int(config["hyperparameters"]["val_batch_size"])
@@ -289,11 +294,12 @@ with open_dict(cfg):
   cfg.test_ds.pin_memory = True
   cfg.test_ds.use_start_end_token = True
   cfg.test_ds.trim_silence = True
+'''  
 
 # setup model with new configs
 model.setup_training_data(cfg.train_ds)
 model.setup_multiple_validation_data(cfg.validation_ds)
-model.setup_multiple_test_data(cfg.test_ds)
+#model.setup_multiple_test_data(cfg.test_ds)
 
 def analyse_ctc_failures_in_model(model):
     count_ctc_failures = 0
@@ -338,19 +344,19 @@ print(OmegaConf.to_yaml(cfg.optim))
 ##Reduce learning rate and warmup if required
 
 with open_dict(model.cfg.optim):
-  model.cfg.optim.lr = config["hyperparameters"]["learning_rate"]
-  model.cfg.optim.weight_decay = config["hyperparameters"]["weight_decay"]
+  model.cfg.optim.lr = float(config["hyperparameters"]["learning_rate"])
+  model.cfg.optim.weight_decay = float(config["hyperparameters"]["weight_decay"])
   model.cfg.optim.sched.warmup_steps = None  # Remove default number of steps of warmup
-  model.cfg.optim.sched.warmup_ratio = config["hyperparameters"]["warmup_ratio"]  # 10 % warmup
-  model.cfg.optim.sched.min_lr = config["hyperparameters"]["min_learning_rate"]
+  model.cfg.optim.sched.warmup_ratio = float(config["hyperparameters"]["warmup_ratio"]) # 10 % warmup
+  model.cfg.optim.sched.min_lr = float(config["hyperparameters"]["min_learning_rate"])
 
 ### Setup data augmentation
 
 with open_dict(model.cfg.spec_augment):
-  model.cfg.spec_augment.freq_masks = config["hyperparameters"]["freq_mask"]
-  model.cfg.spec_augment.freq_width = config["hyperparameters"]["freq_width"]
-  model.cfg.spec_augment.time_masks = config["hyperparameters"]["time_mask"]
-  model.cfg.spec_augment.time_width = config["hyperparameters"]["time_width"]
+  model.cfg.spec_augment.freq_masks = int(config["hyperparameters"]["freq_mask"])
+  model.cfg.spec_augment.freq_width = int(config["hyperparameters"]["freq_width"])
+  model.cfg.spec_augment.time_masks = int(config["hyperparameters"]["time_mask"])
+  model.cfg.spec_augment.time_width = float(config["hyperparameters"]["time_width"])
 
 model.spec_augmentation = model.from_config_dict(model.cfg.spec_augment)
 
@@ -359,9 +365,8 @@ model.spec_augmentation = model.from_config_dict(model.cfg.spec_augment)
 #@title Metric
 use_cer = True #@param ["False", "True"] {type:"raw"}
 log_prediction = True #@param ["False", "True"] {type:"raw"}
-
-model._wer.use_cer = use_cer
-model._wer.log_prediction = log_prediction
+model.wer.use_cer = use_cer
+model.wer.log_prediction = log_prediction
 
 """## Setup Trainer and Experiment Manager
 
@@ -376,17 +381,15 @@ if torch.cuda.is_available():
 else:
   accelerator = 'cpu'
 
-print(torch.cuda.is_available())
-
-EPOCHS = 10  # 100 epochs would provide better results
+EPOCHS = int(config["hyperparameters"]["num_epochs"])  
 
 trainer = ptl.Trainer(devices=1, 
                       accelerator=accelerator, 
-                      max_epochs=config["hyperparameters"]["num_epochs"], 
-                      accumulate_grad_batches=config["hyperparameters"]["gradient_accumulation_steps"],
+                      max_epochs=int(config["hyperparameters"]["num_epochs"]), 
+                      accumulate_grad_batches=int(config["hyperparameters"]["gradient_accumulation_steps"]),
                       enable_checkpointing=False,
                       logger=False,
-                      log_every_n_steps=config["hyperparameters"]["logging_steps"],
+                      log_every_n_steps=int(config["hyperparameters"]["logging_steps"]),
                       check_val_every_n_epoch=10)
 
 # Setup model with the trainer
@@ -422,13 +425,3 @@ save_path = f"{config['experiment']['dir']}Model-{LANGUAGE}.nemo"
 model.save_to(f"{save_path}")
 print(f"Model saved at path : {os.getcwd() + os.path.sep + save_path}")
 
-
-
-'''
-if 'transducer' in args.model_id_or_path:
-        asr_model = nemo_asr.models.EncDecRNNTBPEModel.from_pretrained(args.model_id_or_path, map_location=device)
-        # "nvidia/stt_en_conformer_transducer_large"
-    elif 'conformer' in args.model_id_or_path:
-        asr_model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(args.model_id_or_path, map_location=device)
-        # "nvidia/stt_en_conformer_ctc_large"
-'''
