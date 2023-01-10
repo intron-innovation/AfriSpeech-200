@@ -8,8 +8,8 @@
 
 import os
 
-os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
-os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
+#os.environ['TRANSFORMERS_CACHE'] = '/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/results/'
+#os.environ['XDG_CACHE_HOME'] = '/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/results/'
 os.environ["WANDB_DISABLED"] = "true"
 
 import argparse
@@ -32,7 +32,7 @@ import librosa
 from dataclasses import dataclass
 from typing import Any, Dict, List, Union
 
-from src.train.train import parse_argument, train_setup, get_checkpoint, data_setup
+from src.train.train import parse_argument, train_setup, get_checkpoint, data_setup, set_dropout
 from src.inference.inference import write_pred
 from src.utils.audio_processing import load_audio_file, AudioConfig
 from src.utils.prepare_dataset import load_custom_dataset
@@ -42,9 +42,12 @@ from src.utils.text_processing import clean_text
 set_seed(1778)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 temp_audio = '/data/data/intron/e809b58c-4f05-4754-b98c-fbf236a88fbc/544bbfe5e1c6f8afb80c4840b681908d.wav'
+
+num_gpus = [i for i in range(torch.cuda.device_count())]
+if len(num_gpus) > 1:
+    print("Let's use", num_gpus, "GPUs!")
+    os.environ["CUDA_VISIBLE_DEVICES"] = ','.join(str(x) for x in num_gpus)
 wer_metric = load_metric("wer")
-
-
 
 @dataclass
 class DataCollatorSpeechSeq2SeqWithPadding:
@@ -107,6 +110,64 @@ def compute_metrics(pred):
 
     return {"wer": wer}
 
+def get_whisper_pretrained_model(checkpoint_pretrained, config_):
+
+    model_ = WhisperForConditionalGeneration.from_pretrained(
+        checkpoint_pretrained if checkpoint_pretrained else config_['models']['model_path'],
+    )
+    if len(num_gpus) > 1:
+        model_ = torch.nn.DataParallel(model_, device_ids=num_gpus)
+    model_.to(device)
+    return model_.module if len(num_gpus) > 1 else model_
+
+def run_whisper_inference(trained_model, dataloader, mode='most', mc_dropout_rounds=10):
+    # print('In inference:', type(mode))
+    if 'random' in mode.lower():
+        # print('Gets in random')
+        # we do not need to compute the WER here
+        # we shuffle randomly the dictionary (this will display a random order) - the selecting the strict first top-k
+        audios_ids = [batch['audio_idx'] for batch in dataloader]
+        random.shuffle(audios_ids)
+        return {key[0]: 1.0 for key in
+                audios_ids}  # these values are just dummy ones, to have a format similar to the two other cases
+    else:
+        audio_wers = {}
+        final_dict = {}
+        for batch in tqdm(dataloader, desc="Uncertainty Inference"):
+            input_val = batch['input_values'].to(device)
+
+            # run 10 steps of mc dropout
+            wer_list = []
+            batch["reference"] = clean_text(processor.batch_decode(batch["labels"])[0])
+
+            for mc_dropout_round in range(mc_dropout_rounds):
+                with torch.no_grad():
+                    logits = trained_model(input_val).logits
+                    batch["logits"] = logits
+
+                pred_ids = torch.argmax(torch.tensor(batch["logits"]), dim=-1)
+                pred = processor.batch_decode(pred_ids)[0]
+                batch["predictions"] = clean_text(pred)
+                # the following block is against cases where we have empty reference
+                # leading to the error: "ValueError: one or more groundtruths are empty strings"
+                try:
+                    batch["wer"] = wer_metric.compute(
+                        predictions=[batch["predictions"]], references=[batch["reference"]]
+                    )
+                    wer_list.append(batch['wer'])
+                except:
+                    pass
+
+            if len(wer_list) > 0:
+                uncertainty_score = np.array(wer_list).std()
+                audio_wers[batch['audio_idx'][0]] = uncertainty_score
+
+        if 'most' in mode.lower():
+            # we select most uncertain samples
+            return dict(sorted(audio_wers.items(), key=lambda item: item[1], reverse=True))
+        if 'least' in mode.lower():
+            # we select the least uncertain samples
+            return dict(sorted(audio_wers.items(), key=lambda item: item[1], reverse=False))
 
 if __name__ == "__main__":
     """Run main script"""
@@ -143,14 +204,14 @@ if __name__ == "__main__":
                                       'dev', transform_dataset, prepare=True)
     train_dataset = load_custom_dataset(data_config, data_config.train_path, 
                                         'train', transform_dataset, prepare=True)
+    aug_dataset = load_custom_dataset(data_config, data_config.aug_path, 
+                                        'aug', transform_dataset, prepare=True)
 
     last_checkpoint, checkpoint_ = get_checkpoint(checkpoints_path, config['models']['model_path'])
     print(f"model starting...from last checkpoint:{last_checkpoint}")
 
     # load model
-    model = WhisperForConditionalGeneration.from_pretrained(
-        last_checkpoint if last_checkpoint else config['models']['model_path'],
-    ).to(device)
+    model = get_whisper_pretrained_model(last_checkpoint, config)
     
     if config['hyperparameters']['do_train'] == "True":
 
@@ -202,12 +263,96 @@ if __name__ == "__main__":
             tokenizer=processor.feature_extractor,
         )
 
-        # Save the processor object once before starting to train
         processor.save_pretrained(checkpoints_path)
-
-        # Train the model
         trainer.train(resume_from_checkpoint=checkpoint_)
-
         model.save_pretrained(checkpoints_path)
         processor.save_pretrained(checkpoints_path)
-    
+
+        if 'aug' in config['data']:
+            # after baseline is completed
+
+            print(f"\n...Baseline model trained in {time.time() - start:.4f}. Start training with Active Learning...\n")
+
+            active_learning_rounds = int(config['hyperparameters']['active_learning_rounds'])
+            aug_batch_size = int(config['hyperparameters']['aug_batch_size'])
+            sampling_mode = str(config['hyperparameters']['sampling_mode']).strip()
+            k = int(config['hyperparameters']['top_k'])
+            mc_dropout_round = int(config['hyperparameters']['mc_dropout_round'])
+
+            # AL rounds
+            for active_learning_round in range(active_learning_rounds):
+                print('Performing McDropout for AL Round: {}\n'.format(active_learning_round))
+
+                # McDropout for uncertainty computation
+                set_dropout(model)
+                # evaluation step and uncertain samples selection
+                augmentation_dataloader = DataLoader(aug_dataset, batch_size=aug_batch_size)
+
+                samples_uncertainty = run_whisper_inference(model, augmentation_dataloader,
+                                                    mode=sampling_mode, mc_dropout_rounds=mc_dropout_round)
+                uncertainties = np.array(list(samples_uncertainty.values()))
+                min_uncertainty = uncertainties.min()
+                max_uncertainty = uncertainties.max()
+                mean_uncertainty = uncertainties.mean()
+                print('AL Round: {} with SM: {} - Max Uncertainty: {} - Min Uncertainty: {} - Mean Uncertainty: {}'.format(active_learning_round,
+                                                                                                    sampling_mode,
+                                                                                                    max_uncertainty,
+                                                                                                    min_uncertainty, mean_uncertainty))
+                # top-k samples
+                most_uncertain_samples_idx = list(samples_uncertainty.keys())[:k]
+
+                # writing the top=k to disk
+                filename = 'Top-{}_AL_Round_{}_Mode_{}'.format(k, active_learning_round, sampling_mode)
+                # write the top-k to the disk
+                filepath = os.path.join(checkpoints_path, filename)
+                np.save(filepath, np.array(most_uncertain_samples_idx + [max_uncertainty, min_uncertainty, mean_uncertainty])) # appending uncertainties stats to keep track
+                print(f"saved audio ids for round {active_learning_round} to {filepath}")
+
+                print('Old training set size: {} - Old Augmenting Size: {}'.format(len(train_dataset), len(aug_dataset)))
+                augmentation_data = aug_dataset.get_dataset()
+                training_data = train_dataset.get_dataset()
+                # get top-k samples of the augmentation set
+                selected_samples_df = augmentation_data[augmentation_data.audio_ids.isin(most_uncertain_samples_idx)]
+                # remove those samples from the augmenting set and set the new augmentation set
+                new_augmenting_samples = augmentation_data[~augmentation_data.audio_ids.isin(most_uncertain_samples_idx)]
+                aug_dataset.set_dataset(new_augmenting_samples)
+                # add the new dataset to the training set
+                new_training_data = pd.concat([training_data, selected_samples_df])
+                train_dataset.set_dataset(new_training_data)
+                print('New training set size: {} - New Augmenting Size: {}'.format(len(train_dataset), len(aug_dataset)))
+
+                # delete current model from memory and empty cache
+                del model
+
+                torch.cuda.empty_cache()
+
+                if len(aug_dataset) == 0 or len(aug_dataset) < k:
+                    print('Stopping AL because the augmentation dataset is now empty or less than top-k ({})'.format(k))
+                    break
+                else:
+                    model = get_whisper_pretrained_model(last_checkpoint, config)
+                    # reset the trainer with the updated training and augmenting dataset
+                    new_al_round_checkpoint_path = os.path.join(checkpoints_path, f"AL_Round_{active_learning_round+1}")
+                    Path(new_al_round_checkpoint_path).mkdir(parents=True, exist_ok=True)
+
+                    # Detecting last checkpoint.
+                    last_checkpoint, checkpoint_ = get_checkpoint(new_al_round_checkpoint_path,
+                                                                  config['models']['model_path'])
+                    # update training arg with new output path
+                    training_args.output_dir = new_al_round_checkpoint_path
+
+                    trainer = Seq2SeqTrainer(
+                        args=training_args,
+                        model=model,
+                        train_dataset=train_dataset,
+                        eval_dataset=dev_dataset,
+                        data_collator=data_collator,
+                        compute_metrics=compute_metrics,
+                        tokenizer=processor.feature_extractor,
+                    )
+
+                    processor.save_pretrained(new_al_round_checkpoint_path)
+                    print('Active Learning Round: {}\n'.format(active_learning_round+1))
+                    trainer.train(resume_from_checkpoint=checkpoint_)
+                    # define path for checkpoints for new AL round
+                    model.module.save_pretrained(new_al_round_checkpoint_path)

@@ -317,9 +317,7 @@ if __name__ == "__main__":
     )
 
     PROCESSOR.save_pretrained(checkpoints_path)
-
     trainer.train(resume_from_checkpoint=checkpoint_)
-
     model.module.save_pretrained(checkpoints_path) if len(num_gpus) > 1 else model.save_pretrained(checkpoints_path)
     PROCESSOR.save_pretrained(checkpoints_path)
 
