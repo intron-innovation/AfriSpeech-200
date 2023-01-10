@@ -245,7 +245,11 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 11. To run Active Learning code, create a config file similar to `src/config/config_al_xlsr_general.ini`, and run
  `python3 src/train/train.py -c src/config/config_al_xlsr_general.ini`
 
-
+12. Before generating stats and plots about AL results, please run (in order)
+    - `python3 src/utils/create_al_topk_datasets.py` : this will load your top-k saved audio ids into a csv file (dataset)
+    - `python3 src/train/evaluate.py -c src/config/config_al_test.ini` : this will allow you to generate the WER (inference WER and uncertainty WER) for the top-k samples for each round. Currently you will have to manually check both files to manually set the AL round and accordingly the ssaved model's path
+    - You are all set to generate plots. Run `python3 /src/utils/al_sampling_modes_accents_stats.py` to generate plots like [AL_most_Sampling_Accents_Stats](src/utils/AL_most_Sampling_Accents_Stats.png)
+ 
 ### Benchmark Results
 
 | Model | Dev WER |
