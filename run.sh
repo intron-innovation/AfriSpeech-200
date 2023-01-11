@@ -1,20 +1,21 @@
 #!/bin/usr/env bash
 
 # datasets=("./data/intron-test-public-6346-clean.csv" "./data/intron-dev-public-3231-clean.csv") 
-# datasets=("./data/intron-dev-tiny-public-25-clean.csv" ) 
-datasets=("./data/intron-test-public-6346-clean.csv") 
+# datasets=("./data/intron-dev-tiny-25-clean.csv" ) 
+datasets=("./data/intron-dev-public-3231-clean.csv") 
 audio_dir=/data/data/intron/
 models_list=( 'jonatasgrosman/wav2vec2-large-xlsr-53-english' "facebook/wav2vec2-large-960h" \
     "jonatasgrosman/wav2vec2-xls-r-1b-english" "facebook/wav2vec2-large-960h-lv60-self" \
     "facebook/hubert-large-ls960-ft" "facebook/wav2vec2-large-robust-ft-swbd-300h" \
     "patrickvonplaten/wavlm-libri-clean-100h-base-plus" "facebook/hubert-xlarge-ls960-ft" \
-    "patrickvonplaten/wavlm-libri-clean-100h-large" \
-    "whisper_medium" "whisper_medium.en" "whisper_large" "whisper_small" "whisper_base")
+    "patrickvonplaten/wavlm-libri-clean-100h-large" )
+whisper_models_list=("whisper_medium" "whisper_medium.en" "whisper_large" \
+    "whisper_small" "whisper_base" "whisper_small.en" )
 aws_models=("aws-transcribe" "aws-transcribe-medical")
 gcp_azure_models=("gcp-transcribe-medical" "gcp-transcribe" "azure-transcribe")
 domains=("general" "clinical" "all" ) 
 # domains=("clinical") 
-models_list=("whisper_small.en")
+
 
 for dataset in ${datasets[@]}; 
 do
