@@ -1,9 +1,21 @@
+import random
+
 import pandas as pd
 import numpy as np
+import itertools
 import matplotlib.pyplot as plt
+import seaborn as sns
+import math
 from wordcloud import WordCloud
+from scipy import stats
+
+import matplotlib.colors as colors
 
 data = pd.read_csv('/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/data/intron-train-public-58000-clean.csv')
+data.drop_duplicates(subset=["audio_paths"], inplace=True)
+train_data = pd.read_csv('/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/data/intron-al-train-public-17400.csv')
+aug_data = pd.read_csv('/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/data/intron-al-aug-public-40600.csv')
+
 top_k_format = "/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/src/experiments/wav2vec2-large-xlsr-53-general_most/checkpoints/Top-{}_AL_Round_{}_Mode_'{}'.npy"
 wers_file = '/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/data/Top-{}_AL_Round_{}_Mode_{}_WERS.csv'
 mode = 'most'
@@ -12,110 +24,65 @@ k = 2000
 top_k_accents = 15
 
 
-def get_accents(dataframe, ids_list):
-    results = dataframe[dataframe['audio_ids'].isin(ids_list)]
-    accents = results['accent'].tolist()
-    accent_frequencies = {accent: accents.count(accent) for accent in list(set(accents))}
-    accent_frequencies_sorted = dict(sorted(accent_frequencies.items(), key=lambda item: item[1], reverse=True))
-    ids_audios_most_uncertain = results[results['accent'].isin(list(accent_frequencies_sorted.keys())[:top_k_accents])]
-    ids_audios_least_uncertain = results[results['accent'].isin(list(accent_frequencies_sorted.keys())[top_k_accents:])]
-
-    # print(ids_audios_most_uncertain)
-    return accent_frequencies_sorted, accents, ids_audios_most_uncertain['audio_ids'].tolist(), \
-        ids_audios_least_uncertain['audio_ids'].tolist()
-
-
-fig, axs = plt.subplots(al_rounds, 3, figsize=(15, 15))
-
-
-def fill_uncertainty(audio, list_of_audios, wers_dict):
-    if audio in list_of_audios:
-        return wers_dict[audio]
-    else:
-        return None
-
-
-def plot_frequencies(dict_accents, list_accents, round_al, list_audios_high_uncertain, list_audios_low_uncertain):
+def get_accents_stats(round_al):
     wer_file = wers_file.format(k, round_al, mode)
     data_wer = pd.read_csv(wer_file)
-    audios_accents_most_uncertainty = data_wer[data_wer['audios_ids'].isin(list_audios_high_uncertain)]
-    audios_accents_most_uncertainty = {audio_id: wer for audio_id, wer in
-                                       zip(audios_accents_most_uncertainty['audios_ids'],
-                                           audios_accents_most_uncertainty['uncertainty_wer'])}
-
-    audios_accents_least_uncertainty = data_wer[data_wer['audios_ids'].isin(list_audios_low_uncertain)]
-    audios_accents_least_uncertainty = {audio_id: wer for audio_id, wer in
-                                        zip(audios_accents_least_uncertainty['audios_ids'],
-                                            audios_accents_least_uncertainty['uncertainty_wer'])}
-
-    data_wer['top-{}-uncertain-accents'.format(top_k_accents)] = data_wer['audios_ids'].apply(
-        lambda x: fill_uncertainty(x, list_audios_high_uncertain, audios_accents_most_uncertainty))
-
-    data_wer['least-uncertain-accents'] = data_wer['audios_ids'].apply(
-        lambda x: fill_uncertainty(x, list_audios_low_uncertain, audios_accents_least_uncertainty))
-
-    data_wer.rename(columns={'uncertainty_wer': 'all-accents'}, inplace=True)
-    data_wer[['top-{}-uncertain-accents'.format(top_k_accents), 'least-uncertain-accents',
-              'all-accents']].plot.kde(ax=axs[round_al][2])
-    axs[round_al][2].legend(loc='upper right', prop={'size': 8})
-    axs[round_al][2].set_title(
-        "AL Round {} African Accents' WER Distribution".format(round_al + 1))
-    axs[round_al][2].axes.get_xaxis().set_visible(False)
-
-    accents_words = ''
-    accents_words += " ".join(accent for accent in list_accents) + " "
-    accents = list(dict_accents.keys())[:top_k_accents]
-    frequencies = list(dict_accents.values())[:top_k_accents]
-
-    accentcloud = WordCloud(width=800, height=800,
-                            background_color='white', collocations=False,
-                            min_font_size=10).generate(accents_words)
-
-    axs[round_al][0].bar(accents, frequencies, label=accents,
-                         color=['black', 'brown', 'salmon', 'orange', 'gold', 'red', 'green', 'blue', 'cyan',
-                                'darkorange', 'lime', 'darkslateblue', 'purple', 'gray', 'pink'])
-    axs[round_al][0].axes.get_xaxis().set_visible(False)
-    axs[round_al][0].set_ylabel('Frequency')
-    axs[round_al][0].set_title(
-        'AL Round {} Top-{}-Most Uncertain African Accents'.format(round_al + 1, top_k_accents))
-    axs[round_al][0].legend(loc='upper right', prop={'size': 9})
-
-    axs[round_al][1].imshow(accentcloud)
-    axs[round_al][1].axis("off")
-    axs[round_al][1].set_title("AL Round {}'s African Accents' Cloud".format(round_al + 1))
+    data_wer['accents'] = data_wer['audios_ids'].apply(
+        lambda x: data[data['audio_ids'] == x]['accent'].values[0])
+    accents = data_wer['accents'].tolist()
+    accent_frequencies_dict = {accent: accents.count(accent) for accent in list(set(accents))}
+    accents_frequencies_dict = dict(sorted(accent_frequencies_dict.items(), key=lambda item: item[1], reverse=True))
+    return accents_frequencies_dict
 
 
+def plot_stats(list_of_language, fig, axes, description):
+    for round_al in range(al_rounds):
+        wer_file = wers_file.format(k, round_al, mode)
+        data_wer = pd.read_csv(wer_file)
+        data_wer['accents'] = data_wer['audios_ids'].apply(
+            lambda x: data[data['audio_ids'] == x]['accent'].values[0])
+        data_wer = data_wer[data_wer['accents'].isin(list_of_language)]
+        sns_ax_top = sns.boxplot(y="uncertainty_wer", x='accents', data=data_wer,
+                                 ax=axes[round_al])
+        sns_ax_top.set(xlabel=None, ylabel=None)
+        sns_ax_top.tick_params(axis='x')
+    fig.suptitle('{}'.format(description))
+    fig.savefig('/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/src/experiments/wav2vec2-large-xlsr-53-general_most/figures/{}.png'.format(description), bbox_inches='tight', pad_inches=.3)
+
+
+rounds_difference_stats = []
 for al_round in range(al_rounds):
     filename = top_k_format.format(k, al_round, mode)
     al_round_stats = np.load(filename, allow_pickle=True)
     audio_ids, uncertainty_stats = al_round_stats[:k], al_round_stats[k:]  # should be k+3 elements in this list
-    accents_dict, accents_list, most_uncertain_audios, least_uncertain_audios = get_accents(data, audio_ids)
-    plot_frequencies(accents_dict, accents_list, al_round, most_uncertain_audios, least_uncertain_audios)
-
-fig.savefig(
-    "/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/src/experiments/wav2vec2-large-xlsr-53-general_most/figures/AL_{}_Sampling_Accents_Stats.png",
-    bbox_inches='tight', pad_inches=.3)
-plt.show()
+    rounds_difference_stats.append(get_accents_stats(al_round))
 
 # get the intersection of the top-15 for the three runs
 al_0, al_1, al_2 = rounds_difference_stats
 common_accents = set(list(al_0.keys())[:top_k_accents]).intersection(
     set(list(al_1.keys())[:top_k_accents])).intersection(set(list(al_2.keys())[:top_k_accents]))
 common_accents_list = list(common_accents)
+
+fig_common, axs_common = plt.subplots(al_rounds, 1, figsize=(20, 20))
+plot_stats(common_accents_list, fig_common, axs_common, 'common_accents_wer_analysis')
+plt.show()
+
 frequencies_round_1 = [al_0[accent] for accent in common_accents_list]
 frequencies_round_2 = [al_1[accent] for accent in common_accents_list]
 frequencies_round_3 = [al_2[accent] for accent in common_accents_list]
 
 df = pd.DataFrame(
-    {'AL Round 1': frequencies_round_1, 'Al Round 2': frequencies_round_2, 'Al Round 3': frequencies_round_3},
+    {'Round 1': frequencies_round_1, 'Round 2': frequencies_round_2, 'Round 3': frequencies_round_3},
     index=common_accents_list)
 
 fig_bars, axs_bars = plt.subplots(1, 1, figsize=(15, 15))
 df.plot.bar(rot=0, ax=axs_bars)
 axs_bars.set_ylabel('Frequency')
 fig_bars.suptitle(
-    'Distribution of Most Uncertain Accents Appearing Across all 3 AL rounds (from the top-{} samples)'.format(k))
-fig_bars.savefig('/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/src/experiments/wav2vec2-large-xlsr-53-general_most/figures/most_common_accents_distributions.png', bbox_inches='tight', pad_inches=.3)
+    'Accents Appearing across AL rounds (from the top-{} uncertain samples)'.format(k))
+fig_bars.savefig(
+    '/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/src/experiments/wav2vec2-large-xlsr-53-general_most/figures/most_common_accents_distributions.png',
+    bbox_inches='tight', pad_inches=.3)
 plt.show()
 
 all_common_accents = set(list(al_0.keys())).intersection(
@@ -147,8 +114,9 @@ fig_bars_variance, axs_bars_variance = plt.subplots(1, 1, figsize=(20, 20))
 df_variance.plot.bar(rot=90, ax=axs_bars_variance)
 axs_bars_variance.set_ylabel('Frequency')
 fig_bars_variance.suptitle(
-    'Variational Distribution of Accents Frequencies Across all AL rounds (from the top-{} samples)'.format(k))
-fig_bars_variance.savefig('/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/src/experiments/wav2vec2-large-xlsr-53-general_most/figures/most_varying_accents.png', bbox_inches='tight', pad_inches=.3)
+    'Variational Distribution of Accents Frequencies (from the top-{} samples) Across AL rounds'.format(k))
+fig_bars_variance.savefig('/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/src/experiments/wav2vec2-large-xlsr-53-general_most/figures/most_varying_accents.png',
+                          bbox_inches='tight', pad_inches=.3)
 plt.show()
 
 # descending/ascending for the first AL rounds transition
@@ -163,6 +131,10 @@ descending_accents = set(list(descending_one.keys())).intersection(
     set(list(descending_two.keys())))
 descending_accents = list(descending_accents)
 
+fig_descending, axs_descending = plt.subplots(al_rounds, 1, figsize=(20, 20))
+plot_stats(descending_accents, fig_descending, axs_descending, 'decreasing_accents_wer_analysis')
+plt.show()
+
 descending_variance_one = [descending_one[accent] for accent in descending_accents]
 descending_variance_two = [descending_two[accent] for accent in descending_accents]
 
@@ -174,6 +146,10 @@ df_descending_variance = pd.DataFrame(
 ascending_accents = set(list(ascending_one.keys())).intersection(
     set(list(ascending_two.keys())))
 ascending_accents = list(ascending_accents)
+
+fig_ascending, axs_ascending = plt.subplots(al_rounds, 1, figsize=(20, 20))
+plot_stats(ascending_accents, fig_ascending, axs_ascending, 'increasing_accents_wer_analysis')
+plt.show()
 
 ascending_variance_one = [ascending_one[accent] for accent in ascending_accents]
 ascending_variance_two = [ascending_two[accent] for accent in ascending_accents]
@@ -192,5 +168,6 @@ axs_bars_variances[1].set_ylabel('Frequency')
 axs_bars_variances[0].set_title("Descending Accents Across Top-{} '{}' Uncertain Samples".format(k, mode))
 axs_bars_variances[1].set_title("Ascending Accents Across Top-{} '{}' Uncertain Samples".format(k, mode))
 
-fig_bars_variances.savefig('/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/src/experiments/wav2vec2-large-xlsr-53-general_most/figures/descending_ascending_accents.png', bbox_inches='tight', pad_inches=.3)
+fig_bars_variances.savefig('/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/data/descending_ascending_accents.png',
+                           bbox_inches='tight', pad_inches=.3)
 plt.show()
