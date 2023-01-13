@@ -24,7 +24,7 @@ s3 = boto3.resource(
     region_name='eu-west-2',
 )
 
-UNIQUE_JOB_NUM=36
+UNIQUE_JOB_NUM=40
 
 def get_aws_transcript_medical(job_name, job_uri, service):
     """
@@ -76,22 +76,38 @@ def aws_transcribe(data_df, service, split, audio_dir):
     :param data_df: DataFrame
     :return:
     """
+    s3_paths = ["http://speech-app.s3.amazonaws.com/static/audio/uploads/",
+                "https://speech-app.s3.eu-west-2.amazonaws.com/static/audio/uploads/"
+               ]
     for idx, row in tqdm(data_df.iterrows(), total=data_df.shape[0], desc=f"call {service} endpoint"):
         audio_path = row['audio_paths']
+
+        # print(idx)
         if not os.path.isfile(audio_path.replace(f"/AfriSpeech-100/{split}/", audio_dir)):
+            print(audio_path)
             continue
-        s3_uri = f"s3://intron-open-source{audio_path}"
-        s3_job_name = f"dev-transcription-job-{UNIQUE_JOB_NUM}-{service}-{idx}"
-        if "medical" in service:
-            get_aws_transcript_medical(s3_job_name, s3_uri, service)
+        if split in ['train', 'dev']:
+            s3_uri = f"s3://intron-open-source{audio_path}"
         else:
-            get_aws_transcript(s3_job_name, s3_uri, service)
-        if idx % 400 == 0:
+            audio_path = audio_path.replace(f"/AfriSpeech-100/{split}/", "")
+            s3_uri = f"{s3_paths[0]}{audio_path}"
+              
+        s3_job_name = f"{split}-transcription-job-{UNIQUE_JOB_NUM}-{service}-{idx}"
+        # print(s3_job_name)
+        try:
+            if "medical" in service:
+                get_aws_transcript_medical(s3_job_name, s3_uri, service)
+            else:
+                get_aws_transcript(s3_job_name, s3_uri, service)
+        except Exception as e:
+            print(idx, str(e))
+            
+        if idx % 100 == 0:
             # avoid RateLimitExceeded error
             time.sleep(60)
 
 
-def get_aws_results_from_s3(data_df, service, audio_dir):
+def get_aws_results_from_s3(data_df, service, audio_dir, split="dev"):
     """
     Get transcription results written to s3 directory
     :param data_df: DataFrame
@@ -105,12 +121,14 @@ def get_aws_results_from_s3(data_df, service, audio_dir):
         if not os.path.isfile(row['audio_paths'].replace(f"/AfriSpeech-100/{split}/", audio_dir)):
             preds.append("")
             preds_clean.append("") 
-            wers.append(0)
+            wers.append(None)
             continue
-        s3_job_name = f"dev-transcription-job-{UNIQUE_JOB_NUM}-{service}-{idx}"
+        pred = ""
+        pred_clean = ""
+        s3_job_name = f"{split}-transcription-job-{UNIQUE_JOB_NUM}-{service}-{idx}"
         predicted_transcript_file = f'https://s3.eu-west-2.amazonaws.com/' \
-                                    f'intron-open-source/aws-{service}-output-files/{s3_job_name}.json'
-        s3_prefix = f"https://s3.eu-west-2.amazonaws.com/intron-open-source/aws-{service}-output-files"
+                                    f'intron-open-source/aws-{service}-output-files/{"medical/" if "medical" in service else ""}{s3_job_name}.json'
+        s3_prefix = f'https://s3.eu-west-2.amazonaws.com/intron-open-source/aws-{service}-output-files{"/medical" if "medical" in service else ""}'
         try:
             local_dev_fname = get_s3_file(predicted_transcript_file,
                                           s3_prefix=s3_prefix,
@@ -118,12 +136,13 @@ def get_aws_results_from_s3(data_df, service, audio_dir):
                                           bucket_name=bucket_name,
                                           s3=s3)
             pred = get_json_result(local_dev_fname)
+            # print(s3_prefix, predicted_transcript_file, local_dev_fname, pred)
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == 'ClientError':
-                print("Object does not exists")
+                print(idx, "Object does not exists")
             else:
-                print("Unexpected error: %s" % e)
-            pred = ""
+                print(idx, "Unexpected error: %s" % e)
+            
         except botocore.exceptions.ParamValidationError as error:
             raise ValueError('The parameters you provided are incorrect: {}'.format(error))
 
@@ -151,7 +170,7 @@ def write_aws_results(data_df, predictions, preds_clean, wer_list, split="dev",
     data_df['wer'] = wer_list
     all_wer = np.mean(data['wer'])
 
-    out_path = f'{output_dir}/intron-open-{split}-{model_id_or_path}-wer-{round(all_wer, 4)}-{len(data)}.csv'
+    out_path = f'{output_dir}/intron-open-{split}-{model_id_or_path}-wer-{round(all_wer, 4)}-{len(data_df)}.csv'
     data_df.to_csv(out_path, index=False)
     print(out_path)
 
@@ -173,8 +192,8 @@ if __name__ == '__main__':
     print(aws_service)
     
     #UNIQUE_JOB_NUM+=1
-    #aws_transcribe(data, aws_service, split, args.audio_dir)
+    aws_transcribe(data, aws_service, split, args.audio_dir)
 
-    prediction_list, all_wer_list, pred_clean_list = get_aws_results_from_s3(data, aws_service, args.audio_dir)
+    prediction_list, all_wer_list, pred_clean_list = get_aws_results_from_s3(data, aws_service, args.audio_dir, split)
 
     write_aws_results(data, prediction_list, pred_clean_list, all_wer_list, split, args.model_id_or_path)

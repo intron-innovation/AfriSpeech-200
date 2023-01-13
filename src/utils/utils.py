@@ -15,7 +15,7 @@ def write_pred(model_id_or_path, results, wer, cols=None, output_dir="./results"
     :param wer: float
     :return: DataFrame
     """
-    if "checkpoints" in model_id_or_path:
+    if "checkpoints" in model_id_or_path or os.path.isdir(model_id_or_path):
         model_id_or_path = model_id_or_path.split("/")[3]
     else:
         model_id_or_path = model_id_or_path.replace("/", "-")
@@ -40,7 +40,7 @@ def write_pred_inference_df(model_id_or_path, predictions_df, wer, output_dir=".
     :param wer: float
     :return: DataFrame
     """
-    if "checkpoints" in model_id_or_path:
+    if "checkpoints" in model_id_or_path or os.path.isdir(model_id_or_path):
         model_id_or_path = model_id_or_path.split("/")[3]
     else:
         model_id_or_path = model_id_or_path.replace("/", "-")
