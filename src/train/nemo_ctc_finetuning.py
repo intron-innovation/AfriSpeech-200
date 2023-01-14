@@ -232,7 +232,7 @@ elif 'conformer' in config["models"]["finetune"]:
 model.change_vocabulary(new_tokenizer_dir=TOKENIZER_DIR, new_tokenizer_type="bpe")
 
 
-freeze_encoder = True #@param ["False", "True"] {type:"raw"}
+freeze_encoder = False #@param ["False", "True"] {type:"raw"}  # Changed to False by Chris | 13.01
 freeze_encoder = bool(freeze_encoder)
 
 if freeze_encoder:
@@ -260,9 +260,7 @@ model.cfg.tokenizer = cfg.tokenizer
 
 # Setup train/val/test configs
 cfg.train_ds.is_tarred = False
-print('='*80+'Train DS details'+'='*80)
-print(OmegaConf.to_yaml(cfg.train_ds))
-print('='*160)
+
 
 # Setup train, validation, test configs
 with open_dict(cfg):
@@ -272,6 +270,7 @@ with open_dict(cfg):
   cfg.train_ds.num_workers = int(config["hyperparameters"]["dataloader_num_workers"])
   cfg.train_ds.is_tarred: False # If set to true, uses the tarred version of the Dataset
   cfg.tarred_audio_filepaths: None
+  cfg.train_ds.normalize_transcripts = False  # Added by Chris | 13.01
   cfg.train_ds.pin_memory = True
   cfg.train_ds.use_start_end_token = True
   cfg.train_ds.trim_silence = True
@@ -281,6 +280,7 @@ with open_dict(cfg):
   cfg.validation_ds.batch_size = int(config["hyperparameters"]["val_batch_size"])
   cfg.validation_ds.num_workers = int(config["hyperparameters"]["dataloader_num_workers"])
   cfg.validation_ds.pin_memory = True
+  cfg.validation_ds.normalize_transcripts = False
   cfg.validation_ds.use_start_end_token = True
   cfg.validation_ds.trim_silence = True
 
@@ -293,6 +293,11 @@ with open_dict(cfg):
   cfg.test_ds.use_start_end_token = True
   cfg.test_ds.trim_silence = True
 '''  
+
+print('='*80+'Train DS details'+'='*80)
+print(OmegaConf.to_yaml(cfg.train_ds))
+print('='*160)
+
 
 # setup model with new configs
 model.setup_training_data(cfg.train_ds)
@@ -337,7 +342,7 @@ def analyse_ctc_failures_in_model(model):
 
 ### Setup optimizer and scheduler
 
-print(OmegaConf.to_yaml(cfg.optim))
+#print(OmegaConf.to_yaml(cfg.optim))
 
 ##Reduce learning rate and warmup if required
 
@@ -363,8 +368,14 @@ model.spec_augmentation = model.from_config_dict(model.cfg.spec_augment)
 #@title Metric
 use_cer = True #@param ["False", "True"] {type:"raw"}
 log_prediction = True #@param ["False", "True"] {type:"raw"}
-model.wer.use_cer = use_cer
-model.wer.log_prediction = log_prediction
+
+if 'transducer' in config["models"]["finetune"]:
+  model.wer.use_cer = use_cer
+  model.wer.log_prediction = log_prediction
+
+elif 'conformer' in config["models"]["finetune"]:
+  model._wer.use_cer = use_cer
+  model._wer.log_prediction = log_prediction
 
 """## Setup Trainer and Experiment Manager
 
