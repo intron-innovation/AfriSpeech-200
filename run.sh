@@ -20,7 +20,7 @@ domains=("general" "clinical" "all" )
 for dataset in ${datasets[@]}; 
 do
     echo dataset: $dataset
-
+    
 #     for domain in ${domains[@]}; 
 #     do
 #         echo model: $domain
@@ -40,7 +40,7 @@ do
     
     
     
-    for model in ${models_list[@]}; 
+    for model in ${whisper_models_list[@]}; 
     do
         echo model: $model
         python3 src/inference/whisper-inference.py --audio_dir $audio_dir --gpu 1 \
