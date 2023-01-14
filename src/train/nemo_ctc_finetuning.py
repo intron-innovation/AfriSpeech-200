@@ -232,7 +232,7 @@ elif 'conformer' in config["models"]["finetune"]:
 model.change_vocabulary(new_tokenizer_dir=TOKENIZER_DIR, new_tokenizer_type="bpe")
 
 
-freeze_encoder = False #@param ["False", "True"] {type:"raw"}  # Changed to False by Chris | 13.01
+freeze_encoder = config['hyperparameters']['freeze_feature_encoder']
 freeze_encoder = bool(freeze_encoder)
 
 if freeze_encoder:
