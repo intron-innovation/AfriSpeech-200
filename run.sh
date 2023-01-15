@@ -17,6 +17,11 @@ domains=("general" "clinical" "all" )
 # domains=("clinical") 
 
 
+# python3 src/train/train.py -c src/config/config_xlsr_group_lengths.ini
+
+# python3 src/train/train.py -c src/config/config_xlsr.ini
+
+
 for dataset in ${datasets[@]}; 
 do
     echo dataset: $dataset
@@ -30,22 +35,22 @@ do
 #     done
 
 
-#     for domain in ${domains[@]}; 
-#     do
-#         echo model: $domain
-#         python3 src/inference/whisper-inference.py --audio_dir $audio_dir --gpu 1 \
-#             --model_id_or_path ./src/experiments/wav2vec2-large-xlsr-53-$domain/checkpoints/ \
-#             --data_csv_path $dataset --batchsize 8
-#     done
-    
-    
-    
-    for model in ${whisper_models_list[@]}; 
+    for domain in ${domains[@]}; 
     do
-        echo model: $model
+        echo model: $domain
         python3 src/inference/whisper-inference.py --audio_dir $audio_dir --gpu 1 \
-            --model_id_or_path $model --data_csv_path $dataset --batchsize 8
+            --model_id_or_path ./src/experiments/wav2vec2-large-xlsr-53-$domain/checkpoints/ \
+            --data_csv_path $dataset --batchsize 8
     done
+    
+    
+    
+#     for model in ${whisper_models_list[@]}; 
+#     do
+#         echo model: $model
+#         python3 src/inference/whisper-inference.py --audio_dir $audio_dir --gpu 1 \
+#             --model_id_or_path $model --data_csv_path $dataset --batchsize 8
+#     done
     
     
     
@@ -65,9 +70,6 @@ do
 #             --audio_dir $audio_dir --data_csv_path $dataset
 #     done
 
-
-    # python3 src/train/train.py -c src/config/config_xlsr_group_lengths.ini
-
-    # python3 src/train/train.py -c src/config/config_xlsr.ini
-
 done
+
+python3 src/train/train.py -c src/config/config_xlsr_all_unfreeze_encoder.ini
