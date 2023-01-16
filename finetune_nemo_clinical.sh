@@ -14,5 +14,5 @@ module load anaconda/3
 conda activate /home/mila/c/chris.emezue/scratch/nemo2
 export LD_LIBRARY_PATH=/home/mila/c/chris.emezue/scratch/nemo2/lib/python3.8/site-packages/nvidia/cublas/lib/:$LD_LIBRARY_PATH
 
-
-python3 src/train/nemo_ctc_finetuning.py --config src/config/nemo_clinical.ini
+#python3 src/train/nemo_ctc_finetuning.py --config src/config/nemo_clinical.ini
+python3 src/train/nemo_ctc_finetuning.py --config $1

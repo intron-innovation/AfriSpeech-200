@@ -5,8 +5,8 @@ import subprocess
 import time
 from pathlib import Path
 
-os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
-os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
+#os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
+#os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
 os.environ["WANDB_DISABLED"] = "true"
 
 import torch

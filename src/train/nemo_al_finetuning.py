@@ -24,9 +24,13 @@ import configparser
 import torch
 import torch.nn as nn
 import argparse
+from train_al import *
+
 
 VERSION = "cv-corpus-6.1-2020-12-11"
 LANGUAGE = "en"
+device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+
 
 tokenizer_dir = os.path.join('tokenizers', LANGUAGE)
 manifest_dir = os.path.join('manifests', LANGUAGE)
@@ -72,15 +76,19 @@ def read_intron(path):
       data["duration"] = df.iloc[i]["duration"]
       data["text"] = df.iloc[i]["transcript"]
       data["domain"] = df.iloc[i]["domain"]
+      data['audio_ids'] = df.iloc[i]['audio_ids']
       my_file = Path(data["audio_filepath"])
       if data["duration"] <= float(config["audio"]["max_audio_len_secs"]) and len(data["text"]) >= int(config["hyperparameters"]["min_transcript_len"]) and my_file.exists():
         final.append(data)
   return final
 
 
-def write_processed_manifest(data, original_path,domain):
+def write_processed_manifest(data, original_path,domain,manifest_name = None):
     original_manifest_name = os.path.basename(original_path)
-    new_manifest_name = original_manifest_name.replace(".json", f"_processed_{domain}.json")
+    if manifest_name is None:
+      manifest_name = f"_processed_al_{domain}.json"
+
+    new_manifest_name = original_manifest_name.replace(".json", manifest_name)
 
     manifest_dir = os.path.split(original_path)[0]
     filepath = os.path.join(manifest_dir, new_manifest_name)
@@ -161,17 +169,19 @@ PREPROCESSORS = [
 
 # Load manifests
 intron_train_data = read_intron(config["data"]["train"])
+intron_aug_data = read_intron(config["data"]["aug"])
 # intron_train_data = read_intron("intron-dev-public-3232.csv")
 intron_dev_data = read_intron(config["data"]["val"])
 
 # Apply preprocessing
 intron_train_data_processed = apply_preprocessors(intron_train_data, PREPROCESSORS)
+intron_aug_data_processed = apply_preprocessors(intron_aug_data, PREPROCESSORS)
 intron_dev_data_processed = apply_preprocessors(intron_dev_data, PREPROCESSORS)
 
 
 # Write new manifests
 intron_train_manifest_cleaned = write_processed_manifest(intron_train_data_processed, config["data"]["train"][:-4] + ".json",config["data"]["domain"])
-
+intron_aug_manifest_cleaned = write_processed_manifest(intron_aug_data_processed, config["data"]["aug"][:-4] + ".json",config["data"]["domain"],f'_processed_aug_{config["data"]["domain"]}')
 intron_dev_manifest_cleaned = write_processed_manifest(intron_dev_data_processed, config["data"]["val"][:-4] + ".json",config["data"]["domain"])
 
 def enable_bn_se(m):
@@ -283,7 +293,20 @@ with open_dict(cfg):
   cfg.validation_ds.use_start_end_token = True
   cfg.validation_ds.trim_silence = True
 
-'''
+  '''
+  # Details for aug dataset
+  cfg.aug_ds.manifest_filepath = intron_aug_manifest_cleaned
+  cfg.aug_ds.batch_size = int(config["hyperparameters"]["train_batch_size"])
+  cfg.aug_ds.num_workers = int(config["hyperparameters"]["dataloader_num_workers"])
+  cfg.aug_ds.is_tarred: False # If set to true, uses the tarred version of the Dataset
+  cfg.aug_ds.normalize_transcripts = False  # Added by Chris | 13.01
+  cfg.aug_ds.pin_memory = True
+  cfg.aug_ds.use_start_end_token = True
+  cfg.aug_ds.trim_silence = True
+  '''
+
+
+  '''
   # Test dataset
   cfg.test_ds.manifest_filepath = intron_dev_manifest_cleaned
   cfg.test_ds.batch_size = int(config["hyperparameters"]["val_batch_size"])
@@ -291,7 +314,26 @@ with open_dict(cfg):
   cfg.test_ds.pin_memory = True
   cfg.test_ds.use_start_end_token = True
   cfg.test_ds.trim_silence = True
-'''  
+  '''  
+
+
+def create_aug_data_cfg(cfg,aug_manifest):
+  with open_dict(cfg):
+    # Aug dataset
+    if 'aug_ds' not in cfg:
+      cfg['aug_ds'] = copy.deepcopy(cfg.train_ds)
+    cfg.aug_ds.manifest_filepath = aug_manifest
+    cfg.aug_ds.batch_size = int(config["hyperparameters"]["aug_batch_size"])
+    cfg.aug_ds.num_workers = int(config["hyperparameters"]["dataloader_num_workers"])
+    cfg.aug_ds.is_tarred: False # If set to true, uses the tarred version of the Dataset
+    cfg.tarred_audio_filepaths: None
+    cfg.aug_ds.normalize_transcripts = False  # Added by Chris | 13.01
+    cfg.aug_ds.pin_memory = True
+    cfg.aug_ds.use_start_end_token = True
+    cfg.aug_ds.trim_silence = True
+    cfg.aug_ds.shuffle = False #remove shuffling in the aug dataset
+  return cfg.aug_ds
+
 
 print('='*80+'Train DS details'+'='*80)
 print(OmegaConf.to_yaml(cfg.train_ds))
@@ -425,7 +467,7 @@ exp_config = OmegaConf.structured(exp_config)
 
 logdir = exp_manager.exp_manager(trainer, exp_config)
 
-trainer.fit(model)
+#trainer.fit(model)
 
 # Save the final model
 
@@ -435,15 +477,69 @@ print(f"Model saved at path : {os.getcwd() + os.path.sep + save_path}")
 
 
 
-def run_nemo_inference():
+def run_nemo_inference(model,dataloader,mode='most', mc_dropout_rounds=10):
+  # print('In inference:', type(mode))
+  if 'random' in mode.lower():
+    # print('Gets in random')
+    # we do not need to compute the WER here
+    # we shuffle randomly the dictionary (this will display a random order) - the selecting the strict first top-k
+    audios_ids = [batch['audio_idx'] for batch in dataloader]
+    random.shuffle(audios_ids)
+    return {key[0]: 1.0 for key in
+            audios_ids}  # these values are just dummy ones, to have a format similar to the two other cases
+  else:
+    audio_wers = {}
+    final_dict = {}
+    for batch in tqdm(dataloader, desc="Uncertainty Inference"):
+      signal, signal_len, transcript, transcript_len = batch
+      model = model.to(device)
+      # run 10 steps of mc dropout
+      wer_list = []
 
+      for mc_dropout_round in range(mc_dropout_rounds):
+        with torch.no_grad():
+          log_probs, encoded_len, predictions = model.forward(input_signal=signal.to(device), input_signal_length=signal_len.to(device))
+
+          model._wer.update(
+            predictions=log_probs,
+            targets=transcript,
+            target_lengths=transcript_len,
+            predictions_lengths=encoded_len,
+          )
+          wer, _, _ = model._wer.compute()
+          model._wer.reset()
+          wer_list.append(wer.item())
+
+          # the following block is against cases where we have empty reference
+          # leading to the error: "ValueError: one or more groundtruths are empty strings"
+          '''
+          try:
+              batch["wer"] = wer_metric.compute(
+                  predictions=[batch["predictions"]], references=[batch["reference"]]
+              )
+              wer_list.append(batch['wer'])
+          except:
+              pass
+          '''
+      if len(wer_list) > 0:
+          uncertainty_score = np.array(wer_list).std()
+          audio_wers[batch['audio_idx'][0]] = uncertainty_score
+
+    if 'most' in mode.lower():
+        # we select most uncertain samples
+        return dict(sorted(audio_wers.items(), key=lambda item: item[1], reverse=True))
+    if 'least' in mode.lower():
+        # we select the least uncertain samples
+        return dict(sorted(audio_wers.items(), key=lambda item: item[1], reverse=False))   
+   #model.forward() needs the following as input
+   #      self, input_signal=None, input_signal_length=None, processed_signal=None, processed_signal_length=None
+  return 0
 
 
 
 if 'aug' in config['data']:
   # after baseline is completed
 
-  print(f"\n...Baseline model trained in {time.time() - start:.4f}. Start training with Active Learning...\n")
 
   active_learning_rounds = int(config['hyperparameters']['active_learning_rounds'])
   aug_batch_size = int(config['hyperparameters']['aug_batch_size'])
@@ -451,80 +547,94 @@ if 'aug' in config['data']:
   k = int(config['hyperparameters']['top_k'])
   mc_dropout_round = int(config['hyperparameters']['mc_dropout_round'])
 
+  # get_aug_manifest
+
   # AL rounds
   for active_learning_round in range(active_learning_rounds):
-  print('Performing McDropout for AL Round: {}\n'.format(active_learning_round))
+    print('Performing McDropout for AL Round: {}\n'.format(active_learning_round))
 
-  # McDropout for uncertainty computation
-  set_dropout(model)
-  # evaluation step and uncertain samples selection
-  augmentation_dataloader = DataLoader(aug_dataset, batch_size=aug_batch_size)
+    # McDropout for uncertainty computation
+    set_dropout(model)
+    # evaluation step and uncertain samples selection
+    # get_aug_manifest
+    #train_intron_manifest = read_intron(config["data"]["train"])
+    intron_aug_manifest_cleaned = write_processed_manifest(intron_aug_data_processed, config["data"]["aug"][:-4] + ".json",config["data"]["domain"],f'_processed_aug_{config["data"]["domain"]}_al_{active_learning_round}')
+    #Transform `intron_aug_manifest_cleaned` to dataloader
+    aug_ds_config = create_aug_data_cfg(copy.deepcopy(model.cfg),intron_aug_manifest_cleaned)
 
-  samples_uncertainty = run_whisper_inference(model, augmentation_dataloader,
-                                    mode=sampling_mode, mc_dropout_rounds=mc_dropout_round)
-  uncertainties = np.array(list(samples_uncertainty.values()))
-  min_uncertainty = uncertainties.min()
-  max_uncertainty = uncertainties.max()
-  mean_uncertainty = uncertainties.mean()
-  print('AL Round: {} with SM: {} - Max Uncertainty: {} - Min Uncertainty: {} - Mean Uncertainty: {}'.format(active_learning_round,
-                                                                                    sampling_mode,
-                                                                                    max_uncertainty,
-                                                                                    min_uncertainty, mean_uncertainty))
-  # top-k samples
-  most_uncertain_samples_idx = list(samples_uncertainty.keys())[:k]
+    augmentation_dataloader = model._setup_dataloader_from_config(config=aug_ds_config)
 
-  # writing the top=k to disk
-  filename = 'Top-{}_AL_Round_{}_Mode_{}'.format(k, active_learning_round, sampling_mode)
-  # write the top-k to the disk
-  filepath = os.path.join(checkpoints_path, filename)
-  np.save(filepath, np.array(most_uncertain_samples_idx + [max_uncertainty, min_uncertainty, mean_uncertainty])) # appending uncertainties stats to keep track
-  print(f"saved audio ids for round {active_learning_round} to {filepath}")
 
-  print('Old training set size: {} - Old Augmenting Size: {}'.format(len(train_dataset), len(aug_dataset)))
-  augmentation_data = aug_dataset.get_dataset()
-  training_data = train_dataset.get_dataset()
-  # get top-k samples of the augmentation set
-  selected_samples_df = augmentation_data[augmentation_data.audio_ids.isin(most_uncertain_samples_idx)]
-  # remove those samples from the augmenting set and set the new augmentation set
-  new_augmenting_samples = augmentation_data[~augmentation_data.audio_ids.isin(most_uncertain_samples_idx)]
-  aug_dataset.set_dataset(new_augmenting_samples)
-  # add the new dataset to the training set
-  new_training_data = pd.concat([training_data, selected_samples_df])
-  train_dataset.set_dataset(new_training_data)
-  print('New training set size: {} - New Augmenting Size: {}'.format(len(train_dataset), len(aug_dataset)))
+    samples_uncertainty = run_nemo_inference(model, augmentation_dataloader,
+                                      mode=sampling_mode, mc_dropout_rounds=mc_dropout_round)
+    uncertainties = np.array(list(samples_uncertainty.values()))
+    min_uncertainty = uncertainties.min()
+    max_uncertainty = uncertainties.max()
+    mean_uncertainty = uncertainties.mean()
+    print('AL Round: {} with SM: {} - Max Uncertainty: {} - Min Uncertainty: {} - Mean Uncertainty: {}'.format(active_learning_round,
+                                                                                      sampling_mode,
+                                                                                      max_uncertainty,
+                                                                                      min_uncertainty, mean_uncertainty))
+    # top-k samples
+    most_uncertain_samples_idx = list(samples_uncertainty.keys())[:k]
 
-  # delete current model from memory and empty cache
-  del model
+    # writing the top=k to disk
+    filename = 'Top-{}_AL_Round_{}_Mode_{}'.format(k, active_learning_round, sampling_mode)
+    # write the top-k to the disk
+    filepath = os.path.join(checkpoints_path, filename)
+    np.save(filepath, np.array(most_uncertain_samples_idx + [max_uncertainty, min_uncertainty, mean_uncertainty])) # appending uncertainties stats to keep track
+    print(f"saved audio ids for round {active_learning_round} to {filepath}")
 
-  torch.cuda.empty_cache()
+    print('Old training set size: {} - Old Augmenting Size: {}'.format(len(train_dataset), len(aug_dataset)))
+    augmentation_data = aug_dataset.get_dataset()
+    training_data = train_dataset.get_dataset()
+    # get top-k samples of the augmentation set
+    selected_samples_df = augmentation_data[augmentation_data.audio_ids.isin(most_uncertain_samples_idx)]
+    # remove those samples from the augmenting set and set the new augmentation set
+    new_augmenting_samples = augmentation_data[~augmentation_data.audio_ids.isin(most_uncertain_samples_idx)]
+    aug_dataset.set_dataset(new_augmenting_samples)
 
-  if len(aug_dataset) == 0 or len(aug_dataset) < k:
-    print('Stopping AL because the augmentation dataset is now empty or less than top-k ({})'.format(k))
-    break
-  else:
-    model = get_whisper_pretrained_model(last_checkpoint, config)
-    # reset the trainer with the updated training and augmenting dataset
-    new_al_round_checkpoint_path = os.path.join(checkpoints_path, f"AL_Round_{active_learning_round+1}")
-    Path(new_al_round_checkpoint_path).mkdir(parents=True, exist_ok=True)
+    # add the new dataset to the training set
+    # train_intron_manifest = read_intron(config["data"]["train"])
+    intron_aug_manifest_cleaned = write_processed_manifest(intron_aug_data_processed, config["data"]["aug"][:-4] + ".json",config["data"]["domain"],f'_processed_aug_{config["data"]["domain"]}')
 
-    # Detecting last checkpoint.
-    last_checkpoint, checkpoint_ = get_checkpoint(new_al_round_checkpoint_path,
-                                                  config['models']['model_path'])
-    # update training arg with new output path
-    training_args.output_dir = new_al_round_checkpoint_path
 
-    trainer = Seq2SeqTrainer(
-        args=training_args,
-        model=model,
-        train_dataset=train_dataset,
-        eval_dataset=dev_dataset,
-        data_collator=data_collator,
-        compute_metrics=compute_metrics,
-        tokenizer=processor.feature_extractor,
-    )
+    new_training_data = pd.concat([training_data, selected_samples_df])
+    train_dataset.set_dataset(new_training_data)
+    print('New training set size: {} - New Augmenting Size: {}'.format(len(train_dataset), len(aug_dataset)))
 
-    processor.save_pretrained(new_al_round_checkpoint_path)
-    print('Active Learning Round: {}\n'.format(active_learning_round+1))
-    trainer.train(resume_from_checkpoint=checkpoint_)
-    # define path for checkpoints for new AL round
-    model.module.save_pretrained(new_al_round_checkpoint_path)
+    # delete current model from memory and empty cache
+    del model
+
+    torch.cuda.empty_cache()
+
+    if len(aug_dataset) == 0 or len(aug_dataset) < k:
+      print('Stopping AL because the augmentation dataset is now empty or less than top-k ({})'.format(k))
+      break
+    else:
+      model = get_whisper_pretrained_model(last_checkpoint, config)
+      # reset the trainer with the updated training and augmenting dataset
+      new_al_round_checkpoint_path = os.path.join(checkpoints_path, f"AL_Round_{active_learning_round+1}")
+      Path(new_al_round_checkpoint_path).mkdir(parents=True, exist_ok=True)
+
+      # Detecting last checkpoint.
+      last_checkpoint, checkpoint_ = get_checkpoint(new_al_round_checkpoint_path,
+                                                    config['models']['model_path'])
+      # update training arg with new output path
+      training_args.output_dir = new_al_round_checkpoint_path
+
+      trainer = Seq2SeqTrainer(
+          args=training_args,
+          model=model,
+          train_dataset=train_dataset,
+          eval_dataset=dev_dataset,
+          data_collator=data_collator,
+          compute_metrics=compute_metrics,
+          tokenizer=processor.feature_extractor,
+      )
+
+      processor.save_pretrained(new_al_round_checkpoint_path)
+      print('Active Learning Round: {}\n'.format(active_learning_round+1))
+      trainer.train(resume_from_checkpoint=checkpoint_)
+      # define path for checkpoints for new AL round
+      model.module.save_pretrained(new_al_round_checkpoint_path)

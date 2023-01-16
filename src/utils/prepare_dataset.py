@@ -7,8 +7,8 @@ from datetime import datetime
 import pandas as pd
 import subprocess
 
-os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
-os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
+os.environ['TRANSFORMERS_CACHE'] = '/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/results/'
+os.environ['XDG_CACHE_HOME'] = '/home/mila/b/bonaventure.dossou/AfriSpeech-Dataset-Paper/results/'
 
 from datasets import load_dataset, load_metric, Dataset
 from dataclasses import dataclass
@@ -46,20 +46,32 @@ class DataConfig:
 
             
 def load_afri_speech_data(
-    data_path, max_audio_len_secs=17, audio_dir="./data/", 
+    data_path, max_audio_len_secs=17, audio_dir="/network/scratch/b/bonaventure.dossou/AfriSpeech-100/", 
     return_dataset=True, split="dev", gpu=-1, domain='all',
-    max_transcript_len=-1, min_transcript_len=10
+    max_transcript_len=-1, min_transcript_len=-1
 ):
     """
     load train/dev/test data from csv path.
+    :param max_transcript_len:
+    :param min_transcript_len:
+    :param domain:
+    :param gpu:
+    :param split:
+    :param return_dataset:
+    :param audio_dir:
     :param max_audio_len_secs: int
     :param data_path: str
     :return: Dataset instance
     """
     data = pd.read_csv(data_path)
-    data["audio_paths"] = data["audio_paths"].apply(
-        lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
-    )
+    if split == 'aug':
+        data["audio_paths"] = data["audio_paths"].apply(
+            lambda x: x.replace(f"/AfriSpeech-100/", audio_dir)
+        )
+    else:
+        data["audio_paths"] = data["audio_paths"].apply(
+            lambda x: x.replace(f"/AfriSpeech-100/", audio_dir)
+        )
     
     if max_audio_len_secs > -1 and gpu != -1:
         # when gpu is available, it cannot fit long samples
@@ -102,8 +114,9 @@ def data_prep(config):
     global CONFIG, PROCESSOR
     CONFIG = config
     start = time.time()
+    aug_dataset = None
 
-    raw_dataset = load_data(config.train_path, config.val_path)
+    raw_dataset = load_data(config.train_path, config.val_path, config.aug_path)
     logger.debug(f"...Data Read Complete in {time.time() - start:.4f}. Starting Tokenizer...")
 
     vocab_file_name = load_vocab(config.model_path, config.ckpt_path, config.exp_dir, raw_dataset)
@@ -111,21 +124,32 @@ def data_prep(config):
     logger.debug(f"...Load vocab and processor complete in {time.time() - start:.4f}.\n"
                  f"Loading dataset...")
 
-    train_dataset = load_custom_dataset(config, config.train_path, 'train', transform_audio, transform_labels)
     val_dataset = load_custom_dataset(config, config.val_path, 'dev', transform_audio, transform_labels)
+    if config.aug_percent and config.aug_percent > 1:
+        train_df = load_custom_dataset(config, config.train_path, 'train', 
+                                       transform_audio, transform_labels, return_dataset=False)
+        aug_df = train_df.sample(frac=config.aug_percent, random_state=config.seed)
+        train_df = train_df[~train_df.audio_ids.isin(aug_df.audio_ids.to_list())]
+        aug_dataset = Dataset.from_pandas(aug_df)
+        train_dataset = Dataset.from_pandas(train_df)
+    elif config.aug_path:
+        train_dataset = load_custom_dataset(config, config.train_path, 'train', transform_audio, transform_labels)
+        aug_dataset = load_custom_dataset(config, config.aug_path, 'aug', transform_audio, transform_labels)
+    else:
+        train_dataset = load_custom_dataset(config, config.train_path, 'train', transform_audio, transform_labels)
 
     logger.debug(f"Load train and val dataset done in {time.time() - start:.4f}.")
-    return train_dataset, val_dataset, PROCESSOR
+    return train_dataset, val_dataset, aug_dataset, PROCESSOR
 
 
 def load_custom_dataset(config, data_path, split, 
                         transform_audio_, transform_labels_=None, 
-                        prepare=None):
+                        prepare=None, return_dataset=True):
     return CustomASRDataset(data_path, transform_audio_, transform_labels_,
                             config.audio_path, split=split, domain=config.domain,
                             max_audio_len_secs=config.max_audio_len_secs,
                             min_transcript_len=config.min_transcript_len,
-                            prepare=prepare)
+                            prepare=prepare, return_dataset=return_dataset)
 
 
 def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets):
@@ -169,8 +193,11 @@ def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets):
     return vocab_file_name
 
 
-def load_data(train_path, val_path):
-    return load_dataset('csv', data_files={'train': train_path, 'val': val_path})
+def load_data(train_path, val_path, aug_path=None):
+    if aug_path:
+        return load_dataset('csv', data_files={'train': train_path, 'val': val_path, 'aug': aug_path})
+    else:
+        return load_dataset('csv', data_files={'train': train_path, 'val': val_path})
 
 
 def remove_special_characters(batch):
@@ -243,7 +270,7 @@ class CustomASRDataset(torch.utils.data.Dataset):
     def __init__(self, data_file, transform=None, transform_target=None, audio_dir=None,
                  split=None, domain="all", max_audio_len_secs=-1, min_transcript_len=10,
                  prepare=False, max_transcript_len=-1, gpu=1, 
-                 length_column_name='duration'):
+                 length_column_name='duration', return_dataset=True):
         
         self.prepare = prepare
         self.split = split
@@ -252,36 +279,34 @@ class CustomASRDataset(torch.utils.data.Dataset):
                                               split=split, gpu=gpu, 
                                               audio_dir=audio_dir,
                                               max_transcript_len=max_transcript_len,
-                                              domain=domain)
+                                              domain=domain, return_dataset=return_dataset)
         self.transform = transform
         self.target_transform = transform_target
-        self.lengths = self.__get_lengths__(length_column_name)
+
+    def set_dataset(self, new_data):
+        self.asr_data = Dataset.from_pandas(new_data, preserve_index=False)
+
+    def get_dataset(self):
+        return self.asr_data.to_pandas()
 
     def __len__(self):
         return len(self.asr_data)
-    
-    def __get_lengths__(self, length_column_name):
-        self.lengths = (
-                self.asr_data[length_column_name]
-                if length_column_name in self.asr_data.column_names
-                else None
-            )
 
     def __getitem__(self, idx):
         audio_path = self.asr_data[idx]['audio_paths']
         text = self.asr_data[idx]['transcript']
         accent = self.asr_data[idx]['accent']
+        audio_idx = self.asr_data[idx]['audio_ids']
         
-        # print(audio_path, text, accent)
         if self.prepare:
             input_audio, label = self.transform(audio_path, text)
-            result = {'input_features': input_audio, 'labels': label}
+            result = {'input_values': input_audio, 'input_lengths': len(input_audio)}
         else:
             input_audio = self.transform(audio_path)
             label = self.target_transform(text)
-            result = {'input_values': input_audio[0], 'labels': label, 
-                      'input_lengths': len(input_audio[0])}
-        # print(audio_path, input_audio.shape)
+            result = {'input_values': input_audio[0], 'input_lengths': len(input_audio[0])}
+
+        result.update({'labels': label, 'accent': accent, 'audio_idx': audio_idx})
         return result
 
 
