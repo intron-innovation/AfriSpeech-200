@@ -3,6 +3,7 @@ import glob
 import subprocess
 import tarfile
 import copy
+import numpy as np
 from omegaconf import OmegaConf, open_dict
 from pathlib import Path
 import pytorch_lightning as ptl
@@ -10,7 +11,6 @@ import nemo
 import nemo.collections.asr as nemo_asr
 from nemo.collections.asr.metrics.wer import word_error_rate
 from nemo.utils import logging, exp_manager
-from nemo.utils import exp_manager
 
 import re
 import unicodedata
@@ -24,7 +24,7 @@ import configparser
 import torch
 import torch.nn as nn
 import argparse
-from train_al import *
+from train_al import get_checkpoint,set_dropout,train_setup,
 
 
 VERSION = "cv-corpus-6.1-2020-12-11"
@@ -51,6 +51,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--config", type=str, help="configuration for fine-tuning nemo")
 args, config = parse_argument()
 #args = parser.parse_args()
+
+#-----------------------Get the last checkpoint---------------------
+checkpoints_path = train_setup(config, args)
+last_checkpoint, checkpoint_ = get_checkpoint(checkpoints_path, config['models']['model_path'])
 
 def read_manifest(path):
     manifest = []
@@ -229,16 +233,19 @@ if num_tokens < INTRON_VOCAB_SIZE:
         f"Please reconstruct the tokenizer with fewer tokens"
     )
 
-#model = nemo_asr.models.ASRModel.from_pretrained(config["models"]["finetune"], map_location=config["experiment"]["map_location"])
 
-if 'transducer' in config["models"]["finetune"]:
-  model = nemo_asr.models.EncDecRNNTBPEModel.from_pretrained(config["models"]["finetune"], map_location=config["experiment"]["map_location"])
-  # "nvidia/stt_en_conformer_transducer_large"
-elif 'conformer' in config["models"]["finetune"]:
-  model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(config["models"]["finetune"], map_location=config["experiment"]["map_location"])
-  # "nvidia/stt_en_conformer_ctc_large"
+def get_nemo_pretrained_model(checkpoint_pretrained, config_):
+
+  if 'transducer' in config["models"]["finetune"]:
+    model = nemo_asr.models.EncDecRNNTBPEModel.from_pretrained(checkpoint_pretrained if checkpoint_pretrained else config_["models"]["finetune"], map_location=config["experiment"]["map_location"])
+    # "nvidia/stt_en_conformer_transducer_large"
+  elif 'conformer' in config["models"]["finetune"]:
+    model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(checkpoint_pretrained if checkpoint_pretrained else config_["models"]["finetune"], map_location=config["experiment"]["map_location"])
+    # "nvidia/stt_en_conformer_ctc_large"
+  return model
 
 
+model = get_nemo_pretrained_model(last_checkpoint,config)
 model.change_vocabulary(new_tokenizer_dir=TOKENIZER_DIR, new_tokenizer_type="bpe")
 
 
@@ -315,6 +322,7 @@ with open_dict(cfg):
   cfg.test_ds.use_start_end_token = True
   cfg.test_ds.trim_silence = True
   '''  
+
 
 
 def create_aug_data_cfg(cfg,aug_manifest):
@@ -476,6 +484,17 @@ model.save_to(f"{save_path}")
 print(f"Model saved at path : {os.getcwd() + os.path.sep + save_path}")
 
 
+def get_wer_with_model(model,log_probs,transcript,transcript_len,encoded_len):
+ 
+  model._wer.update(
+  predictions=log_probs,
+  targets=transcript,
+  target_lengths=transcript_len,
+  predictions_lengths=encoded_len,
+  )
+  wer, _, _ = model._wer.compute()
+  model._wer.reset()
+  return wer.item()
 
 def run_nemo_inference(model,dataloader,mode='most', mc_dropout_rounds=10):
   # print('In inference:', type(mode))
@@ -484,6 +503,7 @@ def run_nemo_inference(model,dataloader,mode='most', mc_dropout_rounds=10):
     # we do not need to compute the WER here
     # we shuffle randomly the dictionary (this will display a random order) - the selecting the strict first top-k
     audios_ids = [batch['audio_idx'] for batch in dataloader]
+    import random
     random.shuffle(audios_ids)
     return {key[0]: 1.0 for key in
             audios_ids}  # these values are just dummy ones, to have a format similar to the two other cases
@@ -491,7 +511,7 @@ def run_nemo_inference(model,dataloader,mode='most', mc_dropout_rounds=10):
     audio_wers = {}
     final_dict = {}
     for batch in tqdm(dataloader, desc="Uncertainty Inference"):
-      signal, signal_len, transcript, transcript_len = batch
+      signal, signal_len, transcript, transcript_len,audio_files = batch
       model = model.to(device)
       # run 10 steps of mc dropout
       wer_list = []
@@ -499,16 +519,9 @@ def run_nemo_inference(model,dataloader,mode='most', mc_dropout_rounds=10):
       for mc_dropout_round in range(mc_dropout_rounds):
         with torch.no_grad():
           log_probs, encoded_len, predictions = model.forward(input_signal=signal.to(device), input_signal_length=signal_len.to(device))
+          wers = [get_wer_with_model(model,log_probs[i,:,:].unsqueeze(0),transcript[i,:].unsqueeze(0),transcript_len[i].unsqueeze(0),encoded_len[i].unsqueeze(0)) for i in range(log_probs.shape[0])]
 
-          model._wer.update(
-            predictions=log_probs,
-            targets=transcript,
-            target_lengths=transcript_len,
-            predictions_lengths=encoded_len,
-          )
-          wer, _, _ = model._wer.compute()
-          model._wer.reset()
-          wer_list.append(wer.item())
+          wer_list.append(wers)
 
           # the following block is against cases where we have empty reference
           # leading to the error: "ValueError: one or more groundtruths are empty strings"
@@ -522,8 +535,10 @@ def run_nemo_inference(model,dataloader,mode='most', mc_dropout_rounds=10):
               pass
           '''
       if len(wer_list) > 0:
-          uncertainty_score = np.array(wer_list).std()
-          audio_wers[batch['audio_idx'][0]] = uncertainty_score
+        uncertainty_score = np.array(wer_list).std(0).tolist()
+
+        #audio_wers[batch['audio_idx'][0]] = uncertainty_score
+        audio_wers.update({a:u for a,u in zip(audio_files,uncertainty_score)})
 
     if 'most' in mode.lower():
         # we select most uncertain samples
@@ -585,34 +600,50 @@ if 'aug' in config['data']:
     np.save(filepath, np.array(most_uncertain_samples_idx + [max_uncertainty, min_uncertainty, mean_uncertainty])) # appending uncertainties stats to keep track
     print(f"saved audio ids for round {active_learning_round} to {filepath}")
 
-    print('Old training set size: {} - Old Augmenting Size: {}'.format(len(train_dataset), len(aug_dataset)))
-    augmentation_data = aug_dataset.get_dataset()
-    training_data = train_dataset.get_dataset()
+
+
+    
+
+    print('Old training set size: {} - Old Augmenting Size: {}'.format(len(intron_train_data), len(intron_aug_data)))
     # get top-k samples of the augmentation set
-    selected_samples_df = augmentation_data[augmentation_data.audio_ids.isin(most_uncertain_samples_idx)]
+    selected_samples_data = [d for d in intron_aug_data if d['audio_filepath'] in most_uncertain_samples_idx]
     # remove those samples from the augmenting set and set the new augmentation set
-    new_augmenting_samples = augmentation_data[~augmentation_data.audio_ids.isin(most_uncertain_samples_idx)]
-    aug_dataset.set_dataset(new_augmenting_samples)
+    new_aug_data = [d for d in intron_aug_data if d['audio_filepath'] not in most_uncertain_samples_idx]
+
+    intron_aug_data = [d for d in new_aug_data]
+    intron_aug_data_processed = apply_preprocessors(intron_aug_data, PREPROCESSORS)
+
 
     # add the new dataset to the training set
     # train_intron_manifest = read_intron(config["data"]["train"])
-    intron_aug_manifest_cleaned = write_processed_manifest(intron_aug_data_processed, config["data"]["aug"][:-4] + ".json",config["data"]["domain"],f'_processed_aug_{config["data"]["domain"]}')
+
+    new_train_data = intron_train_data.extend(intron_aug_data)
+    # create manifest, add to cfg, setup training data with it.
+    intron_train_manifest_cleaned_ = write_processed_manifest(intron_train_data_processed, config["data"]["train"][:-4] + ".json",config["data"]["domain"],f'_processed_al_train_{config["data"]["domain"]}_al_{active_learning_round}')
+
+    cfg = copy.deepcopy(model.cfg)
+
+    with open_dict(cfg):
+      # Train dataset
+      cfg.train_ds.manifest_filepath = intron_train_manifest_cleaned_
+
+    # setup model with new configs
+    model.setup_training_data(cfg.train_ds)
 
 
-    new_training_data = pd.concat([training_data, selected_samples_df])
-    train_dataset.set_dataset(new_training_data)
-    print('New training set size: {} - New Augmenting Size: {}'.format(len(train_dataset), len(aug_dataset)))
+    print('New training set size: {} - New Augmenting Size: {}'.format(len(new_train_data), len(intron_aug_data)))
 
     # delete current model from memory and empty cache
     del model
 
     torch.cuda.empty_cache()
 
-    if len(aug_dataset) == 0 or len(aug_dataset) < k:
+    if len(intron_aug_data) == 0 or len(intron_aug_data) < k:
       print('Stopping AL because the augmentation dataset is now empty or less than top-k ({})'.format(k))
       break
     else:
-      model = get_whisper_pretrained_model(last_checkpoint, config)
+      model = get_nemo_pretrained_model(last_checkpoint,config)
+
       # reset the trainer with the updated training and augmenting dataset
       new_al_round_checkpoint_path = os.path.join(checkpoints_path, f"AL_Round_{active_learning_round+1}")
       Path(new_al_round_checkpoint_path).mkdir(parents=True, exist_ok=True)
