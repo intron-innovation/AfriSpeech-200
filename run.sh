@@ -35,13 +35,13 @@ do
 #     done
 
 
-    for domain in ${domains[@]}; 
-    do
-        echo model: $domain
-        python3 src/inference/whisper-inference.py --audio_dir $audio_dir --gpu 1 \
-            --model_id_or_path ./src/experiments/wav2vec2-large-xlsr-53-$domain/checkpoints/ \
-            --data_csv_path $dataset --batchsize 8
-    done
+#     for domain in ${domains[@]}; 
+#     do
+#         echo model: $domain
+#         python3 src/inference/whisper-inference.py --audio_dir $audio_dir --gpu 1 \
+#             --model_id_or_path ./src/experiments/wav2vec2-large-xlsr-53-$domain/checkpoints/ \
+#             --data_csv_path $dataset --batchsize 8
+#     done
     
     
     
