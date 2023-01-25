@@ -14,6 +14,7 @@ import time
 import pandas as pd
 import whisper
 import jiwer
+from datasets import load_dataset
 from whisper.normalizers import EnglishTextNormalizer
 from tqdm import tqdm
 from transformers import Wav2Vec2Processor, AutoModelForCTC
@@ -74,8 +75,49 @@ class AfriSpeechWhisperDataset(torch.utils.data.Dataset):
 
         return (audio, text, audio_path, accent)
 
+    
+    
 
-def transcribe_whisper(args, model, loader):
+class LibriSpeechDataset(torch.utils.data.Dataset):
+    def __init__(self, data_path, split="test", device="cpu", model_id="whisper",
+                 max_audio_len_secs=17, gpu=-1
+                 ):
+        self.dataset = load_dataset("librispeech_asr", "clean", split=split)
+        self.device = device
+        self.model_id = model_id
+
+    def __len__(self):
+        return len(self.dataset)
+
+    def __getitem__(self, item):
+        audio = self.dataset[item]['audio']['array']
+        text = self.dataset[item]['text']
+        accent = "US English"
+        audio_path = self.dataset[item]['file']
+        
+        audio = np.asarray(audio)
+        if 'whisper' in self.model_id and os.path.isdir(self.model_id):
+            input_features = processor(
+                audio,
+                sampling_rate=AudioConfig.sr, 
+                return_tensors="pt",
+            )
+            audio = input_features.input_features.squeeze()
+        elif 'whisper' in self.model_id:
+            audio = np.asarray(audio, dtype=np.float32)
+            audio = whisper.pad_or_trim(torch.tensor(audio.flatten())).to(self.device)
+            audio = whisper.log_mel_spectrogram(audio)
+        else:
+            input_features = processor(
+                audio, sampling_rate=AudioConfig.sr, padding='max_length', 
+                max_length=AudioConfig.sr*17, truncation=True
+            )
+            audio = input_features.input_values[0]
+
+        return (audio, text, audio_path, accent)
+
+    
+def transcribe_whisper(args, model, loader, split):
     tsince = int(round(time.time()))
     hypotheses = []
     references = []
@@ -137,7 +179,6 @@ def transcribe_whisper(args, model, loader):
     data["hypothesis_clean"] = [normalizer(text) for text in data["hypothesis"]]
     data["reference_clean"] = [normalizer(text) for text in data["reference"]]
     
-    split = args.data_csv_path.split("-")[1]
     write_pred_inference_df(args.model_id_or_path, data, all_wer, split=split)
     
     time_elapsed = int(round(time.time())) - tsince
@@ -156,13 +197,22 @@ if __name__ == "__main__":
     os.makedirs(args.output_dir, exist_ok=True)
 
     device = torch.device("cuda" if (torch.cuda.is_available() and args.gpu > -1) else "cpu")
-
-    dataset = AfriSpeechWhisperDataset(data_path=args.data_csv_path,
-                                       max_audio_len_secs=args.max_audio_len_secs,
-                                       audio_dir=args.audio_dir, device=device,
-                                       split=args.data_csv_path.split("-")[1],
-                                       gpu=args.gpu, model_id=args.model_id_or_path
-                                       )
+    
+    if "librispeech" in args.data_csv_path:
+        dataset = LibriSpeechDataset(data_path="librispeech_asr", split='test',
+                                    model_id=args.model_id_or_path,
+                                    device=device,)
+        split = 'test-libri-speech'
+        
+    else:
+        split = args.data_csv_path.split("-")[1]
+        dataset = AfriSpeechWhisperDataset(data_path=args.data_csv_path,
+                                           max_audio_len_secs=args.max_audio_len_secs,
+                                           audio_dir=args.audio_dir, device=device,
+                                           split=split,
+                                           gpu=args.gpu, model_id=args.model_id_or_path
+                                           )
+        
     data_loader = torch.utils.data.DataLoader(dataset, batch_size=args.batchsize)
     
     if "whisper" in args.model_id_or_path and os.path.isdir(args.model_id_or_path):
@@ -182,4 +232,4 @@ if __name__ == "__main__":
 
     model = model.to(device)
 
-    transcribe_whisper(args, model, data_loader)
+    transcribe_whisper(args, model, data_loader, split)

@@ -1,11 +1,15 @@
 import os
+
+os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
+os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
+
 import pandas as pd
 from tqdm import tqdm
 import numpy as np
 import time
 from google.cloud import speech
 import azure.cognitiveservices.speech as speechsdk
-from datasets import load_metric
+from datasets import load_metric, load_dataset
 
 from src.utils.utils import parse_argument
 from src.utils.text_processing import clean_text
@@ -18,11 +22,12 @@ google_client = speech.SpeechClient()
 
 def get_config(service):
     if "gcp" in service:
+        # speech.enums.RecognitionConfig.AudioEncoding.FLAC, 1600, 1
         speech_config = speech.RecognitionConfig(
-            encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+            # encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
             language_code="en-US",
-            sample_rate_hertz=44100,
-            audio_channel_count=2,
+            # sample_rate_hertz=44100, 
+            # audio_channel_count=2,
             model='medical_dictation' if 'medical' in service else 'default'
         )
     elif "azure" in service:
@@ -32,6 +37,34 @@ def get_config(service):
         speech_config.speech_recognition_language="en-US"
     return speech_config
 
+
+class BinaryFileReaderCallback(speechsdk.audio.PullAudioInputStreamCallback):
+    def __init__(self, filename: str):
+        super().__init__()
+        self._file_h = open(filename, "rb")
+
+    def read(self, buffer: memoryview) -> int:
+        # print('trying to read {} frames'.format(buffer.nbytes))
+        try:
+            size = buffer.nbytes
+            frames = self._file_h.read(size)
+
+            buffer[:len(frames)] = frames
+            # print('read {} frames'.format(len(frames)))
+
+            return len(frames)
+        except Exception as ex:
+            print('Exception in `read`: {}'.format(ex))
+            raise
+
+    def close(self) -> None:
+        # print('closing file')
+        try:
+            self._file_h.close()
+        except Exception as ex:
+            print('Exception in `close`: {}'.format(ex))
+            raise
+            
 
 def azure_asr(fname, speech_config):
     done = False
@@ -46,8 +79,16 @@ def azure_asr(fname, speech_config):
         done = True
         speech_recognition_result = evt.result
 
-    # audio_config = speechsdk.audio.AudioConfig(use_default_microphone=True)
-    audio_config = speechsdk.audio.AudioConfig(filename=fname)
+    if "flac" in fname:
+        # https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/how-to-use-codec-compressed-audio-input-streams?tabs=linux%2Cdebian%2Cjava-android%2Cterminal&pivots=programming-language-python#speech-sdk-version-required-for-compressed-audio-input
+        compressed_format = speechsdk.audio.AudioStreamFormat(compressed_stream_format=speechsdk.AudioStreamContainerFormat.FLAC)
+        callback = BinaryFileReaderCallback(fname)
+        stream = speechsdk.audio.PullAudioInputStream(stream_format=compressed_format, pull_stream_callback=callback)
+        audio_config = speechsdk.audio.AudioConfig(stream=stream)
+    else:
+        # audio_config = speechsdk.audio.AudioConfig(use_default_microphone=True)
+        audio_config = speechsdk.audio.AudioConfig(filename=fname)
+    
     speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
 
     speech_recognition_result = speech_recognizer.recognize_once_async().get()
@@ -132,7 +173,7 @@ def main_transcribe_medical(data, service):
     preds_raw = []
     preds_clean = []
     wers = []
-    pause = 400 if 'gcp' in service else 10
+    pause = 400 if 'gcp' in service else 50
     
     for idx, row in tqdm(data.iterrows(), total=data.shape[0]):
         if not os.path.isfile(row['audio_paths']):
@@ -181,7 +222,7 @@ def write_gcp_results(data, model_id_or_path='gcp-transcribe',
     """
     all_wer = np.mean(data['wer'])
     out_path = f'{output_dir}/intron-open-{split}-{model_id_or_path}-wer-{round(all_wer, 4)}-{len(data)}.csv'
-    data_df.to_csv(out_path, index=False)
+    data.to_csv(out_path, index=False)
     print(out_path)
 
 
@@ -191,14 +232,31 @@ if __name__ == '__main__':
 
     # Make output directory if does not already exist
     os.makedirs(args.output_dir, exist_ok=True)
-
-    split = args.data_csv_path.split("-")[1]
     
-    data_df = pd.read_csv(args.data_csv_path)
-    data_df = data_df[data_df.duration < 17]
-    data_df["audio_paths"] = data_df["audio_paths"].apply(
-        lambda x: x.replace(f"/AfriSpeech-100/{split}/", args.audio_dir)
-    )
+    def fix_libr_paths(p):      
+        # /data/.cache/huggingface/datasets/downloads/extracted/4cea1a241a27fcd66aa1739cbda62aa2181547a606a2a26bafe5d6d2a39dfb2a/LibriSpeech/test-clean/6930/75918/6930-75918-0000.flac
+        # '/data/.cache/huggingface/datasets/downloads/extracted/4cea1a241a27fcd66aa1739cbda62aa2181547a606a2a26bafe5d6d2a39dfb2a/6930-75918-0000.flac'
+        fname = p.split('/')[-1]
+        fnums = "/".join(fname.replace(".flac", "").split("-")[:2])
+        fdir = p.replace(fname, "")
+        new_fname = f"{fdir}LibriSpeech/test-clean/{fnums}/{fname}"
+        return new_fname
+
+    if "librispeech" in args.data_csv_path:
+        data_df = load_dataset("librispeech_asr", "clean", split="test")
+        data_df = data_df.to_pandas()
+        data_df['audio_paths'] = data_df['file'].apply(fix_libr_paths)
+        data_df.rename(columns={"text": "transcript"}, inplace=True)
+        print(data_df['audio_paths'][0])
+        split = "libri-test-clean"
+    else:
+        split = args.data_csv_path.split("-")[1]
+
+        data_df = pd.read_csv(args.data_csv_path)
+        data_df = data_df[data_df.duration < 17]
+        data_df["audio_paths"] = data_df["audio_paths"].apply(
+            lambda x: x.replace(f"/AfriSpeech-100/{split}/", args.audio_dir)
+        )
 
     assert 'gcp' in args.model_id_or_path or 'azure' in args.model_id_or_path
     data_df = main_transcribe_medical(data_df, args.model_id_or_path)

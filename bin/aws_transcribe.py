@@ -1,5 +1,9 @@
 import boto3
 import os
+
+os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
+os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
+
 import pandas as pd
 from tqdm import tqdm
 import time
@@ -24,7 +28,7 @@ s3 = boto3.resource(
     region_name='eu-west-2',
 )
 
-UNIQUE_JOB_NUM=40
+UNIQUE_JOB_NUM=41
 
 def get_aws_transcript_medical(job_name, job_uri, service):
     """
@@ -88,6 +92,8 @@ def aws_transcribe(data_df, service, split, audio_dir):
             continue
         if split in ['train', 'dev']:
             s3_uri = f"s3://intron-open-source{audio_path}"
+        elif split == 'libri-test':
+            pass
         else:
             audio_path = audio_path.replace(f"/AfriSpeech-100/{split}/", "")
             s3_uri = f"{s3_paths[0]}{audio_path}"
@@ -183,8 +189,13 @@ if __name__ == '__main__':
 
     split = args.data_csv_path.split("-")[1]
     
-    data = pd.read_csv(args.data_csv_path)
-    data = data[data.duration < 17]
+    if "librispeech" in args.data_csv_path:
+        data = load_dataset("librispeech_asr", "clean", split=split)
+        data = data.to_pandas()
+        data.rename(columns={"file": "audio_paths", "text": "transcript"}, inplace=True)
+    else:
+        data = pd.read_csv(args.data_csv_path)
+        data = data[data.duration < 17]
 
     # aws_service = 'transcribe-medical'
     assert 'aws' in args.model_id_or_path
