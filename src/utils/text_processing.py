@@ -24,6 +24,5 @@ def clean_text(text):
         .strip()
     text = " ".join(text.split())
     text = re.sub(r"[^a-zA-Z0-9\s\.\,\-\?\:\'\/\(\)\[\]\+\%]", '', text)
-    text = text.lower()
     return text
 

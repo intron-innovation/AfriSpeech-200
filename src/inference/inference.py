@@ -7,17 +7,13 @@ os.environ["WANDB_DISABLED"] = "true"
 import pandas as pd
 import time
 from datasets import load_metric, Dataset
-import librosa
 import torch
-from transformers import (
-    Wav2Vec2ForCTC,
-    HubertForCTC,
-    Wav2Vec2Processor,
-    set_seed,
-)
+from transformers import AutoProcessor, AutoModelForCTC
+from transformers import set_seed
 import whisper
-from src.utils.utils import write_pred
+from src.utils.utils import write_pred, write_pred_inference_df
 from src.utils.text_processing import clean_text
+from src.utils.audio_processing import load_audio_file
 
 set_seed(1778)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -37,9 +33,7 @@ def compute_benchmarks(batch):
     :param batch:
     :return:
     """
-    speech, fs = librosa.load(batch["audio_paths"], sr=SAMPLING_RATE)
-    if fs != SAMPLING_RATE:
-        speech = librosa.resample(speech, fs, SAMPLING_RATE)
+    speech = load_audio_file(batch["audio_paths"])
 
     input_features = PROCESSOR(
         speech, sampling_rate=SAMPLING_RATE, padding=True, return_tensors="pt"
@@ -51,6 +45,7 @@ def compute_benchmarks(batch):
 
     pred_ids = torch.argmax(torch.tensor(batch["logits"]), dim=-1)
     pred = PROCESSOR.batch_decode(pred_ids)[0]
+    batch["predictions"] = pred
     batch["predictions"] = clean_text(pred)
     batch["reference"] = clean_text(batch["text"]).lower()
     batch["wer"] = wer_metric.compute(
@@ -94,7 +89,8 @@ def transcribe_whisper(dataframe, model_size="medium"):
     return dataframe
 
 
-def run_benchmarks(model_id_or_path, test_dataset, output_dir="./results", gpu=-1):
+def run_benchmarks(model_id_or_path, test_dataset,
+                   output_dir="./results", gpu=-1, batchsize=8):
     """
     Pipeline for running benchmarks for huggingface models on dev/test data
     :param output_dir: str
@@ -107,12 +103,7 @@ def run_benchmarks(model_id_or_path, test_dataset, output_dir="./results", gpu=-
     device = torch.device("cuda" if (torch.cuda.is_available() and gpu>-1) else "cpu")
     output_cols = None
 
-    if "hubert" in model_id_or_path:
-        PROCESSOR = Wav2Vec2Processor.from_pretrained(model_id_or_path)
-        MODEL = HubertForCTC.from_pretrained(model_id_or_path).to(device)
-        test_dataset = test_dataset.map(compute_benchmarks)
-
-    elif "whisper" in model_id_or_path:
+    if "whisper" in model_id_or_path:
         test_dataset = transcribe_whisper(
             dataframe=test_dataset, model_size=model_id_or_path.split("_")[1]
         )
@@ -129,10 +120,12 @@ def run_benchmarks(model_id_or_path, test_dataset, output_dir="./results", gpu=-
         ]
 
     else:
-        PROCESSOR = Wav2Vec2Processor.from_pretrained(model_id_or_path)
-        MODEL = Wav2Vec2ForCTC.from_pretrained(model_id_or_path).to(device)
+        PROCESSOR = AutoProcessor.from_pretrained(model_id_or_path)
+        MODEL = AutoModelForCTC.from_pretrained(model_id_or_path).to(device)
         test_dataset = test_dataset.map(compute_benchmarks)
+        # test_dataset = test_dataset.map(compute_benchmarks, batched=True, batch_size=batchsize)
 
+    # test_dataset = compute_wer_dataset(test_dataset)
     n_samples = len(test_dataset)
     all_wer = wer_metric.compute(
         predictions=test_dataset["predictions"],
@@ -142,8 +135,36 @@ def run_benchmarks(model_id_or_path, test_dataset, output_dir="./results", gpu=-
     write_pred(
         model_id_or_path, test_dataset, all_wer, cols=output_cols, output_dir=output_dir
     )
-    ttime_elapsed = int(round(time.time())) - tsince
+    time_elapsed = int(round(time.time())) - tsince
     print(
-        f"{model_id_or_path}-- Inference Time: {ttime_elapsed / 60:.4f}m | "
-        f"{ttime_elapsed / n_samples:.4f}s per sample"
+        f"{model_id_or_path}-- Inference Time: {time_elapsed / 60:.4f}m | "
+        f"{time_elapsed / n_samples:.4f}s per sample"
     )
+
+
+def compute_wer_df(test_dataset, cols=None):
+    if cols is None:
+        cols = ["audio_paths", "text", "reference", "predictions", "wer", "accent"]
+    predictions_data = {col: test_dataset[col] for col in cols}
+    predictions_df = pd.DataFrame(data=predictions_data)
+    predictions_df["predictions"] = [clean_text(pred) for pred in predictions_df["predictions"]]
+    predictions_df["reference"] = [clean_text(ref) for ref in predictions_df["text"]]
+    wers = []
+    for i, row in predictions_df.iterrows():
+        wer_metric.compute(
+            predictions=[row["predictions"]], references=[row["reference"]]
+        )
+    predictions_df["wer"] = wers
+    return predictions_df
+
+
+def compute_wer_dataset(test_dataset):
+    test_dataset["predictions"] = [clean_text(pred) for pred in test_dataset["predictions"]]
+    test_dataset["reference"] = [clean_text(ref) for ref in test_dataset["text"]]
+    wers = []
+    for i in range(len(test_dataset)):
+        wer_metric.compute(
+            predictions=[test_dataset["predictions"][i]], references=[test_dataset["reference"][i]]
+        )
+    test_dataset["wer"] = wers
+    return test_dataset

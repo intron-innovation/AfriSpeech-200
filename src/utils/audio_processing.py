@@ -19,9 +19,13 @@ def pad_zeros(x, size, sr):
 
 
 def load_audio_file(file_path):
-    data, sr = librosa.core.load(file_path, sr=AudioConfig.sr)
-    if sr != AudioConfig.sr:
-        data = librosa.resample(data, sr, AudioConfig.sr)
-    if len(data) < sr:
-        data = pad_zeros(data, AudioConfig.sr, AudioConfig.sr)
+    try:
+        data, sr = librosa.core.load(file_path, sr=AudioConfig.sr)
+        if sr != AudioConfig.sr:
+            data = librosa.resample(data, sr, AudioConfig.sr)
+        if len(data) < sr:
+            data = pad_zeros(data, AudioConfig.sr, AudioConfig.sr)
+    except Exception as e:
+        print(f"{file_path} not found {str(e)}")
+        data = np.random.rand(AudioConfig.sr * 3).astype(np.float32)
     return data
