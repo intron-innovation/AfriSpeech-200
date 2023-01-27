@@ -26,7 +26,6 @@ from transformers import (
     WhisperConfig,
     set_seed,
     Seq2SeqTrainingArguments,
-    Seq2SeqTrainer,
 )
 import librosa
 from dataclasses import dataclass
@@ -37,6 +36,7 @@ from src.inference.inference import write_pred
 from src.utils.audio_processing import load_audio_file, AudioConfig
 from src.utils.prepare_dataset import load_custom_dataset
 from src.utils.text_processing import clean_text
+from src.utils.sampler import IntronSeq2SeqTrainer
 
 
 set_seed(1778)
@@ -123,10 +123,10 @@ if __name__ == "__main__":
 
     def transform_dataset(audio_path, text):
         # Load and resample audio data to 16KHz
-        try:
+        try:           
             speech = load_audio_file(audio_path)
         except Exception as e:
-            print(f"{audio_path} not found {str(e)}")
+            print(f"prepare: {audio_path} not found {str(e)}")
             speech = load_audio_file(temp_audio)
         
         # Compute log-Mel input features from input audio array
@@ -157,6 +157,8 @@ if __name__ == "__main__":
         # Override generation arguments
         model.config.forced_decoder_ids = None
         model.config.suppress_tokens = []
+        # to use gradient checkpointing
+        # model.config.use_cache = False
 
         # Instantiate data collator
         data_collator = DataCollatorSpeechSeq2SeqWithPadding(processor=processor)
@@ -188,11 +190,13 @@ if __name__ == "__main__":
             greater_is_better=False,
             push_to_hub=False,
             logging_first_step=True,
+            ignore_data_skip=True if config['hyperparameters']['ignore_data_skip'] == 'True' else False,
             dataloader_num_workers=int(config['hyperparameters']['dataloader_num_workers']),
+            ddp_find_unused_parameters=True if config['hyperparameters']['ddp_find_unused_parameters'] == "True" else False,
         )
 
         # # Define the trainer
-        trainer = Seq2SeqTrainer(
+        trainer = IntronSeq2SeqTrainer(
             args=training_args,
             model=model,
             train_dataset=train_dataset,
@@ -200,6 +204,7 @@ if __name__ == "__main__":
             data_collator=data_collator,
             compute_metrics=compute_metrics,
             tokenizer=processor.feature_extractor,
+            sampler=config['data']['sampler'] if 'sampler' in config['data'] else None
         )
 
         # Save the processor object once before starting to train

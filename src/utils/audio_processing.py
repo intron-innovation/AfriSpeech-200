@@ -1,6 +1,8 @@
 import librosa
 import numpy as np
 import warnings
+import traceback
+import sys
 
 warnings.filterwarnings('ignore')
 
@@ -26,6 +28,8 @@ def load_audio_file(file_path):
         if len(data) < sr:
             data = pad_zeros(data, AudioConfig.sr, AudioConfig.sr)
     except Exception as e:
-        print(f"{file_path} not found {str(e)}")
+        print(f"audio: {file_path} not found {str(e)}")
+        print(traceback.format_exc())
+        print(sys.exc_info()[2])
         data = np.random.rand(AudioConfig.sr * 3).astype(np.float32)
     return data

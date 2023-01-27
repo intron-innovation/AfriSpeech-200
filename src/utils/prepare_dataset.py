@@ -23,7 +23,7 @@ from transformers import (
 )
 
 from src.utils.audio_processing import AudioConfig, load_audio_file
-from src.utils.text_processing import clean_text
+from src.utils.text_processing import clean_text, detect_inaudible, replace_inaudible
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -48,7 +48,7 @@ class DataConfig:
 def load_afri_speech_data(
     data_path, max_audio_len_secs=17, audio_dir="./data/", 
     return_dataset=True, split="dev", gpu=-1, domain='all',
-    max_transcript_len=-1, min_transcript_len=-1
+    max_transcript_len=-1, min_transcript_len=-1,
 ):
     """
     load train/dev/test data from csv path.
@@ -64,14 +64,22 @@ def load_afri_speech_data(
     :return: Dataset instance
     """
     data = pd.read_csv(data_path)
-    if split == 'aug':
-        data["audio_paths"] = data["audio_paths"].apply(
-            lambda x: x.replace(f"/AfriSpeech-100/train/", audio_dir)
-        )
+    
+    if "audio_paths" in data.columns:
+        if split == 'aug':
+            data["audio_paths"] = data["audio_paths"].apply(
+                lambda x: x.replace(f"/AfriSpeech-100/train/", audio_dir)
+            )
+        else:
+            data["audio_paths"] = data["audio_paths"].apply(
+                lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
+            )
     else:
-        data["audio_paths"] = data["audio_paths"].apply(
-            lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
-        )
+        data["audio_paths"] = data["audio_path"]
+        data['audio_ids'] = data.index.astype("string")
+    
+    # drop empty transcript
+    data = data[~data.transcript.isna()]
     
     if max_audio_len_secs > -1 and gpu != -1:
         # when gpu is available, it cannot fit long samples
@@ -92,17 +100,30 @@ def load_afri_speech_data(
                 "-- set `max_audio_len_secs` to filter longer speech!"
             )
     
+    # drop inaudible
+    data["is_inaudible"] = data.text.apply(detect_inaudible)
+    data["text"] = data.text.apply(replace_inaudible)
+    print(f"inaudible: {len(data[data['is_inaudible'] > 0])}")
+    data = data[data.is_inaudible != 1]
+    print(f"drop inaudible: {data.shape}")
+    
+    data['nchars'] = data['text'].str.len()
+    
     if domain != 'all':
         data = data[data.domain == domain]
     if min_transcript_len != -1:
-        data = data[data.transcript.str.len() >= min_transcript_len]
+        data = data[data.nchars >= min_transcript_len]
     if max_transcript_len != -1:
-        data = data[data.transcript.str.len() < max_transcript_len]
+        data = data[data.nchars < max_transcript_len]
     
-    data["text"] = data["transcript"]
     print("before dedup", data.shape)
     data.drop_duplicates(subset=["audio_paths"], inplace=True)
     print("after dedup", data.shape)
+    if split == 'dev' and "1m_data_index" in data_path:
+        data = data.sample(frac=0.5, random_state=1)
+        print("dev new size", data.shape)
+    print(f"transcript len: max {data['nchars'].max()}, min {data['nchars'].min()}")
+    print(f"audio duration: max {data['duration'].max()}, min {data['duration'].min()}")
     if return_dataset:
         return Dataset.from_pandas(data)
     else:
@@ -149,6 +170,7 @@ def load_custom_dataset(config, data_path, split,
                             config.audio_path, split=split, domain=config.domain,
                             max_audio_len_secs=config.max_audio_len_secs,
                             min_transcript_len=config.min_transcript_len,
+                            max_transcript_len=config.max_transcript_len,
                             prepare=prepare, return_dataset=return_dataset)
 
 
