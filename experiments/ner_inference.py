@@ -29,7 +29,7 @@ def extract_entities(csv, threshhold=0.8):
         has_entity = 0
 
         if len(entities) != 0:
-            # fix for to ensure that entities is successfully saved as json blob.
+            # fix for to ensure that entities is successfully saved as json.
             for i in range(len(entities)):
                 y = entities[i]
                 for x in y.keys():
