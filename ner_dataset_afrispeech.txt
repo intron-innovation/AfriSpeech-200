@@ -1,0 +1,12464 @@
+▁National B-ORG
+▁ I-ORG
+Cycl I-ORG
+e I-ORG
+▁Network I-ORG
+▁Port B-LOC
+
+▁Rebel B-ORG
+
+▁Tin B-PER
+u I-PER
+bu I-PER
+
+▁Reuters B-ORG
+▁Grande B-ORG
+fe I-ORG
+x I-ORG
+▁June B-DATE
+▁2020 I-DATE
+▁Germany B-LOC
+
+▁Tuesday B-DATE
+▁28 I-DATE
+▁April I-DATE
+, I-DATE
+▁1998 I-DATE
+▁Dar B-PER
+amo I-PER
+la I-PER
+▁Ach I-PER
+ike I-PER
+▁08 B-DATE
+▁February I-DATE
+, I-DATE
+▁2003 I-DATE
+
+▁A B-PER
+beni B-PER
+▁Chine I-PER
+me I-PER
+mma I-PER
+▁China B-PER
+e I-PER
+cher I-PER
+em I-PER
+
+▁Microsoft B-ORG
+▁Microsoft B-ORG
+
+▁Brooklyn B-LOC
+
+▁Hend B-PER
+er I-PER
+son I-PER
+▁seven B-DATE
+- I-DATE
+day I-DATE
+▁North B-ORG
+e I-ORG
+a I-ORG
+stern I-ORG
+
+▁Gui B-PER
+
+▁This B-DATE
+▁morning I-DATE
+▁Chi B-PER
+mere I-PER
+ya I-PER
+▁Chi B-ORG
+no I-ORG
+ye I-ORG
+▁hospital I-ORG
+▁I B-LOC
+badan I-LOC
+▁Hussain B-PER
+a I-PER
+
+▁U B-LOC
+. I-LOC
+S I-LOC
+. I-LOC
+▁Justin B-PER
+▁McC I-PER
+ar I-PER
+thy I-PER
+
+▁Ki B-PER
+zz I-PER
+
+▁N B-PER
+wan I-PER
+nek I-PER
+a I-PER
+▁Na B-PER
+gona B-PER
+▁ne B-PER
+ice B-PER
+▁Ku I-PER
+jo I-PER
+re I-PER
+
+▁Town B-PER
+
+▁Taiwan B-LOC
+▁Vietnam B-LOC
+
+▁10 B-DATE
+▁Jul I-DATE
+, I-DATE
+▁1979 I-DATE
+▁If B-PER
+ech B-PER
+uk I-PER
+wu I-PER
+kw I-PER
+uru I-PER
+▁11 B-DATE
+▁years I-DATE
+▁of I-DATE
+▁age I-DATE
+▁5 B-DATE
+▁days I-DATE
+
+▁Vi B-PER
+nce I-PER
+
+▁14 B-DATE
+▁days I-DATE
+▁I B-PER
+weg B-PER
+bu I-PER
+ne I-PER
+▁Bata I-PER
+gara I-PER
+wa I-PER
+
+▁Ra B-PER
+ppa I-PER
+port I-PER
+▁NHL B-ORG
+
+▁Hussain B-PER
+▁MA B-ORG
+E I-ORG
+▁AFF I-ORG
+
+▁Federal B-ORG
+▁Ministry I-ORG
+▁of I-ORG
+▁Women I-ORG
+▁Affairs I-ORG
+▁and I-ORG
+▁Social I-ORG
+▁Development I-ORG
+▁F B-ORG
+IDA I-ORG
+▁Nigeria B-ORG
+▁Police I-ORG
+▁Force I-ORG
+▁Bella B-ORG
+Na I-ORG
+ija I-ORG
+▁USA B-ORG
+ID I-ORG
+▁R I-ORG
+ISE I-ORG
+
+▁A B-PER
+siri I-PER
+bo I-PER
+▁Pre I-PER
+cious I-PER
+▁I B-ORG
+badan I-ORG
+▁Gram I-ORG
+mar I-ORG
+▁School I-ORG
+▁Ola B-PER
+ji I-PER
+de I-PER
+▁Iya I-PER
+nu I-PER
+olu I-PER
+wa I-PER
+▁Louis B-ORG
+▁Gram I-ORG
+mar I-ORG
+▁School I-ORG
+
+▁Micro B-ORG
+blad I-ORG
+ing I-ORG
+▁A I-ORG
+e I-ORG
+sthetic I-ORG
+s I-ORG
+
+▁Aber B-ORG
+de I-ORG
+en I-ORG
+▁University I-ORG
+
+▁NA B-ORG
+
+▁Dublin B-LOC
+s I-LOC
+▁north I-LOC
+▁inner I-LOC
+▁city I-LOC
+
+▁Ade B-PER
+ville I-PER
+▁Kam I-PER
+ba I-PER
+
+▁Eisen B-PER
+how I-PER
+er I-PER
+
+▁Chi B-PER
+eke I-PER
+zie I-PER
+▁En I-PER
+i I-PER
+bra I-PER
+ye I-PER
+
+▁Si B-PER
+ki B-PER
+ru I-PER
+▁Ade I-PER
+ye I-PER
+mi I-PER
+▁Nathan B-PER
+iel I-PER
+▁Sam I-PER
+son I-PER
+▁Johnson B-PER
+▁N I-PER
+na I-PER
+mani I-PER
+▁Nigeria B-LOC
+▁24- B-DATE
+year I-DATE
+▁Clement B-PER
+▁Chu I-PER
+kw I-PER
+u I-PER
+▁Da B-LOC
+kar I-LOC
+▁Senegal B-LOC
+▁1998. B-DATE
+
+▁ B-ORG
+NN B-ORG
+PC I-ORG
+▁Nigeria B-LOC
+
+▁Cass B-PER
+o I-PER
+cor I-PER
+▁Boga I-PER
+h I-PER
+day I-PER
+▁O B-LOC
+ud I-LOC
+ts I-LOC
+hoor I-LOC
+n I-LOC
+
+▁Asa B-PER
+roy I-PER
+oma I-PER
+▁Adel I-PER
+ola I-PER
+▁N B-PER
+wa I-PER
+ele I-PER
+▁Chi I-PER
+kel I-PER
+ue I-PER
+
+▁Iz B-PER
+u I-PER
+O I-PER
+juk I-PER
+wu I-PER
+
+▁2014 B-DATE
+▁California B-LOC
+▁Sher B-ORG
+win I-ORG
+▁- I-ORG
+▁Williams I-ORG
+▁ I-ORG
+NL I-ORG
+▁Industrie I-ORG
+s I-ORG
+▁Con B-ORG
+A I-ORG
+gra I-ORG
+
+▁3. B-DATE
+10 I-DATE
+pm I-DATE
+▁Pe B-LOC
+▁Anthony B-PER
+▁Hal I-PER
+pin I-PER
+
+▁Og B-PER
+ech I-PER
+uk I-PER
+wu I-PER
+▁La B-PER
+di I-PER
+po I-PER
+▁Kano B-LOC
+
+▁Bo B-PER
+ma I-PER
+▁Beat B-PER
+rice I-PER
+
+▁San B-ORG
+▁Ono I-ORG
+fre I-ORG
+▁Nu I-ORG
+clear I-ORG
+▁Genera I-ORG
+ting I-ORG
+▁Station I-ORG
+▁SONG I-ORG
+S I-ORG
+▁the B-LOC
+▁Pacific B-LOC
+▁coast I-LOC
+▁south B-LOC
+e I-LOC
+ast I-LOC
+▁of I-LOC
+▁San I-LOC
+▁Clement I-LOC
+e I-LOC
+
+▁Hou B-ORG
+thi I-ORG
+▁Saudi B-LOC
+
+▁Desc B-ORG
+arte I-ORG
+s I-ORG
+▁Systems I-ORG
+▁Group I-ORG
+▁one B-DATE
+▁year I-DATE
+▁one B-DATE
+▁year I-DATE
+
+/ B-LOC
+US B-LOC
+
+▁10 B-DATE
+▁Dec I-DATE
+▁1993 I-DATE
+▁6 I-DATE
+: I-DATE
+▁50 I-DATE
+▁PM I-DATE
+▁ B-ORG
+CTA B-ORG
+▁ABD B-PER
+
+▁next B-DATE
+▁five I-DATE
+▁years I-DATE
+▁Nigeria B-LOC
+
+▁yesterday B-DATE
+▁N B-LOC
+wa I-LOC
+bu I-LOC
+isi I-LOC
+
+▁GI B-PER
+▁ABD B-PER
+
+▁Eg B-PER
+bo I-PER
+e I-PER
+▁No I-PER
+mer I-PER
+
+▁4 B-DATE
+▁yr I-DATE
+▁old I-DATE
+▁On B-PER
+yen I-PER
+ye I-PER
+aka I-PER
+▁U I-PER
+gon I-PER
+ne I-PER
+▁4 B-DATE
+▁days I-DATE
+
+▁Nigeria B-LOC
+
+▁Johnny B-PER
+▁December B-DATE
+▁18 I-DATE
+▁ I-DATE
+, I-DATE
+▁2006 I-DATE
+
+▁Ukraine B-LOC
+▁Vol B-PER
+ody B-PER
+my I-PER
+r I-PER
+▁Zelen I-PER
+sky I-PER
+
+▁Ari B-PER
+bo I-PER
+
+▁Simon B-PER
+▁Peter I-PER
+
+▁Da B-PER
+bang I-PER
+▁APC B-ORG
+
+▁Simpson B-PER
+▁RH I-PER
+W I-PER
+
+▁Lin B-PER
+▁T I-PER
+- I-PER
+Y I-PER
+▁1989 B-DATE
+
+▁N B-ORG
+nej I-ORG
+i I-ORG
+▁En I-ORG
+yin I-ORG
+na I-ORG
+nya I-ORG
+▁ I-ORG
+Diagnos I-ORG
+tic I-ORG
+▁center I-ORG
+▁Gomb B-LOC
+e I-LOC
+
+▁East B-LOC
+ern I-LOC
+▁Europe I-LOC
+
+▁Baba B-PER
+lade I-PER
+▁Lo I-PER
+ta I-PER
+chi I-PER
+▁Og I-PER
+ami I-PER
+nana I-PER
+
+▁Saturday B-DATE
+▁Enter B-ORG
+gy I-ORG
+▁Texas I-ORG
+▁Grove B-LOC
+s I-LOC
+▁Nederland B-LOC
+▁Port B-LOC
+▁Arthur I-LOC
+▁Port B-LOC
+▁Nech I-LOC
+es I-LOC
+▁Sabi B-LOC
+ne I-LOC
+▁Pass I-LOC
+▁Taylor B-LOC
+▁Land I-LOC
+ing I-LOC
+
+▁Chu B-PER
+kw I-PER
+uel I-PER
+oka I-PER
+▁Om I-PER
+imi I-PER
+chu I-PER
+kw I-PER
+u I-PER
+▁Lago B-LOC
+s I-LOC
+
+▁ B-ORG
+WB B-ORG
+Z I-ORG
+▁August B-DATE
+▁25 B-PER
+Da B-PER
+ve B-PER
+▁Ep B-PER
+stein I-PER
+
+▁Kamal B-PER
+de I-PER
+en I-PER
+▁O I-PER
+kun I-PER
+lo I-PER
+la I-PER
+
+▁Del B-PER
+▁Gui I-PER
+dice I-PER
+▁Tuesday B-DATE
+▁Bei B-LOC
+rut I-LOC
+▁Lebanon B-LOC
+
+▁Nya B-PER
+thi I-PER
+
+▁Red B-PER
+▁Cloud I-PER
+▁ni B-DATE
+nete I-DATE
+en I-DATE
+th I-DATE
+▁century I-DATE
+
+▁Amazon B-ORG
+
+▁4 B-DATE
+▁months I-DATE
+▁ago I-DATE
+▁Bash B-PER
+ir I-PER
+▁Og I-PER
+un I-PER
+susi I-PER
+
+▁Bella B-ORG
+my I-ORG
+▁Brother I-ORG
+s I-ORG
+
+▁Radio B-ORG
+▁Communication I-ORG
+▁Nigeria I-ORG
+▁Limited I-ORG
+▁R B-ORG
+CN I-ORG
+▁June B-DATE
+▁12 I-DATE
+, I-DATE
+▁1993 I-DATE
+▁M B-PER
+. I-PER
+K I-PER
+. I-PER
+O I-PER
+▁Abi I-PER
+ola I-PER
+
+▁Jason B-PER
+
+▁Uttar B-LOC
+▁Pradesh I-LOC
+
+▁4 B-DATE
+▁yr I-DATE
+▁old I-DATE
+▁Kan B-PER
+▁4 B-DATE
+▁days I-DATE
+
+▁Da B-PER
+bere I-PER
+chi I-PER
+▁Ini B-PER
+ola I-PER
+▁09 B-DATE
+▁January I-DATE
+, I-DATE
+▁2003 I-DATE
+
+▁Or B-PER
+dor I-PER
+▁Star B-ORG
+r I-ORG
+▁Luxury I-ORG
+▁Car I-ORG
+s I-ORG
+
+▁A B-PER
+ino I-PER
+▁Jin I-PER
+▁John I-PER
+▁Jam B-PER
+
+▁Obi B-PER
+▁PDP B-ORG
+
+▁US B-LOC
+
+▁Moscow B-LOC
+▁Turk B-LOC
+men I-LOC
+istan I-LOC
+
+▁April B-DATE
+▁14 I-DATE
+▁Narendra B-PER
+▁Modi I-PER
+▁Thursday B-DATE
+
+▁NI B-ORG
+GER B-ORG
+IAN I-ORG
+▁TRI I-ORG
+B I-ORG
+UNE I-ORG
+
+▁O B-PER
+ji I-PER
+u I-PER
+go I-PER
+▁4 B-DATE
+▁months I-DATE
+
+▁I B-ORG
+FK I-ORG
+▁G I-ORG
+te I-ORG
+borg I-ORG
+
+▁If B-LOC
+es I-LOC
+ina I-LOC
+chi I-LOC
+▁bus I-ORG
+▁stop I-ORG
+▁N B-LOC
+ne I-LOC
+wi I-LOC
+
+▁Pe B-PER
+te B-PER
+
+▁Cuba B-ORG
+▁Medical I-ORG
+▁Brig I-ORG
+ades I-ORG
+▁Nigeria B-LOC
+
+▁Fal B-PER
+z I-PER
+▁Si B-PER
+mi B-PER
+
+▁Alam B-ORG
+os I-ORG
+▁Gold I-ORG
+
+▁Jackson B-PER
+▁18 B-DATE
+28 I-DATE
+▁25 B-DATE
+▁years I-DATE
+
+▁Ini B-PER
+▁Di I-PER
+ma I-PER
+- I-PER
+O I-PER
+koj I-PER
+ie I-PER
+▁Ab B-PER
+asi I-PER
+▁En I-PER
+e I-PER
+- I-PER
+O I-PER
+bong I-PER
+
+▁TRA B-ORG
+CE I-ORG
+▁I B-LOC
+yana I-LOC
+- I-LOC
+I I-LOC
+log I-LOC
+bo I-LOC
+▁Og B-LOC
+un I-LOC
+
+▁Stan B-PER
+▁N I-PER
+ze I-PER
+
+▁Og B-LOC
+un I-LOC
+▁State I-LOC
+▁Da B-PER
+po I-PER
+▁A I-PER
+bio I-PER
+dun I-PER
+▁Wednesday B-DATE
+▁All B-ORG
+▁Progres I-ORG
+sive I-ORG
+s I-ORG
+▁Congress I-ORG
+▁Abu B-LOC
+ja I-LOC
+
+▁Christine B-PER
+▁Hol I-PER
+gate I-PER
+
+▁Abd B-PER
+i I-PER
+▁Abd I-PER
+i I-PER
+rahman I-PER
+▁age B-DATE
+▁43 I-DATE
+
+▁Mag B-PER
+gie I-PER
+
+▁George I-LOC
+s I-LOC
+▁Cross I-LOC
+▁George B-PER
+
+▁the B-LOC
+▁US B-LOC
+
+▁Za B-PER
+▁Manila B-LOC
+▁Spain B-LOC
+▁Spain B-LOC
+▁Ul I-PER
+ti I-PER
+mos I-PER
+▁Bal I-PER
+er I-PER
+
+▁Anderson B-PER
+▁Stud B-PER
+er I-PER
+
+▁Apple B-ORG
+s I-ORG
+▁five B-DATE
+▁years I-DATE
+
+▁Al B-LOC
+geria I-LOC
+▁Tuesday B-DATE
+▁Reuters B-ORG
+
+▁Le B-PER
+ight B-PER
+on I-PER
+▁Na B-PER
+ndi I-PER
+
+▁N B-PER
+wa I-PER
+di I-PER
+uto I-PER
+▁O B-ORG
+kene I-ORG
+▁elementar I-ORG
+y I-ORG
+▁school I-ORG
+
+▁Nigeria B-LOC
+
+▁N B-PER
+na I-PER
+jo I-PER
+for I-PER
+▁Chu I-PER
+kw I-PER
+uel I-PER
+oka I-PER
+
+▁Acc B-ORG
+ele I-ORG
+rate I-ORG
+▁TV I-ORG
+
+▁Nigeria B-LOC
+
+▁Nes B-PER
+och I-PER
+i I-PER
+▁W I-PER
+ura I-PER
+ola I-PER
+
+▁Fun B-PER
+si I-PER
+▁Yo I-PER
+rah I-PER
+▁Bah I-PER
+▁Kuma B-LOC
+si I-ORG
+▁hospital I-ORG
+
+▁Quint B-PER
+on I-PER
+
+▁AY B-PER
+▁Basket B-PER
+mouth I-PER
+
+▁Australia B-LOC
+▁last B-DATE
+▁seven I-DATE
+▁days I-DATE
+
+▁U B-ORG
+PN I-ORG
+▁1983 B-DATE
+
+▁Tha B-LOC
+net I-LOC
+▁Ash B-LOC
+ford I-LOC
+
+▁La B-PER
+bile I-PER
+
+▁Baba B-PER
+lade I-PER
+▁Bio B-PER
+ye I-PER
+▁Gomb B-ORG
+e I-ORG
+▁university I-ORG
+▁Off B-LOC
+a I-LOC
+▁Kur B-PER
+ok I-PER
+eme I-PER
+
+Ab B-PER
+iola B-PER
+▁ B-DATE
+thir B-DATE
+teen I-DATE
+▁years I-DATE
+
+▁Young B-PER
+- I-PER
+Hol I-PER
+mes I-PER
+
+▁App B-PER
+iah I-PER
+▁Black B-ORG
+▁Stars I-ORG
+▁three B-DATE
+▁days I-DATE
+▁ago I-DATE
+▁G B-ORG
+FA I-ORG
+▁Thursday B-DATE
+▁night I-DATE
+
+▁Nigeria B-LOC
+▁Africa B-LOC
+
+▁Lam B-PER
+lo I-PER
+ya I-PER
+e I-PER
+▁Boy I-PER
+▁Inga B-PER
+h I-PER
+▁Ab B-LOC
+oso I-LOC
+
+▁06 B-DATE
+▁May I-DATE
+▁1986 I-DATE
+▁1: I-DATE
+▁54 I-DATE
+▁PM I-DATE
+▁BILA B-LOC
+
+▁RED B-ORG
+▁F I-ORG
+LAG I-ORG
+
+▁New B-LOC
+▁Delhi I-LOC
+▁earlier B-DATE
+▁this I-DATE
+▁year I-DATE
+
+▁17 B-DATE
+▁December I-DATE
+▁2012 I-DATE
+▁Horn B-ORG
+by I-ORG
+▁2013 B-DATE
+▁late B-DATE
+▁2013 I-DATE
+▁Horn B-ORG
+by I-ORG
+▁Model B-ORG
+▁Rail I-ORG
+▁Magazine I-ORG
+s I-ORG
+
+▁Ma B-PER
+home I-PER
+s I-PER
+
+▁An B-ORG
+▁Post I-ORG
+
+▁San B-LOC
+▁Francisco I-LOC
+
+▁Tam B-PER
+i I-PER
+
+EN B-ORG
+
+▁Raymond B-PER
+▁James I-PER
+▁Raymond B-PER
+▁James I-PER
+▁Market B-ORG
+Be I-ORG
+at I-ORG
+
+▁T B-ORG
+PN I-ORG
+
+▁ B-ORG
+▁ B-ORG
+CTA B-ORG
+▁ABD I-ORG
+▁ B-ORG
+PEL B-ORG
+VIS I-ORG
+
+▁Guy B-LOC
+ana I-LOC
+
+▁Sok B-PER
+elo I-PER
+o I-PER
+▁Er I-PER
+ufa I-PER
+▁68 B-DATE
+▁year I-DATE
+▁old I-DATE
+▁Be B-ORG
+kwa I-ORG
+i I-ORG
+▁ED I-ORG
+▁15 B-DATE
+▁March I-DATE
+▁2011 I-DATE
+▁13 B-DATE
+: I-DATE
+▁40 I-DATE
+
+▁C B-ORG
+- I-ORG
+SP I-ORG
+INE I-ORG
+▁COL I-ORG
+LAR I-ORG
+▁ I-ORG
+INTA I-ORG
+CT I-ORG
+
+▁U B-PER
+to I-PER
+dina I-PER
+chi I-PER
+▁I I-PER
+be I-PER
+ama I-PER
+ka I-PER
+▁Chu B-PER
+kw I-PER
+ua I-PER
+dika I-PER
+▁O I-PER
+lo I-PER
+hi I-PER
+
+▁N B-ORG
+▁NG I-ORG
+
+▁Ida B-PER
+▁Sax I-PER
+ton I-PER
+▁Mc I-PER
+K I-PER
+in I-PER
+ley I-PER
+▁Can B-LOC
+ton I-LOC
+
+▁18- B-DATE
+year I-DATE
+- I-DATE
+old I-DATE
+▁the B-ORG
+▁Emirat I-ORG
+es I-ORG
+
+▁Ti B-PER
+ti I-PER
+▁Dama I-PER
+
+▁Putin B-PER
+▁Ros B-ORG
+kos I-ORG
+mos I-ORG
+▁Boris B-PER
+ov I-PER
+▁Russia B-LOC
+
+▁Kenn B-PER
+y I-PER
+▁Bla I-PER
+q I-PER
+▁Netflix B-ORG
+▁November B-DATE
+▁17. I-DATE
+
+▁Gi B-PER
+gg I-PER
+s I-PER
+
+▁I B-PER
+ke I-PER
+▁O I-PER
+bot I-PER
+▁Bata B-LOC
+gara I-LOC
+wa I-LOC
+▁today B-DATE
+
+▁Ah B-PER
+gou I-PER
+▁Be I-PER
+ndo I-PER
+
+▁Lago B-LOC
+s I-LOC
+▁2000 B-DATE
+▁2021 B-DATE
+
+▁March B-DATE
+▁Central B-ORG
+▁Bank I-ORG
+▁of I-ORG
+▁Nigeria I-ORG
+
+▁Black B-LOC
+wall I-LOC
+▁Carmen B-PER
+
+▁All B-ORG
+▁Progres I-ORG
+sive I-ORG
+s I-ORG
+▁Congress I-ORG
+▁Salih B-PER
+u I-PER
+▁Luk I-PER
+man I-PER
+▁APC B-ORG
+▁Bola B-PER
+▁Tin I-PER
+u I-PER
+bu I-PER
+
+▁Gil B-PER
+ani I-PER
+▁Pakistan B-ORG
+▁People I-ORG
+s I-ORG
+▁Party I-ORG
+
+▁Osa B-PER
+boo I-PER
+▁Do I-PER
+soo I-PER
+▁one B-DATE
+▁week I-DATE
+▁ago I-DATE
+▁night B-DATE
+
+▁Brazil B-LOC
+
+▁Bi B-ORG
+bb I-ORG
+▁County I-ORG
+▁Coro I-ORG
+ners I-ORG
+▁Office I-ORG
+
+▁C B-PER
+rique I-ORG
+▁Ore B-PER
+at I-PER
+▁Kiam B-LOC
+bu I-LOC
+▁24 B-DATE
+/04/ I-DATE
+2000 I-DATE
+
+▁Jackson B-PER
+
+▁SHI B-PER
+MI I-PER
+ZU I-PER
+
+▁2010 B-DATE
+▁Friday B-DATE
+▁night I-DATE
+▁NRK B-ORG
+
+▁Ali B-PER
+cia I-PER
+
+▁U B-LOC
+x I-LOC
+bridge I-LOC
+▁Brun B-ORG
+el I-ORG
+▁University I-ORG
+▁Bu B-ORG
+cking I-ORG
+ham I-ORG
+shire I-ORG
+▁New I-ORG
+▁University I-ORG
+▁U B-ORG
+x I-ORG
+bridge I-ORG
+▁College I-ORG
+
+▁Bio B-PER
+ye I-PER
+▁I I-PER
+ye I-PER
+ala I-PER
+▁G B-LOC
+be I-LOC
+mis I-LOC
+ayo I-LOC
+▁War I-LOC
+d I-LOC
+
+▁APC B-ORG
+▁Jonathan B-PER
+
+▁Nigeria B-LOC
+▁Russia B-LOC
+▁France B-LOC
+▁Kreml B-PER
+▁Ukraine B-LOC
+
+▁R B-PER
+auf I-PER
+▁A I-PER
+reg I-PER
+be I-PER
+sola I-PER
+▁US B-LOC
+
+▁Global B-ORG
+▁News I-ORG
+▁IL B-ORG
+W I-ORG
+U I-ORG
+▁Port B-ORG
+▁of I-ORG
+▁Vancouver I-ORG
+
+▁Do B-PER
+dd I-PER
+▁Varga B-PER
+s I-PER
+
+▁Daniel B-PER
+
+▁N B-ORG
+SP I-ORG
+
+▁Sun B-DATE
+▁09 I-DATE
+▁Dec I-DATE
+, I-DATE
+▁2018 I-DATE
+▁Mora B-PER
+nda B-PER
+▁11 B-DATE
+▁years I-DATE
+▁of I-DATE
+▁age I-DATE
+▁5 B-DATE
+▁days I-DATE
+
+▁Brazil B-LOC
+
+▁2017 B-DATE
+▁Ty B-PER
+e I-PER
+wo I-PER
+o I-PER
+▁Cha I-PER
+dari I-PER
+
+▁Pop B-PER
+eye I-PER
+▁Jos B-LOC
+ie I-ORG
+▁Lee I-ORG
+▁Pop B-PER
+eye I-PER
+
+▁Et B-PER
+ander I-PER
+▁Ay I-PER
+ale I-PER
+
+▁Emmanuel B-PER
+▁Macron I-PER
+
+▁Jun B-PER
+▁Og B-PER
+
+▁Solomon B-PER
+
+▁Gum B-PER
+a I-PER
+▁He I-PER
+hung I-PER
+▁Mah B-PER
+mu B-PER
+
+▁Ag B-PER
+be I-PER
+de I-PER
+▁Chi I-PER
+bu I-PER
+zor I-PER
+
+▁TRI B-ORG
+▁LU I-ORG
+
+▁Te B-LOC
+esta I-LOC
+▁river I-LOC
+
+▁this B-DATE
+▁week I-DATE
+▁Mike B-PER
+▁Za I-PER
+rren I-PER
+▁the B-ORG
+▁Globe I-ORG
+
+▁Sergey B-PER
+▁Kom I-PER
+kov I-PER
+
+▁Bi B-LOC
+hta I-LOC
+▁Ph B-LOC
+ul B-LOC
+war I-LOC
+isha I-LOC
+rif I-LOC
+
+▁Wilson B-PER
+
+▁Thursday B-DATE
+▁Gar B-PER
+ba I-PER
+
+▁Spain B-LOC
+▁Sina B-PER
+tra I-PER
+
+▁CON B-PER
+OR I-PER
+▁Mc I-PER
+GRE I-PER
+GOR I-PER
+▁UFC B-ORG
+
+▁I B-PER
+momo I-PER
+timi I-PER
+▁Toch I-PER
+uk I-PER
+wu I-PER
+▁age B-DATE
+▁55 I-DATE
+▁Oba B-ORG
+ni I-ORG
+yi I-ORG
+▁hospital I-ORG
+▁17 B-DATE
+-03- I-DATE
+2009 I-DATE
+
+▁Zam B-LOC
+fara I-LOC
+
+▁Patel B-PER
+
+▁20 B-DATE
+▁and I-DATE
+▁30 I-DATE
+▁hours I-DATE
+▁Apple B-ORG
+
+▁N B-PER
+k I-PER
+rumah I-PER
+
+▁Og B-PER
+u I-PER
+chi I-PER
+▁Ach I-PER
+ike I-PER
+
+▁year I-DATE
+▁Moore B-PER
+▁that B-DATE
+▁year I-DATE
+▁Philadelphia B-LOC
+
+▁11 B-DATE
+:22 I-DATE
+am I-DATE
+▁A B-PER
+ho B-PER
+kay I-PER
+▁O I-PER
+doo I-PER
+lar I-PER
+my I-PER
+
+▁Kat B-LOC
+sina I-LOC
+
+▁U B-PER
+che I-PER
+▁Ek I-PER
+we I-PER
+▁Nigeria B-ORG
+n I-ORG
+▁La I-ORG
+bour I-ORG
+▁Congress I-ORG
+▁La B-ORG
+bour I-ORG
+▁Union I-ORG
+
+▁Chat B-PER
+mon I-PER
+▁Mississippi B-LOC
+
+▁Best B-ORG
+▁Buy I-ORG
+▁Amazon B-ORG
+▁Android B-ORG
+▁Samsung B-ORG
+
+▁Mc B-PER
+K I-PER
+night I-PER
+▁Katherine B-PER
+▁Fra I-PER
+ser I-PER
+▁Monday B-DATE
+
+▁Abdullah B-PER
+i I-PER
+▁Umar I-PER
+▁Gand I-PER
+uje I-PER
+▁Usman B-PER
+▁Al I-PER
+ha I-PER
+ji I-PER
+▁Kano B-ORG
+▁State I-ORG
+▁Government I-ORG
+
+▁A B-ORG
+egi I-ORG
+s I-ORG
+▁Al B-LOC
+ki I-LOC
+mos I-LOC
+
+▁2011 B-DATE
+▁Israel B-LOC
+
+▁Berry B-ORG
+
+▁Wine B-PER
+▁Muse B-PER
+veni I-PER
+
+▁Eco B-ORG
+was I-ORG
+▁Abu B-LOC
+ja I-LOC
+▁Nigeria B-LOC
+▁Ke B-PER
+ita I-PER
+▁Bou B-PER
+bou I-PER
+▁Ci I-PER
+s I-PER
+s I-PER
+
+▁Nigeria B-ORG
+n I-ORG
+▁Nav I-ORG
+y I-ORG
+
+▁Gu B-PER
+thri B-PER
+e I-PER
+
+▁America B-LOC
+
+▁Turkey B-LOC
+▁Syria B-LOC
+
+▁police I-ORG
+▁forces I-ORG
+▁this B-DATE
+▁week I-DATE
+▁Clear B-ORG
+view I-ORG
+s I-ORG
+
+▁Portland B-ORG
+▁Board I-ORG
+▁of I-ORG
+▁Work I-ORG
+s I-ORG
+▁Meri B-LOC
+dian I-LOC
+▁Street I-LOC
+
+▁Kerala B-LOC
+
+▁Washington B-DATE
+s I-DATE
+▁US B-LOC
+▁today B-DATE
+
+▁APC B-ORG
+
+▁Cri B-LOC
+cium I-LOC
+a I-LOC
+▁early B-DATE
+▁Tuesday I-DATE
+
+▁Gav B-PER
+in I-PER
+
+▁Warren B-PER
+
+▁V B-ORG
+20 I-ORG
+▁Group I-ORG
+▁of I-ORG
+▁Finance I-ORG
+▁Vul I-ORG
+able I-ORG
+▁Forum I-ORG
+▁V B-ORG
+20 I-ORG
+
+▁Sale B-LOC
+m I-LOC
+▁South B-LOC
+▁Da I-LOC
+kota I-LOC
+
+▁Italy B-LOC
+▁South B-LOC
+▁Korea I-LOC
+▁Egypt B-LOC
+▁Lebanon B-LOC
+▁two B-DATE
+▁weeks I-DATE
+
+▁the B-ORG
+▁So I-ORG
+x I-ORG
+
+▁Os B-LOC
+un I-LOC
+
+▁White B-PER
+▁Carbon B-LOC
+dale I-LOC
+
+▁Go B-ORG
+Pro I-ORG
+
+▁The B-ORG
+▁City I-ORG
+▁of I-ORG
+▁Chicago I-ORG
+
+▁F B-ORG
+DA I-ORG
+
+▁Thursday B-DATE
+▁afternoon I-DATE
+▁Chance B-PER
+
+▁Ontario B-LOC
+▁TD B-ORG
+SB I-ORG
+▁Hal B-ORG
+ton I-ORG
+▁Catholic I-ORG
+▁board I-ORG
+
+▁British B-ORG
+▁Journal I-ORG
+▁of I-ORG
+▁Nur I-ORG
+sing I-ORG
+
+▁Thursday B-DATE
+▁morning I-DATE
+▁central B-LOC
+▁and I-LOC
+▁south I-LOC
+▁Alabama I-LOC
+
+▁Gut B-PER
+tenberg I-PER
+▁Dun B-ORG
+kin I-ORG
+▁Don I-ORG
+uts I-ORG
+
+▁Re B-ORG
+liance I-ORG
+▁Retail I-ORG
+▁2007, B-DATE
+▁March B-DATE
+
+▁Ahmedabad B-LOC
+
+▁Frederik B-PER
+▁Mary B-PER
+
+▁Today B-DATE
+▁United B-ORG
+▁Nations I-ORG
+
+▁Raja B-PER
+t I-PER
+▁Kamal I-PER
+
+▁1928 B-DATE
+▁17 B-DATE
+▁days I-DATE
+▁two B-DATE
+▁years I-DATE
+▁later I-DATE
+▁London B-LOC
+s I-LOC
+▁Victoria I-LOC
+▁Tower I-LOC
+▁Garden I-LOC
+s I-LOC
+
+▁U B-PER
+ti I-PER
+▁N I-PER
+wach I-PER
+uk I-PER
+wu I-PER
+
+▁Adi B-PER
+tya I-PER
+▁Seal I-PER
+▁Har B-PER
+sh I-PER
+▁Beni I-PER
+wal I-PER
+
+▁Ja B-PER
+lla I-PER
+▁Ob B-ORG
+u I-ORG
+asi I-ORG
+▁University I-ORG
+▁Pa B-ORG
+domo I-ORG
+▁University I-ORG
+
+▁Fay B-PER
+emi I-PER
+
+▁Amanda B-PER
+
+▁AU B-ORG
+
+▁Nico B-PER
+ls I-PER
+▁Maduro I-PER
+▁United B-LOC
+▁States I-LOC
+▁Venezuela B-LOC
+▁11 B-DATE
+▁p I-DATE
+. I-DATE
+m I-DATE
+
+▁Aba B-LOC
+▁Aku B-PER
+bu I-PER
+ilo I-PER
+▁O B-PER
+ke I-PER
+zie I-PER
+▁O B-ORG
+yo I-ORG
+▁university I-ORG
+▁1998 B-DATE
+▁2006. B-DATE
+
+▁NI B-ORG
+TEL I-ORG
+
+▁Ocean B-LOC
+▁City I-LOC
+
+▁Ud B-PER
+ugi I-PER
+▁Bis I-PER
+i I-PER
+▁one B-DATE
+▁week I-DATE
+▁ago I-DATE
+▁night B-DATE
+
+▁BG B-ORG
+DI I-ORG
+
+▁Dung B-PER
+- I-PER
+G I-PER
+w I-PER
+om I-PER
+
+▁Ona B-PER
+fu I-PER
+ye I-PER
+▁I B-PER
+bi I-PER
+m I-PER
+
+▁Al B-PER
+- I-PER
+M I-PER
+usta I-PER
+pha I-PER
+▁PP B-ORG
+N I-ORG
+
+▁5 B-DATE
+▁6 B-DATE
+▁more I-DATE
+▁years I-DATE
+▁ago I-DATE
+▁Mark B-PER
+▁Angel I-PER
+
+▁Wu B-PER
+
+▁UK B-LOC
+
+▁Catherine B-PER
+▁An I-PER
+ene I-PER
+
+▁International B-ORG
+▁Union I-ORG
+▁of I-ORG
+▁Social I-ORG
+ist I-ORG
+▁Youth I-ORG
+▁ I-ORG
+IUS I-ORG
+Y I-ORG
+▁1907 B-DATE
+
+▁Jones B-PER
+
+▁Polis B-LOC
+h I-LOC
+▁Lithuania I-LOC
+n I-LOC
+▁territori I-LOC
+es I-LOC
+▁Poland B-LOC
+
+▁1950 B-DATE
+▁1975 B-DATE
+▁Nor B-PER
+en I-PER
+
+▁Poti B-LOC
+skum I-LOC
+▁Aku B-LOC
+re I-LOC
+▁1994 B-DATE
+▁1955 B-DATE
+
+▁Chi B-PER
+ke I-PER
+pe I-PER
+
+▁I B-PER
+wa B-PER
+ta I-PER
+▁I B-PER
+wa I-PER
+ta I-PER
+▁2015 B-DATE
+
+▁Fri B-DATE
+▁27 I-DATE
+▁May I-DATE
+, I-DATE
+▁2011 I-DATE
+▁Ben B-LOC
+in I-LOC
+▁Bi B-LOC
+da I-LOC
+
+▁US B-LOC
+▁Nigeria B-LOC
+▁United B-LOC
+▁States I-LOC
+
+▁Christoph B-PER
+e I-PER
+▁Fra I-PER
+ser I-PER
+▁Oxford B-ORG
+▁University I-ORG
+s I-ORG
+▁Big I-ORG
+▁Data I-ORG
+▁Institute I-ORG
+▁UK B-LOC
+
+▁June B-DATE
+▁22, I-DATE
+▁Kenya B-LOC
+
+▁U B-LOC
+AE I-LOC
+
+▁Red B-LOC
+ruth I-LOC
+▁North I-LOC
+
+▁2020 B-DATE
+▁Bridge B-ORG
+rs I-ORG
+
+▁Fan B-PER
+ga I-PER
+▁O I-PER
+wah I-PER
+
+▁Z B-ORG
+IM I-ORG
+SH I-ORG
+OFF I-ORG
+
+▁Z B-ORG
+IM I-ORG
+SH I-ORG
+OFF I-ORG
+
+▁Frank B-PER
+▁Bi I-PER
+cking I-PER
+
+▁S B-PER
+tine I-PER
+
+▁Jordan B-PER
+
+▁Ok B-PER
+wu I-PER
+chi I-PER
+▁A B-LOC
+do I-LOC
+▁Ek I-LOC
+iti I-LOC
+▁Ich B-PER
+e I-PER
+ji I-PER
+▁Yo B-PER
+han B-PER
+na I-PER
+
+▁Garcia B-PER
+
+▁Malam B-PER
+i I-PER
+▁Ng B-PER
+ige I-PER
+▁Fala B-PER
+na B-PER
+
+▁Philippe B-PER
+▁11 B-DATE
+▁May I-DATE
+
+▁Gil B-ORG
+es I-ORG
+▁Academy I-ORG
+▁Church B-LOC
+▁End I-LOC
+
+▁Iraq B-LOC
+▁US B-LOC
+
+▁Gift B-PER
+
+▁3 B-DATE
+▁days I-DATE
+▁3 B-DATE
+▁days I-DATE
+▁3 B-DATE
+▁days I-DATE
+▁ago I-DATE
+▁F B-PER
+umu B-PER
+an I-PER
+ve I-PER
+▁Ca I-PER
+mbah I-PER
+
+▁Ade B-PER
+kun I-PER
+le I-PER
+▁Gold I-PER
+
+▁Hospital B-ORG
+▁Os I-ORG
+ina I-ORG
+chi I-ORG
+▁Kon B-LOC
+ta I-LOC
+gora I-LOC
+▁city I-LOC
+▁15 B-DATE
+▁October I-DATE
+, I-DATE
+▁1998 I-DATE
+
+▁Sacra B-LOC
+mento I-LOC
+▁San B-LOC
+▁Francisco I-LOC
+
+▁Thursday B-DATE
+▁Moscow B-LOC
+▁Peter B-PER
+▁the I-PER
+▁Great I-PER
+
+▁N B-ORG
+ollywood I-ORG
+▁Gene B-PER
+vi I-PER
+eve I-PER
+▁N I-PER
+na I-PER
+ji I-PER
+▁Wednesday B-DATE
+
+▁James B-PER
+▁6- B-DATE
+year I-DATE
+- I-DATE
+old I-DATE
+▁Anna B-PER
+bel I-PER
+
+▁Zimbabwe B-LOC
+▁Mu B-PER
+gabe I-PER
+
+▁24 B-DATE
+▁Jun I-DATE
+, I-DATE
+▁2006 I-DATE
+▁Man B-PER
+sur I-PER
+▁Di I-PER
+ke I-PER
+o I-PER
+gu I-PER
+▁Hospital B-ORG
+▁U I-ORG
+yo I-LOC
+
+▁Huawei B-ORG
+
+▁Stanford B-ORG
+
+▁Tim B-PER
+▁Brown I-PER
+▁Davis B-PER
+▁Stand I-PER
+ish I-PER
+▁Alex B-PER
+▁Gar I-PER
+ber I-PER
+
+▁2013 B-DATE
+-14 I-DATE
+▁season I-DATE
+▁Var B-PER
+dy I-PER
+▁Leicester B-ORG
+s I-ORG
+
+▁INTE B-ORG
+GRA I-ORG
+TED I-ORG
+▁N I-ORG
+UR I-ORG
+SING I-ORG
+▁C I-ORG
+ARE I-ORG
+
+▁Portland B-ORG
+▁Police I-ORG
+▁Bureau I-ORG
+▁Wheel B-PER
+er I-PER
+
+▁China B-LOC
+▁2003 B-DATE
+-2017 I-DATE
+
+▁Tho B-PER
+lang I-PER
+▁Le I-PER
+belo I-PER
+▁Mog B-LOC
+ale I-LOC
+▁City I-LOC
+
+▁Richmond B-ORG
+
+▁Ro B-PER
+timi I-PER
+▁Yet I-PER
+unde I-PER
+
+▁Stephan B-PER
+ie I-PER
+▁Schu I-PER
+man I-PER
+▁McC B-PER
+on I-PER
+nell I-PER
+▁earlier B-DATE
+▁today I-DATE
+▁Lev B-PER
+▁Par I-PER
+nas I-PER
+
+▁Trump B-PER
+
+▁Jonathan B-PER
+
+▁The B-ORG
+▁Guardian I-ORG
+▁Digital B-ORG
+▁Spy I-ORG
+▁Ed B-PER
+mond I-PER
+son I-PER
+▁Abra B-PER
+
+▁Trump B-PER
+▁Republican B-ORG
+▁Party I-ORG
+▁Florida B-LOC
+
+▁Chi B-PER
+dio I-PER
+go I-PER
+▁Hadi I-PER
+
+▁Beth B-PER
+
+▁NH B-ORG
+S I-ORG
+
+▁Era B-PER
+smo I-PER
+▁Nar B-LOC
+ni I-PER
+▁Nar B-LOC
+ni I-LOC
+▁U B-LOC
+mbria I-LOC
+
+▁Nigeria B-ORG
+n I-ORG
+▁Academy I-ORG
+▁of I-ORG
+▁Science I-ORG
+▁Nigeria B-ORG
+n I-ORG
+▁Society I-ORG
+▁for I-ORG
+▁Bio I-ORG
+che I-ORG
+mist I-ORG
+ry I-ORG
+▁and I-ORG
+▁Mole I-ORG
+cular I-ORG
+▁Bi I-ORG
+ology I-ORG
+
+▁U B-LOC
+. I-LOC
+K I-LOC
+. I-LOC
+- I-LOC
+Ja B-LOC
+pan I-LOC
+▁past B-DATE
+▁three I-DATE
+▁years I-DATE
+
+▁Jesus B-PER
+
+▁NA B-ORG
+F I-ORG
+
+▁Bella B-PER
+▁O B-PER
+wo B-PER
+sen I-PER
+i I-PER
+Mak I-PER
+anju I-PER
+ola I-PER
+
+▁2023 B-DATE
+▁A B-PER
+tiku I-PER
+▁Bauch B-LOC
+i I-LOC
+
+▁Steve B-PER
+▁Musa I-PER
+baya I-PER
+▁Simba B-PER
+rash I-PER
+e I-PER
+▁Muta I-PER
+mbi I-PER
+rwa I-PER
+▁Ta B-PER
+fa I-PER
+d I-PER
+zwa I-PER
+▁Ke I-PER
+ni I-PER
+▁Nas B-PER
+lin I-PER
+▁Ne I-PER
+go I-PER
+mo I-PER
+▁Douglas B-PER
+▁Cho I-PER
+to I-PER
+▁Cy B-ORG
+pru I-ORG
+s I-ORG
+▁Vak I-ORG
+if I-ORG
+lar I-ORG
+▁Sports I-ORG
+▁Club I-ORG
+
+▁PDP B-ORG
+
+▁Nigeria B-LOC
+
+▁Kor B-PER
+yn I-PER
+
+▁Master B-PER
+s I-PER
+▁Johnson B-PER
+
+▁Iran B-LOC
+
+▁Bala B-PER
+ra I-PER
+be I-PER
+▁last B-DATE
+▁two I-DATE
+▁weeks I-DATE
+
+▁Ka B-PER
+thi B-PER
+e I-PER
+▁Obra I-PER
+d I-PER
+ovich I-PER
+▁Linh B-PER
+▁Ta I-PER
+▁Hawk B-LOC
+eye I-LOC
+▁state I-LOC
+
+▁Kaduna B-LOC
+
+▁Ronaldo B-PER
+▁Messi B-PER
+
+▁Middle B-LOC
+▁Dam I-LOC
+
+Bab B-PER
+y B-PER
+▁Ege I-PER
+ke I-PER
+ze I-PER
+
+▁Na B-LOC
+kuru B-LOC
+▁Bos B-PER
+afi I-PER
+▁Las I-PER
+hee I-PER
+
+▁Maria B-PER
+h I-PER
+▁Care I-PER
+y I-PER
+▁Boston B-ORG
+▁Pop I-ORG
+s I-ORG
+▁Orchestra I-ORG
+
+▁Bur B-PER
+le I-PER
+▁Marx I-PER
+
+▁George B-PER
+▁Co B-ORG
+u I-ORG
+gar I-ORG
+s I-ORG
+
+▁Bay B-LOC
+water I-LOC
+▁Park I-LOC
+▁8 B-LOC
+B I-LOC
+▁Wol I-LOC
+e I-LOC
+▁Ola I-LOC
+te I-LOC
+ju I-LOC
+▁Cre I-LOC
+sent I-LOC
+▁Le B-LOC
+kki I-LOC
+▁Phase I-LOC
+▁1 I-LOC
+▁Lago B-LOC
+s I-LOC
+
+▁Dia B-PER
+rach I-PER
+uk I-PER
+wu I-PER
+ndu I-PER
+▁Tug I-PER
+gar I-PER
+▁22 B-DATE
+▁weeks I-DATE
+▁ago I-DATE
+
+▁ B-ORG
+NN I-ORG
+PC I-ORG
+
+▁Patient B-PER
+▁De I-PER
+nay I-PER
+▁Lea I-PER
+yah I-PER
+
+▁A B-ORG
+per I-ORG
+ture I-ORG
+▁Investor I-ORG
+s I-ORG
+▁LLC I-ORG
+▁Will B-ORG
+S I-ORG
+cot I-ORG
+
+▁AS B-ORG
+UU I-ORG
+▁Nigeria B-LOC
+
+▁Ola B-PER
+wo I-PER
+ye I-PER
+▁O B-PER
+bio I-PER
+ha I-PER
+▁Wu B-LOC
+kari I-LOC
+▁this B-DATE
+▁morning I-DATE
+▁On B-PER
+yen I-PER
+cho I-PER
+▁last B-DATE
+▁night I-DATE
+▁Min B-ORG
+na I-ORG
+▁clinic I-ORG
+
+▁15 B-DATE
+▁days I-DATE
+▁Ni B-ORG
+ft I-ORG
+y I-ORG
+
+▁P B-ORG
+FS I-ORG
+
+▁Portland B-LOC
+▁Floyd B-PER
+▁May B-DATE
+▁Min B-LOC
+ne I-LOC
+a I-LOC
+polis I-LOC
+
+▁Rome B-LOC
+▁Africa B-LOC
+
+▁Patrick B-PER
+
+▁David B-PER
+▁Gall I-PER
+o I-PER
+▁Wood B-ORG
+s I-ORG
+▁Hol I-ORG
+e I-ORG
+▁Ocean I-ORG
+o I-ORG
+graphic I-ORG
+▁Institution I-ORG
+
+▁Petra B-LOC
+
+▁Pen B-ORG
+Com I-ORG
+
+▁E B-PER
+jimo I-PER
+for I-PER
+▁E B-PER
+bi I-PER
+▁last B-DATE
+▁night I-DATE
+▁Onun B-LOC
+aka I-LOC
+
+▁Fri B-DATE
+▁28 I-DATE
+▁Aug I-DATE
+, I-DATE
+▁1992 I-DATE
+▁A B-PER
+▁Boro I-PER
+▁02 B-DATE
+▁August I-DATE
+, I-DATE
+▁1991 I-DATE
+
+▁Patient B-PER
+▁Chi I-PER
+kwe I-PER
+lu I-PER
+▁Hospital B-ORG
+▁Chi I-ORG
+zur I-ORG
+u I-ORG
+▁last B-DATE
+▁night I-DATE
+▁Sun I-DATE
+▁18 I-DATE
+▁May I-DATE
+, I-DATE
+▁20 I-DATE
+31 I-DATE
+▁Mo B-LOC
+tanya I-LOC
+▁street I-LOC
+
+▁AR B-ORG
+▁State I-ORG
+▁Health I-ORG
+▁Department I-ORG
+
+▁Super B-ORG
+▁Kings I-ORG
+
+▁Ross B-PER
+
+▁Rama B-PER
+ge I-PER
+
+▁Apple B-ORG
+▁Apple B-ORG
+
+▁If B-PER
+ed I-PER
+iba I-PER
+▁Chi I-PER
+eme I-PER
+ka I-PER
+▁2: B-DATE
+▁33 I-DATE
+▁pm I-DATE
+▁Wednesday B-DATE
+▁15 I-DATE
+▁May I-DATE
+, I-DATE
+▁1991 I-DATE
+
+▁Celtic B-ORG
+s I-ORG
+▁Boston B-LOC
+▁Detroit B-ORG
+▁Pis I-ORG
+tons I-ORG
+▁Christian B-PER
+▁Wood I-PER
+
+▁Nijmegen B-LOC
+
+▁Chin B-PER
+wei I-PER
+zu I-PER
+▁O I-PER
+jo I-PER
+▁Bu B-PER
+kola B-PER
+▁last B-DATE
+▁night I-DATE
+▁Ek B-LOC
+et I-LOC
+
+▁Manda B-PER
+i I-PER
+▁Lady B-LOC
+smith I-LOC
+
+▁L B-PER
+aysay I-PER
+▁Mamma I-PER
+h I-PER
+▁Kam I-PER
+ony I-PER
+i I-PER
+
+▁Tas B-PER
+sah I-PER
+▁Bu B-ORG
+ngo I-ORG
+ma I-ORG
+▁university I-ORG
+▁E B-LOC
+ju I-LOC
+ra I-LOC
+▁L B-PER
+la I-PER
+vi I-PER
+
+▁Bangladesh B-LOC
+
+▁Friday B-DATE
+▁Green B-ORG
+▁Jack I-ORG
+et I-ORG
+
+▁Victoria B-PER
+
+▁Af B-PER
+am I-PER
+di I-PER
+▁Ud I-PER
+uma I-PER
+
+▁PO B-ORG
+
+▁California B-LOC
+
+▁ B-LOC
+WAS B-LOC
+HING I-LOC
+TON I-LOC
+▁July B-DATE
+▁18 I-DATE
+▁US B-LOC
+▁Donald B-PER
+▁Trump I-PER
+▁Saturday B-DATE
+
+▁N B-ORG
+PA I-ORG
+▁FR B-ORG
+SC I-ORG
+
+▁Go B-PER
+s B-PER
+sett I-PER
+
+▁Federal B-ORG
+▁Tre I-ORG
+as I-ORG
+ury I-ORG
+▁Daniel B-PER
+▁Andrew I-PER
+s I-PER
+
+▁Simon B-PER
+▁Catholic B-ORG
+▁Church I-ORG
+▁Australia B-LOC
+
+▁Ya B-PER
+mbo I-PER
+o I-PER
+▁Ard I-PER
+abay I-PER
+
+▁Nga B-PER
+m I-PER
+▁Gus B-ORG
+au I-ORG
+▁University I-ORG
+▁A B-ORG
+kere I-ORG
+dol I-ORG
+u I-ORG
+▁University I-ORG
+
+▁26 B-DATE
+▁March I-DATE
+, I-DATE
+▁2015 I-DATE
+▁Une B-PER
+ude I-PER
+▁11 B-DATE
+▁years I-DATE
+▁of I-DATE
+▁age I-DATE
+▁5 B-DATE
+▁days I-DATE
+
+▁Aba B-PER
+lag I-PER
+ha I-PER
+▁Gomb B-LOC
+e I-LOC
+▁Uz B-PER
+oka I-PER
+▁La I-PER
+olu I-PER
+
+▁Du B-PER
+ce I-PER
+y I-PER
+▁Wednesday B-DATE
+
+▁The B-ORG
+▁W I-ORG
+. I-ORG
+H I-ORG
+. I-ORG
+▁Rom B-PER
+ney I-PER
+
+▁Ang B-PER
+ie I-PER
+▁Bee I-PER
+
+▁early B-DATE
+▁20 I-DATE
+th I-DATE
+▁century I-DATE
+▁Yang B-LOC
+on I-LOC
+▁London B-LOC
+
+▁APC B-ORG
+▁N I-ORG
+WC I-ORG
+
+▁3 B-DATE
+▁days I-DATE
+▁3 B-DATE
+▁days I-DATE
+▁U B-PER
+go I-PER
+chi I-PER
+ny I-PER
+ere I-PER
+▁Zi I-PER
+ko I-PER
+rana I-PER
+udo I-PER
+dim I-PER
+ma I-PER
+
+▁WHO B-ORG
+
+▁Vol B-PER
+land I-PER
+
+▁Lake B-LOC
+▁Victoria I-LOC
+
+▁Ka B-PER
+biye I-PER
+sis I-PER
+
+▁Nigeria B-ORG
+n I-ORG
+▁Police I-ORG
+
+▁Ding B-LOC
+s I-LOC
+da I-LOC
+▁Ki B-LOC
+KA I-LOC
+▁2000 B-DATE
+▁2005. B-DATE
+
+▁Royal B-ORG
+▁Nav I-ORG
+y I-ORG
+▁17 B-DATE
+94 I-DATE
+
+▁United B-LOC
+▁States I-LOC
+▁of I-LOC
+▁America I-LOC
+▁Bi B-PER
+den I-PER
+
+▁Soviet B-LOC
+▁Union I-LOC
+
+▁Ada B-PER
+nne I-PER
+▁this B-DATE
+▁morning B-DATE
+▁07 I-DATE
+▁Jul I-DATE
+, I-DATE
+▁20 I-DATE
+27 I-DATE
+▁Em B-PER
+eka I-PER
+
+▁Bota B-LOC
+▁Har B-PER
+shad I-PER
+▁Meh I-PER
+ta I-PER
+▁March B-DATE
+▁28. I-DATE
+▁Sola B-PER
+nki I-PER
+
+▁River B-ORG
+s I-ORG
+▁N I-ORG
+LC I-ORG
+▁AS B-ORG
+UU I-ORG
+
+▁Roth B-PER
+▁152 B-DATE
+▁Still B-ORG
+water I-LOC
+s I-LOC
+▁Hunter B-PER
+▁Lyd I-PER
+en I-PER
+▁Roth B-PER
+▁Dal B-PER
+an I-PER
+▁Jones I-PER
+▁Co B-LOC
+on I-LOC
+▁Rapid I-LOC
+s I-LOC
+▁Smith B-PER
+▁Saturday B-DATE
+
+▁2004, B-DATE
+▁The B-ORG
+▁Ad I-ORG
+vo I-ORG
+cate I-ORG
+
+▁American B-ORG
+▁Society I-ORG
+▁for I-ORG
+▁Radi I-ORG
+ation I-ORG
+▁On I-ORG
+c I-ORG
+ology I-ORG
+▁A I-ORG
+STRO I-ORG
+
+▁I B-LOC
+jo B-LOC
+ra I-LOC
+▁Marine B-LOC
+▁Bridge I-LOC
+▁Area B-LOC
+▁B I-LOC
+▁Jun I-LOC
+ction I-LOC
+
+▁U B-PER
+lo I-PER
+aku I-PER
+▁On B-PER
+yin I-PER
+ye I-PER
+chu I-PER
+kw I-PER
+u I-PER
+▁ne B-PER
+ice B-PER
+▁Fin I-PER
+idi I-PER
+
+▁Cam B-PER
+ille I-PER
+▁Ham I-PER
+on I-PER
+ics I-PER
+▁five B-DATE
+- I-DATE
+year I-DATE
+- I-DATE
+old I-DATE
+▁this B-DATE
+▁fall I-DATE
+
+▁Trip B-ORG
+le I-ORG
+- I-ORG
+S I-ORG
+▁Management I-ORG
+▁Monday B-DATE
+
+▁five B-DATE
+▁six B-DATE
+▁seven B-DATE
+▁years I-DATE
+▁Australia B-LOC
+
+▁Ini B-PER
+▁Di I-PER
+ma I-PER
+- I-PER
+O I-PER
+koj I-PER
+ie I-PER
+
+▁U B-LOC
+wa B-LOC
+e I-LOC
+zu I-LOC
+oke I-LOC
+
+▁Tai B-PER
+wo I-PER
+▁Jar I-PER
+untu I-PER
+▁11 B-DATE
+:22 I-DATE
+pm I-DATE
+▁11 B-DATE
+pm I-DATE
+▁Friday B-DATE
+▁08 I-DATE
+▁December I-DATE
+, I-DATE
+▁20 I-DATE
+28 I-DATE
+
+▁Pro B-ORG
+vidu I-ORG
+s I-ORG
+Bank I-ORG
+▁United B-ORG
+▁Nations I-ORG
+
+▁Kaduna B-LOC
+
+▁Bu B-PER
+la I-PER
+kalo I-PER
+tua I-PER
+▁Apa I-PER
+kata I-PER
+▁08 B-DATE
+-02- I-DATE
+2022 I-DATE
+
+▁Ka B-PER
+inen I-PER
+ech I-PER
+uk I-PER
+wu I-PER
+
+▁James B-PER
+▁Se I-PER
+gar I-PER
+s I-PER
+▁John B-ORG
+s I-ORG
+▁Hopkins I-ORG
+▁University I-ORG
+▁Baltimore B-LOC
+, I-LOC
+▁MD I-LOC
+▁The B-ORG
+▁Atlantic I-ORG
+
+▁No B-PER
+ah I-PER
+▁Bi I-PER
+dd I-PER
+lec I-PER
+ombe I-PER
+▁Youth B-ORG
+▁One I-ORG
+
+▁NBC B-ORG
+
+▁Olu B-PER
+sola I-PER
+▁Ak B-LOC
+pa I-LOC
+w I-LOC
+fu I-LOC
+▁02 B-DATE
+▁Apr I-DATE
+, I-DATE
+▁1985 I-DATE
+
+▁FC B-LOC
+T I-ORG
+
+▁Mal B-LOC
+ua I-LOC
+▁Bay I-LOC
+▁Bate B-LOC
+mans I-LOC
+▁Bay I-LOC
+
+▁Today B-DATE
+▁United B-ORG
+▁Nations I-ORG
+
+▁Pomp B-PER
+ey I-PER
+▁Pomp B-PER
+ey I-PER
+
+▁September B-DATE
+▁Oregon B-LOC
+▁Tuesday I-DATE
+▁March B-DATE
+▁31, I-DATE
+▁2021 I-DATE
+
+▁CH B-ORG
+EST I-ORG
+▁PA I-ORG
+▁ B-ORG
+LAT I-ORG
+
+▁Greg B-ORG
+gs I-ORG
+▁yesterday B-DATE
+
+▁PH B-ORG
+▁March B-DATE
+▁2023 I-DATE
+
+▁World B-ORG
+▁Bank I-ORG
+
+▁In B-PER
+cher B-PER
+ene I-PER
+h I-PER
+▁Can B-PER
+go I-PER
+
+▁U B-PER
+bo I-PER
+chi I-PER
+oma I-PER
+▁Ko I-PER
+fo I-PER
+wor I-PER
+ola I-PER
+▁Poti B-LOC
+skum I-LOC
+
+▁Nga B-PER
+m I-PER
+▁Che I-PER
+re I-PER
+chi I-PER
+▁Gomb B-LOC
+e I-LOC
+
+▁NC B-ORG
+DC I-ORG
+▁Facebook B-ORG
+
+▁Michael B-PER
+▁Gam I-PER
+bon I-PER
+▁Gina B-PER
+▁Mc I-PER
+Ke I-PER
+e I-PER
+▁Tom B-PER
+▁Holland I-PER
+er I-PER
+▁Bill B-PER
+▁N I-PER
+igh I-PER
+y I-PER
+
+▁Eri B-PER
+ayo I-PER
+▁Hospital B-LOC
+▁Im B-PER
+ole I-LOC
+▁Ak B-LOC
+pa I-LOC
+w I-LOC
+fu I-LOC
+
+▁Mal B-PER
+lay I-PER
+▁10 B-DATE
+PM I-DATE
+▁26 I-DATE
+/05 I-DATE
+/ I-DATE
+1984 I-DATE
+
+▁Lopez B-PER
+▁Mar B-LOC
+bella I-LOC
+
+▁O B-PER
+ladi I-PER
+ran I-PER
+
+▁Oso B-PER
+rach I-PER
+uk I-PER
+wu I-PER
+▁morning B-DATE
+▁24 I-DATE
+▁Apr I-DATE
+, I-DATE
+▁2005 I-DATE
+▁Of B-PER
+u I-PER
+chi I-PER
+
+▁GT B-ORG
+Bank I-ORG
+▁Africa B-LOC
+
+▁S B-LOC
+owe I-LOC
+to I-LOC
+▁Im B-ORG
+bela I-ORG
+kay I-ORG
+▁Wat B-LOC
+to I-ORG
+▁Tark B-ORG
+wa I-ORG
+▁university I-ORG
+▁1998 B-DATE
+▁2006. B-DATE
+
+▁Orange B-ORG
+▁County I-ORG
+▁District I-ORG
+▁At I-ORG
+tor I-ORG
+ney I-ORG
+s I-ORG
+▁Office I-ORG
+▁January B-DATE
+▁2013 I-DATE
+▁Villar B-PER
+real I-PER
+▁Herre B-PER
+ra I-PER
+
+▁The B-ORG
+American I-ORG
+Col I-ORG
+lege I-ORG
+▁of I-ORG
+▁Radi I-ORG
+ology I-ORG
+
+▁Chi B-PER
+ke B-PER
+▁last B-DATE
+▁night I-DATE
+▁On B-LOC
+it I-LOC
+sha I-LOC
+
+▁OG B-ORG
+UK I-ORG
+▁De B-PER
+ir I-PER
+dre I-PER
+▁Mich I-PER
+ie I-PER
+
+▁Rakh B-LOC
+ine I-LOC
+
+▁Itu B-PER
+nu I-PER
+olu I-PER
+wa I-PER
+▁Port B-ORG
+▁Har I-ORG
+court I-ORG
+▁University I-ORG
+▁Og B-ORG
+undi I-ORG
+pe I-ORG
+▁University I-ORG
+
+▁F B-ORG
+EC I-ORG
+
+▁N B-ORG
+. I-ORG
+Medic I-ORG
+ine I-ORG
+
+▁Hospital B-ORG
+▁N I-ORG
+ke I-ORG
+chi I-ORG
+ny I-ORG
+ere I-ORG
+ony I-ORG
+e I-ORG
+▁Kano B-LOC
+▁city I-LOC
+▁Saturday B-DATE
+▁28 I-DATE
+▁July I-DATE
+, I-DATE
+▁1979 I-DATE
+
+▁W B-ORG
+
+▁In B-PER
+solo I-PER
+▁Im I-PER
+bor I-PER
+▁52 B-DATE
+▁yo I-DATE
+▁yesterday B-DATE
+▁Mu B-ORG
+to I-ORG
+mo I-ORG
+▁TS I-ORG
+ICU I-ORG
+
+▁Matthew B-ORG
+s I-ORG
+▁Police I-ORG
+▁Department I-ORG
+
+▁To B-LOC
+uba I-LOC
+▁Ono B-PER
+fu I-PER
+abi I-PER
+▁Wo B-PER
+lah I-PER
+mo I-PER
+▁Johannesburg B-ORG
+▁university I-ORG
+▁1998 B-DATE
+▁2006. B-DATE
+
+▁Chris B-PER
+▁shit I-PER
+ty I-PER
+
+▁Israel B-LOC
+▁Isaac B-PER
+▁Herz I-PER
+og I-PER
+
+▁Chi B-PER
+sim I-PER
+diri I-PER
+▁I I-PER
+bin I-PER
+ye I-PER
+▁Mai B-PER
+fari I-PER
+▁last B-DATE
+▁night I-DATE
+▁Aba B-LOC
+kali I-LOC
+ki I-LOC
+
+▁The B-ORG
+▁Hollywood I-ORG
+▁Reporter I-ORG
+▁Alexander B-PER
+▁Aja I-PER
+▁Christi B-PER
+e I-PER
+▁Le I-PER
+B I-PER
+lan I-PER
+cs I-PER
+
+▁Stone B-PER
+▁Richard B-PER
+▁Ni I-PER
+xon I-PER
+
+▁Albert B-PER
+
+▁The B-ORG
+▁Empire I-ORG
+▁Sun I-ORG
+down I-ORG
+▁Lago B-LOC
+s I-ORG
+▁Hennes B-ORG
+sy I-ORG
+
+▁Merc B-PER
+er I-PER
+▁DW I-PER
+▁Li B-PER
+u I-PER
+▁TH I-PER
+▁Cast B-PER
+ane I-PER
+da I-PER
+▁A I-PER
+▁Zuid B-PER
+ema I-PER
+▁GD I-PER
+▁Ye B-PER
+o I-PER
+▁C I-PER
+J I-PER
+
+▁New B-ORG
+port I-ORG
+▁Road I-ORG
+▁CF I-ORG
+D I-ORG
+▁2003 B-DATE
+
+▁France B-LOC
+
+▁12 B-DATE
+-01- I-DATE
+2002 I-DATE
+▁Off B-PER
+i I-PER
+ong I-PER
+▁Ku I-PER
+for I-PER
+iji I-PER
+▁Hospital B-ORG
+▁Maku I-ORG
+rdi I-ORG
+
+N B-ORG
+ollywood I-ORG
+▁Nancy B-PER
+▁I I-PER
+sime I-PER
+
+▁United B-LOC
+▁States I-LOC
+▁Serbia B-LOC
+▁United B-LOC
+▁States I-LOC
+
+▁Sam B-PER
+mie I-PER
+▁Angel B-PER
+▁house B-ORG
+
+▁Manila B-LOC
+▁Beijing B-LOC
+▁early B-DATE
+▁this I-DATE
+▁year I-DATE
+
+▁B B-ORG
+NCH I-ORG
+▁ B-ORG
+CBN I-ORG
+
+▁Lebanon B-LOC
+
+▁Nigeria B-ORG
+n I-ORG
+▁Law I-ORG
+▁School I-ORG
+▁Nigeria B-LOC
+
+▁N B-PER
+n B-PER
+anna I-PER
+▁Chi B-PER
+mai I-PER
+he I-PER
+
+▁N B-PER
+wany I-PER
+an I-PER
+wu I-PER
+
+▁Wol B-PER
+ver I-PER
+ine I-PER
+
+▁Simon B-PER
+▁Catholic B-ORG
+▁Church I-ORG
+▁Australia B-LOC
+
+▁Charlie B-PER
+
+▁Yo B-LOC
+ruba I-LOC
+land I-LOC
+▁80 B-DATE
+s I-DATE
+▁90 B-DATE
+s I-DATE
+▁Fuji B-LOC
+
+▁I B-ORG
+
+▁Bola B-PER
+jo I-PER
+ko I-PER
+▁Ka I-PER
+biri I-PER
+▁22 B-DATE
+▁weeks I-DATE
+▁ago I-DATE
+
+▁Ing B-PER
+mar I-PER
+▁Berg I-PER
+mans I-PER
+
+▁White B-ORG
+▁House I-ORG
+
+▁Obi B-PER
+ama I-PER
+ka I-PER
+▁O I-PER
+nye I-PER
+ge I-PER
+cha I-PER
+
+▁Jan B-PER
+et B-PER
+▁Jackson I-PER
+
+▁Chi B-PER
+dik I-PER
+e I-PER
+▁I B-ORG
+kot I-ORG
+- I-ORG
+Ab I-ORG
+asi I-ORG
+▁University I-ORG
+▁Zahra B-ORG
+h I-ORG
+▁University I-ORG
+
+▁2022 B-DATE
+▁Kin B-LOC
+tam I-LOC
+po I-LOC
+▁Isi B-LOC
+olo I-LOC
+▁Och B-PER
+e I-PER
+bala I-PER
+y I-PER
+▁Ah I-PER
+co I-PER
+ok I-PER
+key I-PER
+▁NA B-ORG
+F I-ORG
+DAC I-ORG
+
+▁next B-DATE
+▁morning I-DATE
+▁Kel B-PER
+sey I-PER
+▁Hoop I-PER
+er I-PER
+▁Por I-PER
+sha I-PER
+▁Lawrence I-PER
+▁M I-PER
+avour I-PER
+▁Bu B-ORG
+bble I-ORG
+▁Shock I-ORG
+
+▁Adam B-LOC
+awa I-LOC
+▁Bauch B-LOC
+▁Bay B-LOC
+els I-LOC
+a I-LOC
+▁Ben B-LOC
+ue I-LOC
+▁Bor B-LOC
+no I-LOC
+▁Cross B-LOC
+▁River I-LOC
+▁E B-LOC
+bo B-LOC
+nyi I-LOC
+▁E B-LOC
+do I-LOC
+▁En B-LOC
+ugu I-LOC
+▁Gomb B-LOC
+e I-LOC
+▁I B-LOC
+mo I-LOC
+▁Ji B-LOC
+gawa I-LOC
+▁Kaduna B-LOC
+▁Kat B-LOC
+sina I-LOC
+▁Ke B-LOC
+bbi I-LOC
+▁Ko B-LOC
+gi I-LOC
+▁Na B-LOC
+sara B-LOC
+wa I-LOC
+▁Niger B-LOC
+▁Ondo B-LOC
+▁Plat B-LOC
+eau I-LOC
+▁Sok B-LOC
+oto I-LOC
+▁Tara B-LOC
+ba I-LOC
+▁Yo B-LOC
+be I-LOC
+▁Zam B-LOC
+fara I-LOC
+
+▁Adam B-PER
+▁Gil I-PER
+ch I-PER
+rist I-PER
+▁Glen B-PER
+n I-PER
+▁McG I-PER
+rath I-PER
+▁Jason B-PER
+▁Gill I-PER
+es I-PER
+pie I-PER
+▁Bruce B-PER
+▁Re I-PER
+id I-PER
+▁Tim B-PER
+▁May I-PER
+
+▁De B-PER
+mba I-PER
+▁Acc I-PER
+oh I-PER
+bay I-PER
+▁Pha B-ORG
+labor I-ORG
+wa I-ORG
+▁hospital I-ORG
+
+▁Ki B-LOC
+gali I-LOC
+
+▁Kila B-PER
+ni I-PER
+▁Ali I-PER
+▁E B-PER
+je B-PER
+fe I-PER
+nih I-PER
+u I-PER
+▁last B-DATE
+▁night I-DATE
+▁Min B-LOC
+na I-LOC
+
+▁Man B-PER
+sur I-PER
+▁Bak I-PER
+i I-PER
+
+▁Fa B-PER
+h B-PER
+ji I-PER
+▁G I-PER
+ado I-PER
+▁56 B-DATE
+▁yr I-DATE
+▁OR B-LOC
+▁Saturday B-DATE
+▁06 I-DATE
+▁September I-DATE
+, I-DATE
+▁2008 I-DATE
+
+▁Wilson B-PER
+
+▁O B-PER
+wol I-PER
+abi I-PER
+▁Am B-ORG
+ote I-ORG
+kun I-ORG
+▁Os B-LOC
+un I-LOC
+
+▁N B-ORG
+
+▁Podle B-PER
+sh I-PER
+▁S I-PER
+▁W I-PER
+▁Boy B-PER
+den I-PER
+▁D I-PER
+▁K B-DATE
+1996 B-DATE
+
+▁Tama B-PER
+ra I-PER
+▁Tom B-PER
+▁Pan I-PER
+krat I-PER
+z I-PER
+
+▁Kaduna B-LOC
+▁North B-LOC
+- I-LOC
+West I-LOC
+▁West B-LOC
+▁Africa I-LOC
+
+▁3 B-DATE
+▁days I-DATE
+▁3 B-DATE
+▁days I-DATE
+▁U B-PER
+go I-PER
+chi I-PER
+ny I-PER
+ere I-PER
+▁Zi I-PER
+ko I-PER
+rana I-PER
+udo I-PER
+dim I-PER
+ma I-PER
+
+▁Xe B-ORG
+jet I-ORG
+▁Limited I-ORG
+
+▁Friday B-DATE
+▁James B-PER
+▁Col I-PER
+ter I-PER
+▁Harris B-PER
+▁Pure I-ORG
+Mo I-ORG
+ve I-ORG
+ment I-ORG
+▁Cricket B-ORG
+
+▁Hospital B-ORG
+▁N I-ORG
+zub I-ORG
+ech I-ORG
+uk I-ORG
+wu I-ORG
+▁Port B-LOC
+▁Har I-LOC
+court I-LOC
+▁city I-LOC
+▁Tuesday B-DATE
+▁18 I-DATE
+▁November I-DATE
+, I-DATE
+▁1986 I-DATE
+
+th I-DATE
+▁I B-LOC
+badan I-LOC
+
+▁UK B-LOC
+▁10 B-DATE
+▁days I-DATE
+▁ago I-DATE
+▁Secret B-LOC
+▁Cinema I-LOC
+
+▁Mas B-PER
+sie I-PER
+▁1967 B-DATE
+▁Maria B-PER
+▁Anastasi B-PER
+a I-PER
+▁The B-PER
+▁Little I-PER
+
+▁Mitchell B-PER
+
+▁Tuesday B-DATE
+▁Man B-PER
+dy I-PER
+▁Cohen I-PER
+
+▁Virtual B-ORG
+▁Wind I-ORG
+sor I-ORG
+
+▁July B-DATE
+▁2017 I-DATE
+▁Peter B-PER
+▁Min I-PER
+su I-PER
+▁Lu I-PER
+▁Sahara B-ORG
+Report I-ORG
+ers I-ORG
+
+▁Ta B-PER
+mbara I-PER
+▁Ik I-PER
+pe I-PER
+ama I-PER
+▁I B-PER
+ye I-PER
+ala I-PER
+
+▁Opp B-ORG
+o I-ORG
+
+▁Sama B-PER
+d I-PER
+
+▁Angel B-PER
+
+▁CH B-PER
+▁Ayat B-PER
+ol I-PER
+lah I-PER
+▁Kho I-PER
+ume I-PER
+ini I-PER
+
+▁Ak B-LOC
+▁Ek B-PER
+iye I-PER
+▁Mo B-PER
+tino I-PER
+la I-PER
+▁Kat B-ORG
+sina I-ORG
+▁university I-ORG
+▁1998 B-DATE
+▁2006. B-DATE
+
+▁Republican B-ORG
+
+▁Ro B-PER
+eni I-PER
+cke I-PER
+
+▁Johnson B-PER
+▁April B-DATE
+▁15 I-DATE
+, I-DATE
+▁2022 I-DATE
+▁Lago B-LOC
+s I-LOC
+▁State I-LOC
+
+▁Islamic B-ORG
+▁State I-ORG
+
+▁Je B-PER
+en I-PER
+be I-PER
+▁Bis B-LOC
+hk I-LOC
+ek I-LOC
+▁Friday B-DATE
+
+▁Ken B-PER
+ech I-PER
+uk I-PER
+▁N B-PER
+du I-PER
+kari I-PER
+▁07 B-DATE
+/07/ I-DATE
+20 I-DATE
+26 I-DATE
+
+▁Olu B-PER
+ware I-PER
+mile I-PER
+kun I-PER
+▁17 B-DATE
+▁years I-DATE
+▁older I-DATE
+▁14 B-DATE
+▁years I-DATE
+▁older I-DATE
+
+▁Gra B-ORG
+▁OT B-ORG
+CB I-ORG
+TC I-ORG
+▁ABC B-ORG
+▁Coin B-ORG
+rail I-ORG
+▁Crypto B-ORG
+B I-ORG
+ridge I-ORG
+▁Hot B-ORG
+▁ B-ORG
+DD B-ORG
+▁H B-ORG
+▁FC B-ORG
+
+▁A B-ORG
+ston I-ORG
+▁Villa I-ORG
+▁Le B-ORG
+ed I-ORG
+s I-ORG
+▁United I-ORG
+▁Wol B-ORG
+ves I-ORG
+
+▁Ola B-PER
+wa I-PER
+tu I-PER
+yi I-PER
+▁Dur I-PER
+oja I-PER
+ye I-PER
+▁2: B-DATE
+▁33 I-DATE
+▁pm I-DATE
+▁08 B-DATE
+/06 I-DATE
+/1999 I-DATE
+
+▁Du B-PER
+ru I-PER
+aku I-PER
+▁Chu I-PER
+kw I-PER
+ual I-PER
+uka I-PER
+▁40 B-DATE
+yr I-DATE
+▁old I-DATE
+▁33 B-LOC
+, I-LOC
+▁Za I-LOC
+ria I-LOC
+▁street I-LOC
+, I-LOC
+▁O I-LOC
+kene I-LOC
+▁state I-LOC
+▁22 B-DATE
+/11/ I-DATE
+2022 I-DATE
+
+▁North B-ORG
+▁Da I-ORG
+kota I-ORG
+▁Department I-ORG
+▁of I-ORG
+▁Human I-ORG
+▁Services I-ORG
+▁Division I-ORG
+▁of I-ORG
+▁Voca I-ORG
+tional I-ORG
+▁Rehabilita I-ORG
+tion I-ORG
+▁Tam B-PER
+i I-PER
+▁Fro I-PER
+e I-PER
+lich I-PER
+▁Jerry B-PER
+▁Sever I-PER
+son I-PER
+
+▁N B-PER
+zub I-PER
+ech I-PER
+uk I-PER
+wu I-PER
+▁Da I-PER
+hun I-PER
+si I-PER
+▁52 B-DATE
+▁yo I-DATE
+▁yesterday B-DATE
+▁I B-ORG
+kot I-ORG
+- I-ORG
+Ab I-ORG
+asi I-ORG
+▁TS I-ORG
+ICU I-ORG
+
+▁United B-LOC
+▁Arab I-LOC
+▁Emirat I-LOC
+es I-LOC
+▁Khalifa B-PER
+▁bin I-PER
+▁Za I-PER
+y I-PER
+ed I-PER
+▁Al I-PER
+- I-PER
+Na I-PER
+h I-PER
+yan I-PER
+▁a B-DATE
+ged I-DATE
+▁73 I-DATE
+▁Friday B-DATE
+
+▁Diamond B-ORG
+▁Access B-ORG
+▁Bank I-ORG
+
+▁P B-ORG
+TF I-ORG
+▁Christmas B-DATE
+▁season I-DATE
+
+▁I B-ORG
+NEC I-ORG
+▁2023 B-DATE
+
+▁Hospital B-ORG
+▁El I-ORG
+mina I-ORG
+▁Ah B-PER
+wo I-PER
+o I-PER
+jah I-PER
+▁App I-PER
+an I-PER
+
+▁O B-PER
+wo B-PER
+▁yesterday B-DATE
+
+▁Nigeria B-LOC
+
+▁Gal B-PER
+vani I-PER
+
+▁N B-PER
+wig I-PER
+we I-PER
+▁Chi I-PER
+e I-PER
+ge I-PER
+
+▁Bella B-ORG
+na I-ORG
+ija I-ORG
+
+▁Journal B-ORG
+▁of I-ORG
+▁Clinic I-ORG
+al I-ORG
+P I-ORG
+sy I-ORG
+chia I-ORG
+try I-ORG
+▁2003 B-PER
+Po B-PER
+pper B-PER
+▁ B-PER
+CW B-PER
+
+▁Da B-PER
+mi B-PER
+
+▁3 B-DATE
+▁days I-DATE
+▁3 B-DATE
+▁days I-DATE
+▁3 B-DATE
+▁days I-DATE
+▁ago I-DATE
+▁A B-PER
+gon B-PER
+jo I-PER
+bey I-PER
+▁As I-PER
+soo I-PER
+ah I-PER
+cha I-PER
+h I-PER
+
+▁California B-LOC
+
+▁Illinois B-LOC
+▁Re B-PER
+agan I-PER
+
+▁USA B-LOC
+
+▁Singh B-PER
+
+▁Nigeria B-LOC
+▁each B-DATE
+▁year I-DATE
+
+▁Az B-PER
+um I-PER
+ini I-PER
+▁Bah B-ORG
+wor I-ORG
+e I-ORG
+kay I-ORG
+▁Hospital I-ORG
+▁Kis I-ORG
+umu I-ORG
+▁Da I-LOC
+kar I-LOC
+▁02 B-DATE
+/04/ I-DATE
+20 I-DATE
+23 I-DATE
+▁5 I-DATE
+▁days I-DATE
+▁ago I-DATE
+
+▁Quant B-ORG
+ri I-ORG
+lls I-ORG
+▁Lawrence B-LOC
+
+▁Global B-ORG
+▁Citizen I-ORG
+
+▁MIN B-ORG
+SK I-ORG
+▁6 B-DATE
+▁August I-DATE
+▁Bel B-ORG
+TA I-ORG
+▁Belarus B-LOC
+▁Yuri B-PER
+▁Nazar I-PER
+ov I-PER
+▁Horizon B-ORG
+t I-ORG
+▁Innovation I-ORG
+▁Center I-ORG
+▁Bel B-ORG
+TA I-ORG
+
+▁In B-PER
+da B-PER
+▁U I-PER
+g I-PER
+wu I-PER
+eze I-PER
+▁Add I-PER
+ana I-PER
+e I-PER
+
+▁Olu B-PER
+wa I-PER
+fun I-PER
+bi I-PER
+▁Chu I-PER
+kw I-PER
+uke I-PER
+lu I-PER
+
+▁Mo B-LOC
+kolo I-LOC
+di I-LOC
+▁Nature I-LOC
+▁Reserve I-LOC
+▁Ga B-LOC
+boro I-LOC
+ne I-LOC
+▁Game I-LOC
+▁Reserve I-LOC
+▁Many B-LOC
+e I-LOC
+lan I-LOC
+ong I-LOC
+▁Game I-LOC
+▁Reserve I-LOC
+
+▁1990 B-DATE
+▁BH B-ORG
+AP I-ORG
+1 I-ORG
+
+▁Dream B-PER
+er I-PER
+
+▁Mike B-PER
+▁Prie I-PER
+fer I-PER
+
+▁C B-ORG
+
+▁Oso B-PER
+o I-PER
+ah I-PER
+▁Wy B-PER
+o I-PER
+ho I-PER
+cah I-PER
+▁ne B-PER
+ice B-PER
+▁Gar I-PER
+car I-PER
+o I-PER
+
+▁Google B-ORG
+▁India B-LOC
+
+▁Oz B-PER
+ichi I-PER
+▁Chi I-PER
+sim I-PER
+di I-PER
+
+▁2019 B-DATE
+▁Lawrence B-PER
+▁Texas B-LOC
+
+▁Delta B-ORG
+▁Nov B-DATE
+. I-DATE
+▁1 I-DATE
+▁last I-DATE
+▁week I-DATE
+
+▁Bola B-PER
+rin I-PER
+wa I-PER
+
+▁3 B-DATE
+▁days I-DATE
+▁3 B-DATE
+▁days I-DATE
+▁3 B-DATE
+▁days I-DATE
+▁ago I-DATE
+▁Man B-PER
+su I-PER
+rah I-PER
+▁Chi I-PER
+nom I-PER
+so I-PER
+
+▁PER B-ORG
+
+▁Ar B-ORG
+zik I-ORG
+a I-ORG
+▁Chi I-ORG
+laka I-ORG
+▁ I-ORG
+Diagnos I-ORG
+tic I-ORG
+▁center I-ORG
+▁En B-LOC
+ugu I-LOC
+
+▁B B-PER
+▁this B-DATE
+▁morning I-DATE
+
+▁Jordan B-PER
+▁Clark I-PER
+son I-PER
+▁U B-ORG
+tah I-ORG
+▁four B-DATE
+- I-DATE
+year I-DATE
+▁Der B-PER
+rick B-PER
+▁Fa I-PER
+vor I-PER
+s I-PER
+▁the B-ORG
+▁Jazz I-ORG
+▁three B-DATE
+▁season I-DATE
+s I-DATE
+
+▁Will B-ORG
+is I-ORG
+▁Tower I-ORG
+s I-ORG
+▁Watson I-ORG
+
+▁Allen B-PER
+▁6 B-DATE
+:23 I-DATE
+▁the B-ORG
+▁Net B-ORG
+s I-ORG
+▁Toronto B-ORG
+
+▁ B-ORG
+
+▁Boris B-PER
+
+▁Mohammed B-PER
+▁Riya B-LOC
+dh I-LOC
+s I-LOC
+▁Rit B-ORG
+z I-ORG
+- I-ORG
+Car I-ORG
+l I-ORG
+ton I-ORG
+▁hotel I-ORG
+▁late B-DATE
+▁2017 I-DATE
+
+▁Pil B-PER
+lai I-PER
+▁R I-PER
+▁Bala B-PER
+ram I-PER
+▁P I-PER
+▁Red B-PER
+di I-PER
+ar I-PER
+▁K I-PER
+▁S I-PER
+▁1992 B-DATE
+
+▁Ben B-PER
+
+▁2010, B-DATE
+▁Abu B-LOC
+ja I-LOC
+▁Chi B-PER
+bud I-PER
+om I-PER
+▁E I-PER
+bide I-PER
+▁Ji B-PER
+de I-PER
+o I-PER
+for I-PER
+
+▁NH B-ORG
+S I-ORG
+
+▁Uno B-PER
+
+▁Serbia B-LOC
+▁Ben B-PER
+▁Na I-PER
+bou I-PER
+hane I-PER
+▁13 B-DATE
+th I-DATE
+- I-DATE
+minut I-DATE
+e I-DATE
+▁National B-LOC
+▁Heroes I-LOC
+▁Stadium I-LOC
+
+▁O B-PER
+ja B-PER
+oro I-PER
+o I-PER
+▁Af I-PER
+o I-PER
+yay I-PER
+
+▁New B-LOC
+▁Zealand I-LOC
+
+▁Og B-PER
+un I-PER
+susi I-PER
+▁Kab B-ORG
+ba I-ORG
+▁elementar I-ORG
+y I-ORG
+▁school I-ORG
+
+▁February B-DATE
+▁24 I-DATE
+, I-DATE
+▁2020 I-DATE
+▁New B-LOC
+▁York I-LOC
+
+▁Co B-PER
+dy B-PER
+▁Bank I-PER
+▁2002. B-DATE
+
+▁Wal B-PER
+e I-PER
+▁Ade I-PER
+ban I-PER
+wi I-PER
+▁ I-PER
+HID I-PER
+
+▁Maria B-PER
+▁Dubai B-LOC
+
+▁July B-PER
+
+▁Bello B-PER
+s I-PER
+▁Ali B-PER
+yu I-PER
+▁15 B-DATE
+▁months I-DATE
+
+▁Africa B-LOC
+▁YouTube B-ORG
+
+▁U B-PER
+chen I-PER
+du I-PER
+▁Sok B-ORG
+oto I-ORG
+▁elementar I-ORG
+y I-ORG
+▁school I-ORG
+
+▁Nigeria B-LOC
+
+▁Ben B-PER
+▁Love I-PER
+tt I-PER
+▁this B-DATE
+▁year I-DATE
+▁last B-DATE
+▁year I-DATE
+
+▁A B-DATE
+▁year I-DATE
+▁and I-DATE
+▁a I-DATE
+▁half I-DATE
+▁later I-DATE
+▁Schu B-PER
+bert I-PER
+
+▁Ni B-PER
+ni I-PER
+▁Ar B-PER
+in B-PER
+
+▁Mah B-PER
+po I-PER
+tay I-PER
+▁Lin B-PER
+ma I-PER
+▁Ab B-PER
+bey I-PER
+▁Ek I-PER
+a I-PER
+say I-PER
+
+▁Bas B-ORG
+in I-ORG
+▁Grad I-ORG
+e I-ORG
+▁School I-ORG
+▁Bou B-LOC
+lder I-LOC
+
+▁I B-PER
+je B-PER
+udo I-PER
+▁Jos B-LOC
+▁hospital I-ORG
+▁09 B-DATE
+▁Feb I-DATE
+, I-DATE
+▁1975 I-DATE
+
+▁Ah B-ORG
+may I-ORG
+N I-ORG
+euros I-ORG
+urg I-ORG
+ery I-ORG
+
+▁Le B-PER
+
+▁11 B-DATE
+:22 I-DATE
+am I-DATE
+▁Chi B-PER
+mbu I-PER
+som I-PER
+ma I-PER
+▁U I-PER
+g I-PER
+eanu I-PER
+go I-PER
+
+▁OR B-ORG
+EF I-ORG
+
+▁Obi B-PER
+adi I-PER
+▁La I-PER
+olu I-PER
+▁War I-PER
+ri I-PER
+
+▁1992 B-DATE
+▁Lan B-ORG
+s I-ORG
+down I-ORG
+▁Ce I-ORG
+meter I-ORG
+y I-ORG
+▁Trust I-ORG
+
+▁M B-PER
+ma I-PER
+du I-PER
+bu I-PER
+ike I-PER
+
+▁W B-LOC
+uhan I-LOC
+▁this B-DATE
+▁week I-DATE
+▁yesterday B-DATE
+
+▁Mumbai B-LOC
+▁Ud B-PER
+dha I-PER
+v I-PER
+▁Tha I-PER
+cker I-PER
+ay I-PER
+
+▁11 B-DATE
+:22 I-DATE
+am I-DATE
+▁O B-PER
+nye B-PER
+buch I-PER
+i I-PER
+▁Ik I-PER
+pen I-PER
+du I-PER
+
+▁Clinton B-PER
+▁Democrat B-ORG
+s I-ORG
+▁Trump B-PER
+
+▁Card B-ORG
+iac I-ORG
+▁Sur I-ORG
+ger I-ORG
+y I-ORG
+▁Recovery I-ORG
+▁Unit I-ORG
+
+▁Export B-ORG
+▁Group I-ORG
+, I-ORG
+▁Manufa I-ORG
+c I-ORG
+turer I-ORG
+s I-ORG
+▁Association I-ORG
+▁of I-ORG
+▁Nigeria I-ORG
+▁Sa B-ORG
+pele I-ORG
+▁Integra I-ORG
+ted I-ORG
+▁Industrie I-ORG
+s I-ORG
+▁Limited I-ORG
+▁E B-PER
+de I-PER
+▁Da I-PER
+fino I-PER
+ne I-PER
+
+▁Maine B-LOC
+
+▁Esa B-LOC
+▁O I-LOC
+ke I-LOC
+▁O B-PER
+ye I-PER
+tola I-PER
+▁OS B-ORG
+CO I-ORG
+TECH I-ORG
+
+▁Democratic B-ORG
+
+▁Deg B-PER
+bay I-PER
+▁U I-PER
+wa I-PER
+▁05 B-DATE
+-02- I-DATE
+1981 I-DATE
+▁2: B-DATE
+▁00 I-DATE
+▁p I-DATE
+. I-DATE
+m I-DATE
+.3. I-DATE
+
+▁MC B-PER
+▁Ol I-PER
+uomo I-PER
+▁Lago B-LOC
+s I-LOC
+▁N B-ORG
+UR I-ORG
+TW I-ORG
+
+▁Aku B-PER
+bu I-PER
+ilo I-PER
+▁Um B-ORG
+ua I-ORG
+hia I-ORG
+▁elementar I-ORG
+y I-ORG
+▁school I-ORG
+
+▁Ark B-LOC
+zie I-ORG
+- I-ORG
+▁Memorial I-ORG
+
+▁Ek B-PER
+e I-PER
+zie I-PER
+
+▁Sydney B-LOC
+▁December B-DATE
+
+▁Ok B-PER
+ike I-PER
+chu I-PER
+kw I-PER
+u I-PER
+▁Danny I-PER
+keh I-PER
+▁E I-PER
+. I-PER
+▁In I-PER
+ju I-PER
+le I-PER
+mah I-PER
+▁09 B-DATE
+▁Dec I-DATE
+▁2014 I-DATE
+▁7 I-DATE
+: I-DATE
+▁17 I-DATE
+▁PM I-DATE
+
+▁Mon B-PER
+go I-PER
+e I-PER
+▁Oko I-PER
+jo I-PER
+be I-PER
+
+▁Los B-LOC
+umi I-LOC
+
+▁OP B-ORG
+
+▁Tuesday B-DATE
+▁evening I-DATE
+▁Modi B-PER
+▁R B-ORG
+BI I-ORG
+
+▁79 B-DATE
+- I-DATE
+year I-DATE
+- I-DATE
+old I-DATE
+▁Im B-PER
+bolo I-PER
+y I-PER
+▁Ag B-LOC
+gai I-LOC
+▁Hospital B-ORG
+▁Ag I-ORG
+gai I-LOC
+
+▁Christopher B-PER
+▁W I-PER
+ray I-PER
+
+▁Ben B-LOC
+in I-LOC
+
+▁Fo B-PER
+law I-PER
+ole I-PER
+▁F I-PER
+iyo I-PER
+si I-PER
+
+▁Za B-PER
+nga I-PER
+y I-PER
+▁A B-PER
+boy I-PER
+si I-PER
+
+▁Nigeria B-LOC
+▁May B-DATE
+▁Day I-DATE
+
+▁Ja B-PER
+ba I-PER
+▁El B-PER
+lif I-PER
+ay I-PER
+
+▁Enna B-PER
+bris I-PER
+hia I-PER
+ke I-PER
+▁Chi I-PER
+lo I-PER
+tem I-PER
+
+▁O B-ORG
+2 I-ORG
+SAT I-ORG
+' I-ORG
+S I-ORG
+PER I-DATE
+▁90 I-DATE
+' I-DATE
+S I-DATE
+
+bo I-ORG
+▁Ab I-ORG
+imba I-ORG
+de I-ORG
+▁War B-LOC
+ri I-LOC
+
+▁A B-PER
+udu B-PER
+▁Matthew B-PER
+
+▁Oku B-PER
+bha I-PER
+to I-PER
+bo I-PER
+fe I-PER
+gha I-PER
+▁Na B-PER
+fi I-PER
+sat I-PER
+▁O B-ORG
+wer I-ORG
+ri I-ORG
+▁university I-ORG
+▁Kumar B-LOC
+iya I-LOC
+▁Iz B-PER
+un I-PER
+na I-PER
+
+▁A B-PER
+yal I-PER
+ucu I-PER
+▁Ono I-PER
+go I-PER
+
+▁Daniel B-PER
+▁James I-PER
+▁Danny I-PER
+▁Par I-PER
+s I-PER
+low I-PER
+▁11 B-DATE
+▁September I-DATE
+▁1985 I-DATE
+▁Che B-ORG
+lt I-ORG
+en I-ORG
+ham I-ORG
+▁Town I-ORG
+
+▁Eli B-PER
+▁Mw I-PER
+enda I-PER
+▁Oscar B-PER
+▁Koo I-PER
+me I-PER
+
+▁Af B-PER
+
+▁Er B-PER
+in I-PER
+ola I-PER
+
+▁Jerry B-PER
+▁Cameron I-PER
+
+▁O B-PER
+ji I-PER
+u I-PER
+go I-PER
+▁Kasar I-PER
+ach I-PER
+i I-PER
+
+▁To B-PER
+dd I-PER
+▁Se I-PER
+ars I-PER
+▁Out B-ORG
+▁Leadership I-ORG
+
+▁Iso B-PER
+lette I-PER
+▁3 B-DATE
+▁hours I-DATE
+
+▁today B-DATE
+▁O B-PER
+moto B-PER
+mi I-PER
+▁A I-PER
+kin I-PER
+sanya I-PER
+▁John B-PER
+▁Greg I-PER
+
+. B-PER
+D B-PER
+io B-PER
+
+▁the B-LOC
+▁Netherlands I-LOC
+
+▁Lewis B-PER
+▁Thursday B-DATE
+▁Mar B-PER
+ne I-PER
+e I-PER
+
+▁O B-ORG
+▁L B-ORG
+WC I-ORG
+S I-ORG
+▁BR B-ORG
+B I-ORG
+▁this B-DATE
+▁morning I-DATE
+
+▁Vai B-PER
+n I-PER
+
+▁The B-ORG
+S I-ORG
+tre I-ORG
+et I-ORG
+▁Rock B-ORG
+well I-ORG
+▁Automat I-ORG
+ion I-ORG
+▁Wednesday B-DATE
+, I-DATE
+▁January I-DATE
+▁29 I-DATE
+th I-DATE
+
+▁March B-DATE
+▁13, I-DATE
+▁Sea B-ORG
+World I-ORG
+▁Park I-ORG
+s I-ORG
+▁Bu B-LOC
+sch I-LOC
+▁Garden I-LOC
+s I-LOC
+▁Adventure B-LOC
+▁Island I-LOC
+▁Sea B-LOC
+World I-LOC
+▁park I-LOC
+s I-LOC
+
+▁WhatsApp B-ORG
+
+▁Orig B-PER
+i I-PER
+▁eight B-DATE
+▁years I-DATE
+▁Mer B-ORG
+sey I-ORG
+side I-ORG
+▁the B-ORG
+▁Red I-ORG
+s I-ORG
+▁Barcelona B-ORG
+▁UEFA B-ORG
+▁2019. B-DATE
+
+▁“ B-ORG
+J B-ORG
+fs I-ORG
+▁Africa B-LOC
+▁eight B-DATE
+▁years I-DATE
+▁Dung B-PER
+- I-PER
+G I-PER
+w I-PER
+om I-PER
+
+▁CD B-ORG
+▁Projekt I-ORG
+▁Red I-ORG
+▁Porsche B-ORG
+▁Johnny B-PER
+▁Silver I-PER
+
+▁ea B-LOC
+▁DR I-LOC
+▁Congo I-LOC
+
+▁Faz B-PER
+lol I-PER
+lah I-PER
+▁Za I-PER
+hed I-PER
+i I-PER
+
+▁World B-ORG
+▁J I-ORG
+▁Sur I-ORG
+g I-ORG
+
+▁Hong B-LOC
+▁Kong I-LOC
+▁August B-DATE
+▁a B-DATE
+▁year I-DATE
+▁earlier I-DATE
+▁July B-DATE
+
+▁N B-ORG
+UT I-ORG
+
+▁Modi B-PER
+
+▁Thursday B-DATE
+▁Cala B-LOC
+bar I-LOC
+▁Cross B-LOC
+▁River I-LOC
+▁state I-LOC
+
+▁Agri B-ORG
+culture I-ORG
+▁Produc I-ORG
+e I-ORG
+▁Market I-ORG
+▁Committee I-ORG
+▁AP I-ORG
+MC I-ORG
+▁August B-DATE
+▁25 I-DATE
+
+▁Hospital B-ORG
+▁Isaac I-ORG
+ke I-ORG
+▁Ac B-LOC
+kal B-LOC
+lea I-LOC
+▁Hospital B-ORG
+▁Isaac I-ORG
+ke I-ORG
+▁10. B-DATE
+
+▁M B-PER
+mere I-PER
+mik I-PER
+wu I-PER
+▁Da B-PER
+ndawo I-PER
+▁Ben B-LOC
+in I-LOC
+▁10 B-DATE
+/03/2018 I-DATE
+
+▁On B-PER
+yeke I-PER
+lei I-PER
+hem I-PER
+▁Gomb B-LOC
+e I-LOC
+
+▁Gold B-PER
+
+▁O B-PER
+goo I-PER
+ge I-PER
+ay I-PER
+▁Chi B-PER
+mam I-PER
+k I-PER
+pa I-PER
+
+▁Fan B-PER
+vo I-PER
+mbo I-PER
+▁Bon I-PER
+o I-PER
+
+▁Ha B-LOC
+h I-LOC
+jo I-LOC
+ing I-LOC
+▁market I-LOC
+▁Roo B-LOC
+de I-LOC
+poort I-LOC
+
+▁China B-LOC
+
+▁South B-ORG
+West I-ORG
+▁Service I-ORG
+▁Monday B-DATE
+- I-DATE
+S I-DATE
+atur I-DATE
+day I-DATE
+▁Ash B-LOC
+burn I-LOC
+▁ I-LOC
+rail I-LOC
+road I-LOC
+▁station I-LOC
+
+▁Price B-ORG
+▁We I-ORG
+al I-ORG
+th I-ORG
+▁LLC I-ORG
+▁The B-ORG
+▁Walt I-ORG
+▁Disney I-ORG
+
+▁Es B-LOC
+wati I-LOC
+ni I-LOC
+▁South B-LOC
+▁Africa I-LOC
+▁Cape B-LOC
+▁Verde I-LOC
+▁Rwanda B-LOC
+
+▁Bi B-PER
+den I-PER
+
+▁O B-PER
+nye B-PER
+ma I-PER
+e I-PER
+chi I-PER
+▁Od B-PER
+irin I-PER
+▁Sar B-LOC
+ki I-LOC
+▁ I-LOC
+ward I-LOC
+
+▁Ni B-PER
+yi I-PER
+▁Aw B-ORG
+gu I-ORG
+▁University I-ORG
+▁Ek B-ORG
+ene I-ORG
+dir I-ORG
+ich I-ORG
+uk I-ORG
+wu I-ORG
+▁University I-ORG
+
+▁Fleisch B-PER
+er I-PER
+
+▁Ireland B-ORG
+
+▁PDP B-ORG
+▁SDP B-ORG
+▁— B-PER
+I B-PER
+wor B-PER
+iso I-PER
+- I-PER
+Mark I-PER
+son I-PER
+▁ex B-ORG
+- B-ORG
+Bay B-ORG
+els I-ORG
+a I-ORG
+
+▁David B-PER
+▁Jones I-PER
+▁David I-PER
+▁two B-DATE
+▁days I-DATE
+▁ago I-DATE
+
+▁S B-ORG
+d I-ORG
+▁Abu B-LOC
+ja I-LOC
+
+▁N B-ORG
+ollywood I-ORG
+▁Y B-PER
+ul I-PER
+▁E I-PER
+do I-PER
+chie I-PER
+▁May B-PER
+▁Jud B-PER
+y I-PER
+
+▁five B-DATE
+▁hours I-DATE
+▁Fem B-PER
+i I-PER
+▁seven B-DATE
+- I-DATE
+week I-DATE
+
+▁Axel B-PER
+▁Fredrik I-PER
+▁Cro I-PER
+n I-PER
+stedt I-PER
+▁17 B-DATE
+51 I-DATE
+
+▁To B-PER
+s B-PER
+can I-PER
+ini I-PER
+
+▁Switzerland B-LOC
+▁2012 B-DATE
+
+▁Ye B-PER
+mi I-PER
+▁Os I-PER
+in I-PER
+ba I-PER
+jo I-PER
+
+▁ten B-DATE
+▁to I-DATE
+▁four I-DATE
+teen I-DATE
+▁days I-DATE
+▁Gera B-PER
+y I-PER
+
+▁Ali B-PER
+▁G I-PER
+
+▁Stan B-PER
+▁N I-PER
+▁FIR B-ORG
+S I-ORG
+
+▁NI B-ORG
+GER I-ORG
+IAN I-ORG
+▁TRI I-ORG
+B I-ORG
+UNE I-ORG
+▁PUBLIC I-ORG
+ATION I-ORG
+S I-ORG
+
+▁Og B-PER
+ech I-PER
+uk I-PER
+wu I-PER
+▁La B-PER
+di I-PER
+po I-PER
+▁Kano B-LOC
+
+▁Ka B-PER
+biri I-PER
+▁Toch I-PER
+uk I-PER
+wu I-PER
+
+▁Ud B-PER
+eme I-PER
+▁O I-PER
+bong I-PER
+▁Ab B-PER
+iona I-PER
+▁AM I-DATE
+▁Ik B-LOC
+eja I-LOC
+
+▁Wo B-PER
+sila B-PER
+tu I-PER
+▁Aga I-PER
+eg I-PER
+bu I-PER
+meg I-PER
+bu I-PER
+
+▁N B-ORG
+SC I-ORG
+
+▁U B-LOC
+S I-LOC
+. I-LOC
+▁Yo B-ORG
+n I-ORG
+hap I-ORG
+
+▁Thursday B-DATE
+▁California B-ORG
+▁National I-ORG
+▁Guard I-ORG
+
+▁Ly B-ORG
+ft I-ORG
+▁Inc I-ORG
+
+▁Sky B-ORG
+▁Sports I-ORG
+▁AJ B-PER
+▁W B-PER
+ladi B-PER
+mir I-PER
+▁Kli I-PER
+tsch I-PER
+ko I-PER
+▁We B-LOC
+mble I-LOC
+y I-LOC
+▁Stadium I-LOC
+▁2017 B-DATE
+
+▁Moz B-LOC
+ambi I-LOC
+que I-LOC
+▁South B-LOC
+▁Africa I-LOC
+
+▁Luk B-PER
+man I-PER
+▁Abu B-LOC
+ja I-LOC
+▁Saturday B-DATE
+▁Eagle B-LOC
+▁Square I-LOC
+
+▁New B-LOC
+▁Delhi I-LOC
+▁Amit B-PER
+▁Shah I-PER
+▁Saturday B-DATE
+
+▁Great B-ORG
+er I-ORG
+▁Manchester I-ORG
+▁Police I-ORG
+▁Ian B-PER
+▁Pil I-PER
+ling I-PER
+▁Friday B-DATE
+▁Saturday B-DATE
+▁night I-DATE
+▁yesterday B-DATE
+▁evening I-DATE
+
+▁Gene B-LOC
+va I-LOC
+▁Paris B-LOC
+
+▁Stan B-PER
+▁Do I-PER
+ty I-PER
+▁Daniel B-PER
+▁Herbst I-PER
+▁De B-PER
+bora B-PER
+h I-PER
+▁Mile I-PER
+s I-PER
+▁Johnson I-PER
+▁Hay B-PER
+d I-PER
+n I-PER
+▁John I-PER
+ston I-PER
+▁Matt B-PER
+▁Zi I-PER
+vi I-PER
+ch I-PER
+
+▁Stu B-PER
+▁Fle I-PER
+sland I-PER
+
+▁Michael B-PER
+▁Gro I-PER
+st I-PER
+▁10- B-DATE
+year I-DATE
+s I-DATE
+- I-DATE
+old I-DATE
+▁Michigan B-ORG
+▁State I-ORG
+▁University I-ORG
+▁1964 B-DATE
+
+▁Hospital B-ORG
+▁Ja I-ORG
+iye I-ORG
+ola I-ORG
+▁Medical I-ORG
+▁Center I-ORG
+▁Hospital B-ORG
+▁Ja I-ORG
+iye I-ORG
+ola I-ORG
+
+▁Bryan B-PER
+▁D B-ORG
+HS I-ORG
+
+▁E B-PER
+
+▁Wright B-PER
+
+▁Hay B-PER
+es I-PER
+▁Nis B-PER
+kan I-PER
+en I-PER
+▁Braun B-PER
+
+▁PA B-LOC
+▁France B-LOC
+
+▁Nova B-PER
+▁Ada B-PER
+▁de I-PER
+▁la I-PER
+▁Cruz I-PER
+
+▁Do B-PER
+yle I-PER
+▁2012 B-DATE
+▁13 I-DATE
+▁Co B-ORG
+ven I-ORG
+try I-ORG
+▁City I-ORG
+▁2012 B-DATE
+▁13 I-DATE
+▁Do B-PER
+yle I-PER
+▁two B-DATE
+▁- I-DATE
+▁year I-DATE
+
+▁O B-PER
+ti I-PER
+▁Ober I-PER
+ek I-PER
+pe I-PER
+
+▁Josh B-PER
+▁Harry I-PER
+▁Missouri B-LOC
+
+▁Tony B-PER
+▁Sanders I-PER
+
+▁Ona B-PER
+fu I-PER
+ye I-PER
+▁I B-PER
+bi I-PER
+m I-PER
+
+▁Kaduna B-ORG
+▁State I-ORG
+▁Government I-ORG
+▁Kaj B-LOC
+uru I-LOC
+▁Local I-LOC
+▁Government I-LOC
+▁Area I-LOC
+
+▁APC B-ORG
+▁last B-DATE
+▁seven I-DATE
+▁years I-DATE
+
+▁Gran B-LOC
+ville I-LOC
+▁Street I-LOC
+▁Vancouver B-LOC
+▁Friday B-DATE
+▁night I-DATE
+▁W B-LOC
+reck I-LOC
+▁Beach I-LOC
+▁English B-LOC
+▁Bay I-LOC
+▁Beach I-LOC
+▁Saturday B-DATE
+
+▁Today B-DATE
+▁Microsoft B-ORG
+▁this B-DATE
+▁year I-DATE
+
+▁Wild B-ORG
+▁Wood I-ORG
+▁Production I-ORG
+s I-ORG
+
+▁Fo B-PER
+law I-PER
+un I-PER
+mi I-PER
+▁Ok I-PER
+wu I-PER
+jin I-PER
+ri I-PER
+
+▁O B-PER
+bor I-PER
+dor I-PER
+▁Bay B-LOC
+els I-LOC
+a I-LOC
+
+▁Za B-ORG
+cks I-ORG
+▁Investment I-ORG
+▁Research I-ORG
+▁A B-ORG
+xon I-ORG
+▁Enterprise I-ORG
+▁Tuesday B-DATE
+, I-DATE
+▁January I-DATE
+▁14 I-DATE
+th I-DATE
+
+▁UK B-LOC
+▁Stone B-PER
+s I-PER
+
+▁hann B-PER
+a I-PER
+wood I-PER
+side I-PER
+
+▁Chu B-PER
+kw I-PER
+udu I-PER
+bem I-PER
+▁Er I-PER
+in I-PER
+ola I-PER
+▁La B-PER
+nke I-PER
+
+▁Willem B-PER
+▁Da I-PER
+fo I-PER
+
+▁2017 B-DATE
+▁Dio B-PER
+pka I-PER
+▁Az I-PER
+um I-PER
+dia I-PER
+ro I-PER
+
+▁Trump B-PER
+
+▁Stalin B-PER
+
+▁ B-ORG
+CBN I-ORG
+▁O B-PER
+badi I-PER
+ah I-PER
+
+▁Thursday B-DATE
+▁night I-DATE
+▁Brand B-ORG
+on I-ORG
+- I-ORG
+E I-ORG
+van I-ORG
+s I-ORG
+ville I-ORG
+▁Ash B-ORG
+by I-ORG
+▁boys I-ORG
+▁John B-PER
+▁Hol I-PER
+sten I-PER
+▁West B-LOC
+▁Central I-LOC
+▁Area I-LOC
+
+▁this B-DATE
+▁year I-DATE
+▁Hay B-PER
+es I-PER
+
+▁N B-PER
+do I-PER
+chu I-PER
+kw I-PER
+u I-PER
+▁E I-PER
+bia I-PER
+ga I-PER
+▁22 B-DATE
+▁weeks I-DATE
+▁ago I-DATE
+
+▁Bill B-PER
+ie I-PER
+▁Holiday I-PER
+▁1959 B-DATE
+
+▁Sche B-PER
+m I-PER
+bri I-PER
+▁Chennai B-ORG
+yin I-ORG
+▁Chennai B-ORG
+
+▁Vid B-PER
+hya I-PER
+▁Modi B-PER
+
+▁Ger B-PER
+e I-PER
+mek I-PER
+
+▁Pea B-PER
+rce I-PER
+
+▁last B-DATE
+▁seven I-DATE
+▁days I-DATE
+▁Fusion B-ORG
+▁US B-LOC
+
+▁Eagle B-ORG
+s I-ORG
+▁first B-DATE
+▁year I-DATE
+▁Phil B-LOC
+ly I-LOC
+
+▁Rou B-PER
+ssos I-PER
+
+▁ B-ORG
+EPA I-ORG
+
+▁IS B-ORG
+WA I-ORG
+P I-ORG
+
+▁Linda B-PER
+▁O I-PER
+si I-PER
+fo I-PER
+
+▁Japan B-LOC
+▁China B-LOC
+
+▁Nigeria B-LOC
+▁NI B-ORG
+PC I-ORG
+
+▁Ye B-PER
+misi I-PER
+
+▁Po B-LOC
+h B-LOC
+jo I-LOC
+la I-LOC
+
+▁Lauren B-PER
+▁Young I-PER
+▁an B-DATE
+▁hour I-DATE
+▁Thursday B-DATE
+▁morning I-DATE
+
+▁Bay B-LOC
+water I-LOC
+▁Park I-LOC
+▁8 B-LOC
+B I-LOC
+▁Wol I-LOC
+e I-LOC
+▁Ola I-LOC
+te I-LOC
+ju I-LOC
+▁Cre I-LOC
+sent I-LOC
+▁Le B-LOC
+kki I-LOC
+▁Phase I-LOC
+▁1 I-LOC
+▁Lago B-LOC
+s I-LOC
+
+▁Og B-LOC
+ami I-LOC
+nana I-LOC
+▁A B-ORG
+kao I-ORG
+lisa I-ORG
+▁Onu B-ORG
+▁Off B-ORG
+a I-ORG
+▁university I-ORG
+▁1998 B-DATE
+▁2006. B-DATE
+
+▁The B-ORG
+▁Human I-ORG
+▁League I-ORG
+▁late B-DATE
+▁1980 I-DATE
+s I-DATE
+
+▁E B-DATE
+ar B-DATE
+lier B-DATE
+▁this I-DATE
+▁month I-DATE
+▁Board B-ORG
+▁of I-ORG
+▁Control I-ORG
+▁for I-ORG
+▁Cricket I-ORG
+▁in I-ORG
+▁India I-ORG
+▁B I-ORG
+CCI I-ORG
+▁April B-DATE
+▁15 I-DATE
+, I-DATE
+▁2020 I-DATE
+
+▁Ar B-PER
+in I-PER
+▁N B-PER
+inis I-PER
+
+▁Thursday B-DATE
+▁Ab B-PER
+bot I-PER
+t I-PER
+
+▁Hospital B-ORG
+▁In I-ORG
+eme I-ORG
+sit I-ORG
+▁I B-LOC
+wo I-LOC
+▁city I-LOC
+▁Mon B-DATE
+▁13 I-DATE
+▁Oct I-DATE
+, I-DATE
+▁2025 I-DATE
+
+▁Sudan B-LOC
+
+▁Sierra B-LOC
+▁Leon I-LOC
+e I-LOC
+▁Pe B-PER
+s I-PER
+eiro I-PER
+
+▁Ye B-PER
+mi I-PER
+▁Adam I-PER
+oleku I-PER
+n I-PER
+▁Nigeria B-LOC
+
+▁Cyn B-PER
+thi I-PER
+a I-PER
+▁Er I-PER
+ivo I-PER
+▁Harri B-PER
+▁Gre B-PER
+ta I-PER
+▁Ger I-PER
+wig I-PER
+▁Loren B-PER
+e I-PER
+▁Sca I-PER
+fari I-PER
+a I-PER
+▁Lulu B-PER
+▁Wang I-PER
+
+▁O B-LOC
+yo B-LOC
+▁APC B-ORG
+
+▁Hen B-PER
+wan I-PER
+
+▁29- B-DATE
+year I-DATE
+- I-DATE
+old I-DATE
+▁Salt B-LOC
+▁Lake I-LOC
+▁City I-LOC
+▁U B-LOC
+tah I-LOC
+▁Tuesday B-DATE
+
+▁Du B-LOC
+lu I-LOC
+th I-LOC
+
+▁BA B-ORG
+CS I-ORG
+▁Jamie B-PER
+▁Alman I-PER
+za I-PER
+
+▁Jag B-PER
+un I-PER
+na I-PER
+▁Oko I-PER
+rie I-PER
+▁68 B-DATE
+▁year I-DATE
+▁old I-DATE
+▁Ek B-ORG
+et I-ORG
+▁ED I-ORG
+▁15 B-DATE
+▁March I-DATE
+▁2011 I-DATE
+▁13 B-DATE
+: I-DATE
+▁40 I-DATE
+
+▁Hannah B-PER
+▁Ein I-PER
+binder I-PER
+▁Hack I-PER
+s I-PER
+
+▁A B-ORG
+DF I-ORG
+
+▁B B-PER
+▁Scha I-PER
+m I-PER
+ro I-PER
+th I-PER
+
+▁Aff B-PER
+e B-PER
+ah I-PER
+▁AND I-PER
+RAI I-ORG
+SING I-ORG
+▁ I-ORG
+BRO I-ORG
+WN I-ORG
+▁S I-ORG
+PUT I-ORG
+UM I-ORG
+
+▁Aja B-PER
+ki I-PER
+fa I-PER
+▁with B-PER
+B B-PER
+ang B-PER
+
+▁James B-PER
+▁Z I-PER
+▁Berg I-PER
+, I-PER
+▁M I-PER
+
+▁Hospital B-ORG
+▁Og I-ORG
+ben I-ORG
+y I-ORG
+eanu I-ORG
+▁22 B-DATE
+▁year I-DATE
+▁old I-DATE
+▁22- B-DATE
+year I-DATE
+- I-DATE
+old I-DATE
+
+▁C B-ORG
+VV I-ORG
+HD I-ORG
+▁28 B-DATE
+▁December I-DATE
+▁2009 I-DATE
+
+▁Fem B-PER
+i I-PER
+▁first B-DATE
+▁14 I-DATE
+▁days I-DATE
+▁Nigeria B-LOC
+
+▁October B-DATE
+s I-DATE
+▁Water B-ORG
+front I-ORG
+▁Toronto I-ORG
+▁Side B-ORG
+walk I-ORG
+▁Lab I-ORG
+s I-ORG
+
+▁north B-LOC
+e I-LOC
+ast I-LOC
+▁of I-LOC
+▁Con I-LOC
+way I-LOC
+
+▁next B-DATE
+▁day I-DATE
+▁Hill B-PER
+
+▁Bra B-PER
+sher I-PER
+
+▁Jack B-PER
+
+▁EU B-ORG
+▁Britain B-LOC
+
+▁O B-PER
+lor B-PER
+un I-PER
+le I-PER
+ke I-PER
+▁4 B-DATE
+▁months I-DATE
+
+▁God B-PER
+
+▁W B-LOC
+rig B-LOC
+ley I-LOC
+▁Building I-LOC
+▁Museum B-ORG
+▁of I-ORG
+▁Con I-ORG
+tempor I-ORG
+ary I-ORG
+▁Art I-ORG
+▁Chicago B-LOC
+
+▁Graham B-PER
+▁Friday B-DATE
+▁morning I-DATE
+
+▁John B-PER
+▁Brown I-PER
+
+▁22 B-DATE
+▁yr I-DATE
+▁old I-DATE
+▁A B-PER
+iye B-PER
+ku I-PER
+▁Kami I-PER
+ye I-PER
+▁11 B-DATE
+am I-DATE
+▁this I-DATE
+▁morning I-DATE
+
+▁Bar B-ORG
+cla I-ORG
+ys I-ORG
+▁Black B-ORG
+Rock I-ORG
+▁Wednesday B-DATE
+, I-DATE
+▁October I-DATE
+▁14 I-DATE
+th I-DATE
+
+▁Town B-PER
+send I-PER
+
+▁Le B-PER
+re I-PER
+▁Ade I-PER
+yer I-PER
+i I-PER
+▁52 B-DATE
+▁yo I-DATE
+▁yesterday B-DATE
+▁U B-ORG
+yo I-ORG
+▁TS I-ORG
+ICU I-ORG
+
+▁A B-PER
+den I-PER
+uga I-PER
+▁I B-LOC
+badan I-LOC
+
+▁19 B-DATE
+-07- I-DATE
+20 I-DATE
+31 I-DATE
+▁A B-PER
+manna I-PER
+▁A I-PER
+muka I-PER
+▁Lalu I-PER
+de I-PER
+▁E B-PER
+biti I-PER
+mi I-PER
+
+▁Neil B-PER
+son I-PER
+▁Arsenal B-ORG
+▁football I-ORG
+▁club I-ORG
+
+▁22 B-DATE
+▁year I-DATE
+▁old I-DATE
+▁Uz B-PER
+o I-PER
+e I-PER
+chie I-PER
+▁Kano B-LOC
+
+▁Ali B-PER
+son I-PER
+▁Murphy I-PER
+▁Ta B-LOC
+com I-LOC
+a I-LOC
+▁this B-DATE
+▁summer I-DATE
+▁Span B-LOC
+away I-LOC
+▁Park B-LOC
+land I-LOC
+
+▁Boss B-LOC
+ier I-LOC
+▁City I-LOC
+▁LA B-LOC
+
+▁Wei B-PER
+mar I-PER
+
+▁ESP B-ORG
+N I-ORG
+▁Adam B-PER
+▁Sch I-PER
+efter I-PER
+▁Tru B-PER
+bi I-PER
+sky I-PER
+▁Ne B-PER
+al B-PER
+▁El I-PER
+At I-PER
+tra I-PER
+che I-PER
+▁Los B-LOC
+▁Angeles I-LOC
+▁Thursday B-DATE
+
+▁January B-DATE
+▁22, I-DATE
+▁Hu B-PER
+ang I-PER
+▁Mou I-PER
+hong I-PER
+▁Hub B-ORG
+ei I-ORG
+▁Provincial I-ORG
+▁Department I-ORG
+▁of I-ORG
+▁ I-ORG
+Commerce I-ORG
+
+▁Gian B-PER
+na I-PER
+
+▁Nur B-PER
+eni I-PER
+▁Ya I-PER
+ga I-PER
+zie I-PER
+▁Ah B-PER
+umo I-PER
+nye I-PER
+▁Om B-ORG
+u I-ORG
+- I-ORG
+A I-ORG
+ran I-ORG
+
+▁Oak B-LOC
+▁Rid I-LOC
+ge I-LOC
+
+▁U B-LOC
+. I-LOC
+S I-LOC
+. I-LOC
+
+▁Apple B-ORG
+
+▁two B-DATE
+▁weeks I-DATE
+▁Samuel B-PER
+▁Pat I-PER
+y I-PER
+▁Paris B-LOC
+▁18- B-DATE
+year I-DATE
+- I-DATE
+old I-DATE
+
+▁The B-ORG
+▁Eagle I-ORG
+s I-ORG
+▁Seattle B-ORG
+▁Sea I-ORG
+hawk I-ORG
+s I-ORG
+
+▁Da B-PER
+mie I-PER
+ibi I-PER
+▁Ade B-PER
+boy I-PER
+e I-PER
+▁Saturday B-DATE
+▁12 I-DATE
+▁July I-DATE
+, I-DATE
+▁1975 I-DATE
+
+▁C B-ORG
+IWA I-ORG
+
+▁Toronto B-LOC
+▁Musk B-LOC
+oka I-LOC
+▁Friday B-DATE
+
+▁Scotland B-LOC
+▁2019 B-DATE
+▁Hamburg B-LOC
+
+▁Ade B-PER
+bola I-PER
+
+▁Pitt B-LOC
+▁Lo B-LOC
+thro I-ORG
+p I-ORG
+▁Hall I-ORG
+
+▁Sher B-PER
+man I-PER
+▁Martha B-ORG
+s I-ORG
+▁Vi I-ORG
+ne I-ORG
+yard I-ORG
+▁Library I-ORG
+▁Association I-ORG
+
+▁ABD B-LOC
+
+▁Sco B-LOC
+ne I-LOC
+▁Scotland B-LOC
+▁Scotland B-LOC
+
+▁Wednesday B-DATE
+▁Food B-ORG
+▁Drug I-ORG
+▁Administration I-ORG
+
+▁Ali B-PER
+bak I-PER
+▁Nigeria B-LOC
+▁Africa B-LOC
+▁Iran B-LOC
+
+▁I B-PER
+y I-PER
+iola I-PER
+▁Ku B-LOC
+for I-LOC
+iji I-LOC
+
+▁O B-PER
+jo I-PER
+▁N B-PER
+nej I-PER
+i I-PER
+▁09 B-DATE
+▁May I-DATE
+, I-DATE
+▁1982 I-DATE
+
+▁Bur B-PER
+ton I-PER
+▁Jon B-PER
+▁Bur B-PER
+ton I-PER
+▁Jon B-PER
+
+▁Horn B-PER
+▁Bar B-PER
+
+▁22 B-DATE
+▁year I-DATE
+▁old I-DATE
+▁En B-PER
+yin I-PER
+na I-PER
+nya I-PER
+▁O B-LOC
+wo I-LOC
+
+▁Dur B-LOC
+ham I-LOC
+▁Dar B-ORG
+ling I-ORG
+ton I-ORG
+▁Cricket I-ORG
+▁Club I-ORG
+
+▁Zimbabwe B-LOC
+▁Mu B-PER
+gabe I-PER
+
+▁10 B-DATE
+▁weeks I-DATE
+▁Bek B-PER
+▁Louise B-PER
+▁Cooper I-PER
+▁Erd B-LOC
+ington I-LOC
+▁Bek B-PER
+
+▁Mark B-PER
+▁Sch I-PER
+wart I-PER
+z I-PER
+
+▁14 B-DATE
+▁days I-DATE
+▁Obi B-PER
+alo I-PER
+▁Ji I-PER
+meta I-PER
+
+▁Mundu B-ORG
+s I-ORG
+▁Mari I-ORG
+s I-ORG
+- I-ORG
+Science I-ORG
+▁and I-ORG
+▁Arts I-ORG
+▁for I-ORG
+▁Sus I-ORG
+tain I-ORG
+ability I-ORG
+
+▁Bi B-LOC
+da I-LOC
+▁U B-PER
+che I-PER
+on I-PER
+wu I-PER
+▁Ola B-PER
+▁Du B-ORG
+tse I-ORG
+▁university I-ORG
+▁1998 B-DATE
+▁2006. B-DATE
+
+▁J B-ORG
+JC I-ORG
+
+▁Chris B-ORG
+land I-ORG
+▁schools I-ORG
+
+▁Master B-ORG
+s I-ORG
+▁Touch I-ORG
+
+▁Ja B-PER
+phe I-PER
+th I-PER
+▁Om I-PER
+oj I-PER
+uwa I-PER
+▁Demi B-PER
+lade I-PER
+▁Od I-PER
+u I-PER
+
+▁1974 B-DATE
+▁Na B-PER
+i I-PER
+wu I-PER
+▁Osa I-PER
+hon I-PER
+
+▁Boo B-PER
+ck I-PER
+var I-PER
+
+▁Chi B-PER
+me I-PER
+zie I-PER
+▁Sho I-PER
+la I-PER
+▁Saka B-PER
+▁Maku B-LOC
+rdi I-LOC
+
+▁Kasi B-PER
+e I-PER
+mobi I-PER
+▁Mog I-PER
+aji I-PER
+▁E B-PER
+wa I-PER
+olu I-PER
+wa I-PER
+▁Chi I-PER
+dol I-PER
+ue I-PER
+
+▁Na B-PER
+ira I-PER
+▁Mar I-PER
+ley I-PER
+▁Chris B-PER
+▁Oma I-PER
+sho I-PER
+la I-PER
+
+▁Scotland B-LOC
+
+▁Iceland B-LOC
+▁Ke B-LOC
+fla I-LOC
+v I-LOC
+k I-LOC
+▁1960 B-DATE
+s I-DATE
+▁70 B-DATE
+s I-DATE
+▁b B-LOC
+t I-LOC
+lab I-LOC
+rinn I-LOC
+▁The B-LOC
+▁Beat I-LOC
+le I-LOC
+▁Town I-LOC
+
+▁U B-ORG
+. I-ORG
+S I-ORG
+. I-ORG
+▁Chamber I-ORG
+▁of I-ORG
+▁ I-ORG
+Commerce I-ORG
+
+▁B B-LOC
+rock I-ORG
+ville I-ORG
+▁Nigeria B-LOC
+▁ICC B-ORG
+E I-ORG
+
+▁N B-ORG
+SR I-ORG
+
+▁Of B-LOC
+os I-LOC
+ho I-LOC
+gu I-LOC
+
+▁Government B-ORG
+▁of I-ORG
+▁Guy I-ORG
+ana I-ORG
+▁Ex B-ORG
+xon I-ORG
+Mobil I-ORG
+▁Friday B-DATE
+▁Pay B-LOC
+
+▁North B-LOC
+▁Sydney I-LOC
+▁Ian B-PER
+▁Mut I-PER
+ton I-PER
+
+▁U B-LOC
+. I-LOC
+S I-LOC
+. I-LOC
+▁one B-DATE
+▁day I-DATE
+▁0 B-DATE
+:00 I-DATE
+▁AM I-DATE
+▁ET I-DATE
+▁May B-DATE
+▁11 I-DATE
+th I-DATE
+
+▁I B-PER
+dow B-PER
+u I-PER
+▁Lago B-ORG
+s I-ORG
+▁State I-ORG
+▁government I-ORG
+
+▁N B-PER
+k B-PER
+wo I-PER
+ama I-PER
+▁E B-PER
+gudu I-PER
+▁Aba B-LOC
+▁Thu B-DATE
+▁31 I-DATE
+▁Jul I-DATE
+, I-DATE
+▁2003 I-DATE
+
+▁Fi B-ORG
+bona I-ORG
+cci I-ORG
+
+▁two B-DATE
+▁weeks I-DATE
+▁Obama B-PER
+▁CD B-ORG
+C I-ORG
+
+▁Patient B-PER
+▁Ku I-PER
+ti I-PER
+▁Eb I-PER
+oda I-PER
+▁5 B-DATE
+▁days I-DATE
+▁ago I-DATE
+▁five B-DATE
+▁hours I-DATE
+
+▁Re B-PER
+ed I-PER
+▁2008 B-DATE
+
+▁Chi B-PER
+no I-PER
+de I-PER
+bem I-PER
+▁Bin I-PER
+ta I-PER
+
+▁Em B-PER
+e I-PER
+nike I-PER
+▁Da B-PER
+om I-PER
+una I-PER
+▁09 B-DATE
+▁March I-DATE
+▁2006 I-DATE
+▁8 B-DATE
+20 I-DATE
+▁am I-DATE
+
+▁Seven B-LOC
+▁Spring I-LOC
+s I-LOC
+▁estate I-LOC
+▁West B-LOC
+chester I-LOC
+, I-LOC
+▁New I-LOC
+▁York I-LOC
+▁Eugen B-PER
+e I-PER
+▁Meyer I-PER
+▁Washington B-ORG
+▁Post I-ORG
+
+▁Fas B-PER
+asan I-PER
+▁O I-PER
+nye I-PER
+ma I-PER
+uwa I-PER
+
+▁A B-PER
+gui I-PER
+las I-PER
+▁M B-PER
+25 I-PER
+▁Matthew B-PER
+
+▁Julius B-PER
+▁Ma I-PER
+ada I-PER
+▁Bio I-PER
+▁yesterday B-DATE
+▁Make B-LOC
+ni I-LOC
+▁north I-LOC
+ern I-LOC
+▁Sierra I-LOC
+▁Leon I-LOC
+e I-LOC
+▁Bomba B-LOC
+li I-LOC
+▁Ke B-LOC
+nema I-LOC
+▁P B-LOC
+uje B-LOC
+hun I-LOC
+▁Kambi B-LOC
+a I-LOC
+
+▁LinkedIn B-ORG
+
+▁ B-ORG
+YI I-ORG
+AGA I-ORG
+▁AF I-ORG
+RICA I-ORG
+▁Sam B-PER
+son I-PER
+▁Ito I-PER
+do I-PER
+
+▁August B-DATE
+▁2020 I-DATE
+▁Ya B-LOC
+ou I-LOC
+nde I-LOC
+
+▁Yo B-PER
+tta I-PER
+
+▁O B-LOC
+yo B-LOC
+▁O B-LOC
+yo I-LOC
+
+▁Chu B-PER
+kw I-PER
+uka I-PER
+▁Kat B-ORG
+sina I-ORG
+▁hospital I-ORG
+▁08 B-DATE
+/11/ I-DATE
+2013 I-DATE
+
+▁Turk B-PER
+er I-PER
+
+▁H B-PER
+. I-PER
+I I-PER
+. I-PER
+D I-PER
+
+▁Kila B-PER
+ni I-PER
+▁A B-ORG
+saba I-ORG
+▁elementar I-ORG
+y I-ORG
+▁school I-ORG
+
+▁Bo B-PER
+ve I-PER
+e I-PER
+▁Mar I-PER
+wo I-PER
+ney I-PER
+
+▁Harry B-PER
+▁Raw I-PER
+son I-PER
+▁twenty B-DATE
+▁years I-DATE
+
+▁La B-PER
+di I-PER
+po I-PER
+es I-PER
+▁Johnson B-ORG
+▁IP I-ORG
+▁London B-LOC
+
+▁Ade B-PER
+do I-PER
+ja I-PER
+▁O B-LOC
+yo I-LOC
+▁Ala B-PER
+
+▁Chi B-PER
+zie I-PER
+bu I-PER
+be I-PER
+▁Chin I-PER
+ons I-PER
+o I-PER
+
+▁3 B-DATE
+▁days I-DATE
+▁3 B-DATE
+▁days I-DATE
+▁3 B-DATE
+▁days I-DATE
+▁ago I-DATE
+▁Ah B-PER
+ton I-PER
+kah I-PER
+▁Gi I-PER
+ddy I-PER
+
+▁Og B-PER
+uyor I-PER
+mu I-PER
+▁Inde I-PER
+boo I-PER
+▁Code B-PER
+ah I-PER
+▁Ab B-LOC
+oso I-LOC
+
+▁Benjamin B-PER
+▁D I-PER
+israel I-PER
+i I-PER
+▁late B-DATE
+▁19 I-DATE
+th I-DATE
+▁century I-DATE
+
+▁Fan B-PER
+gah I-PER
+▁Bob I-PER
+o I-PER
+▁E B-PER
+papa I-PER
+▁Mars B-ORG
+a I-ORG
+bit I-ORG
+
+▁N B-PER
+k I-PER
+rumah I-PER
+▁Northern B-LOC
+▁border I-LOC
+▁of I-LOC
+▁Ghana I-LOC
+
+▁Yo B-PER
+h I-PER
+kay I-PER
+▁Ac I-PER
+qua I-PER
+n I-PER
+
+▁Og B-PER
+ardi I-PER
+mede I-PER
+▁Pe I-PER
+h I-PER
+
+▁Larry B-PER
+
+▁Chi B-PER
+mere I-PER
+▁Nin I-PER
+il I-PER
+MI B-ORG
+DN I-ORG
+OT I-ORG
+
+▁G B-PER
+▁u I-PER
+illian I-PER
+▁Barre I-PER
+' I-PER
+▁Syn I-PER
+d I-PER
+
+▁Il B-PER
+em I-PER
+oba I-PER
+yo I-PER
+▁Chi I-PER
+mere I-PER
+mma I-PER
+▁M I-PER
+. I-PER
+D I-PER
+
+▁Flag B-PER
+
+▁today B-DATE
+▁Chi B-LOC
+ko B-LOC
+di I-LOC
+
+▁Federal B-ORG
+▁Airport I-ORG
+s I-ORG
+▁Authority I-ORG
+▁of I-ORG
+▁Nigeria I-ORG
+▁F I-ORG
+AAN I-ORG
+
+▁Di B-PER
+ken I-PER
+na I-PER
+▁Cala B-ORG
+bar I-ORG
+▁hospital I-ORG
+▁22 B-DATE
+-09- I-DATE
+1972 I-DATE
+
+▁S B-ORG
+SS I-ORG
+
+▁Abu B-LOC
+ja I-LOC
+
+▁India B-LOC
+
+▁E B-PER
+che B-PER
+zon I-PER
+ach I-PER
+uk I-PER
+wu I-PER
+▁Kam I-PER
+s I-PER
+iyo I-PER
+chu I-PER
+kw I-PER
+u I-PER
+▁M I-PER
+. I-PER
+D I-PER
+
+▁C B-ORG
+MED I-ORG
+
+▁En B-PER
+i I-PER
+bra I-PER
+▁Ade I-PER
+dam I-PER
+ola I-PER
+▁MD I-PER
+▁17 B-DATE
+/03/ I-DATE
+1981 I-DATE
+▁22 I-DATE
+: I-DATE
+▁06 I-DATE
+
+▁Or B-LOC
+
+▁Kha B-PER
+mees I-PER
+
+▁Ne B-PER
+h B-PER
+bey I-PER
+▁O I-PER
+tunne I-PER
+ka I-PER
+▁Acho I-PER
+
+▁IL B-LOC
+
+▁Lav B-PER
+iska I-PER
+▁She I-PER
+na I-PER
+ult I-PER
+▁Den B-ORG
+ver I-ORG
+▁the B-ORG
+▁Bron I-ORG
+cos I-ORG
+
+▁BU B-PER
+H I-PER
+LE I-PER
+
+▁Ek B-LOC
+iti I-LOC
+
+▁11 B-DATE
+:22 I-DATE
+am I-DATE
+▁Chi B-PER
+zara I-PER
+mek I-PER
+pere I-PER
+▁N I-PER
+wach I-PER
+uk I-PER
+wu I-PER
+
+▁Alle B-ORG
+ghe I-ORG
+ny I-ORG
+▁Technologie I-ORG
+s I-ORG
+ATI B-ORG
+▁Tuesday B-DATE
+, I-DATE
+▁February I-DATE
+▁4 I-DATE
+th I-DATE
+
+▁Dick B-PER
+son I-PER
+
+▁Dallas B-LOC
+
+▁Mc B-PER
+In I-PER
+ty I-PER
+res I-PER
+▁S B-ORG
+TC I-ORG
+
+▁Ven B-ORG
+tura I-ORG
+▁Center I-ORG
+▁for I-ORG
+▁Menu I-ORG
+▁Research I-ORG
+▁and I-ORG
+▁Development I-ORG
+
+▁Australia B-LOC
+▁United B-LOC
+▁States I-LOC
+
+▁APC B-ORG
+
+▁International B-ORG
+▁Federation I-ORG
+▁of I-ORG
+▁Women I-ORG
+▁La I-ORG
+wy I-ORG
+ers I-ORG
+▁River B-LOC
+s I-LOC
+▁State I-LOC
+
+▁Friday B-DATE
+▁Bridge I-LOC
+▁Lago B-LOC
+s I-LOC
+- I-LOC
+I I-LOC
+badan I-LOC
+
+▁Buhari B-PER
+
+▁Nigeria B-LOC
+
+▁Thursday B-DATE
+▁Lago B-ORG
+s I-ORG
+▁State I-ORG
+▁Emer I-ORG
+gen I-ORG
+cy I-ORG
+▁Management I-ORG
+▁Agency I-ORG
+
+▁Sey B-PER
+i I-PER
+▁Sha I-PER
+y I-PER
+
+▁Bank B-PER
+ole I-PER
+▁O B-PER
+rak I-PER
+wu I-PER
+e I-PER
+▁Or B-LOC
+lu I-LOC
+▁this B-DATE
+▁morning I-DATE
+▁Olu B-PER
+pitan I-PER
+▁last B-DATE
+▁night I-DATE
+▁Ek B-ORG
+et I-ORG
+▁clinic I-ORG
+
+▁Joseph B-PER
+
+▁Guy B-LOC
+ana I-LOC
+
+▁Ori B-PER
+aku I-PER
+▁O I-PER
+do I-PER
+
+▁Hospital B-LOC
+▁Ew I-LOC
+em I-LOC
+tah I-LOC
+
+▁Fat B-PER
+ty I-PER
+▁Bet B-PER
+s I-PER
+▁Pip B-PER
+▁Larry B-PER
+▁Daisy B-PER
+
+▁SA B-ORG
+A I-ORG
+▁every B-DATE
+▁year I-DATE
+
+▁Q B-ORG
+B I-ORG
+TC I-ORG
+▁Crypto B-ORG
+B I-ORG
+ridge I-ORG
+
+▁Rose B-PER
+line I-PER
+▁Af I-PER
+ije I-PER
+▁Li B-PER
+quo I-PER
+rose I-PER
+▁Emmanuel B-PER
+▁Emma B-PER
+rose I-PER
+
+▁G B-ORG
+-20 I-ORG
+
+▁N B-PER
+wane B-PER
+zi I-PER
+▁A I-PER
+hun I-PER
+na I-PER
+
+▁Liv B-PER
+▁Tod B-PER
+ds I-PER
+▁Ty B-PER
+ler I-PER
+▁11 B-DATE
+▁years I-DATE
+▁old I-DATE
+
+▁Nigeria B-LOC
+
+▁AA B-ORG
+▁U B-PER
+che I-PER
+▁N I-PER
+wo I-PER
+su I-PER
+▁I B-LOC
+mo I-LOC
+▁Gu I-LOC
+
+▁27 B-DATE
+-07- I-DATE
+20 I-DATE
+24 I-DATE
+▁U B-PER
+wa I-PER
+e I-PER
+zu I-PER
+oke I-PER
+▁Sa I-PER
+de I-PER
+▁E I-PER
+bid I-PER
+ough I-PER
+a I-PER
+▁Itu B-PER
+nu I-PER
+olu I-PER
+wa I-PER
+
+▁Zam B-LOC
+fara I-LOC
+
+▁end B-DATE
+▁of I-DATE
+▁October I-DATE
+▁Har B-PER
+kin I-PER
+
+▁T B-ORG
+PN I-ORG
+
+▁Chi B-PER
+di I-PER
+▁Federal B-ORG
+▁Ministry I-ORG
+▁of I-ORG
+▁En I-ORG
+vi I-ORG
+ron I-ORG
+ment I-ORG
+
+▁Zer B-PER
+ibe I-PER
+▁4 B-DATE
+▁months I-DATE
+
+▁David B-PER
+
+▁Akan B-PER
+u I-PER
+▁Ek I-PER
+e I-PER
+oma I-PER
+
+▁AS B-ORG
+UU I-ORG
+
+▁Pembe B-PER
+▁Kota I-PER
+h I-PER
+▁Og B-PER
+ombe I-PER
+e I-PER
+▁One B-LOC
+tame I-LOC
+▁this B-DATE
+▁morning I-DATE
+▁A B-PER
+jami B-PER
+▁last B-DATE
+▁night I-DATE
+▁Su B-ORG
+nya I-ORG
+ni I-ORG
+▁clinic I-ORG
+
+▁Pam B-PER
+be I-PER
+e I-PER
+▁Man I-PER
+ful I-PER
+a I-PER
+
+▁N B-PER
+wa I-PER
+bu I-PER
+aku I-PER
+▁yesterday B-DATE
+
+▁Buch B-PER
+ner I-PER
+▁A I-PER
+▁Hansen B-PER
+▁L I-PER
+▁S I-PER
+▁1987 B-DATE
+
+▁CVR B-ORG
+
+▁Nigeria B-LOC
+
+▁Wednesday B-DATE
+▁26 I-DATE
+▁December I-DATE
+, I-DATE
+▁20 I-DATE
+29 I-DATE
+▁O B-PER
+ny I-PER
+edik I-PER
+ach I-PER
+uk I-PER
+wu I-PER
+▁M I-PER
+mad I-PER
+uke I-PER
+ji I-PER
+aga I-PER
+▁Hospital B-ORG
+▁N I-ORG
+ne I-ORG
+wi I-ORG
+
+▁La B-PER
+long I-PER
+▁Abu B-LOC
+ja I-LOC
+▁Kan B-LOC
+am I-LOC
+▁Local I-LOC
+▁Government I-LOC
+▁Area I-LOC
+▁Plat B-LOC
+eau I-LOC
+▁State I-LOC
+
+▁Toronto B-LOC
+- I-LOC
+Dan I-LOC
+fort I-LOC
+h I-LOC
+▁Paula B-PER
+▁Fle I-PER
+t I-PER
+cher I-PER
+▁East B-LOC
+▁York I-LOC
+s I-LOC
+▁Die I-LOC
+ppe I-LOC
+▁Park I-LOC
+▁evening B-DATE
+▁Oct B-DATE
+. I-DATE
+▁22. I-DATE
+
+▁Ah B-PER
+fo I-PER
+o I-PER
+▁A I-PER
+case I-PER
+a I-PER
+▁Nam B-PER
+bay I-PER
+
+▁33 B-DATE
+▁year I-DATE
+▁old I-DATE
+▁I B-PER
+funa I-PER
+nya I-PER
+chu I-PER
+kw I-PER
+u I-PER
+▁Na B-LOC
+' I-LOC
+i I-LOC
+mah I-LOC
+▁street I-LOC
+▁today B-DATE
+
+▁A B-PER
+reg I-PER
+be I-PER
+sola I-PER
+▁Tin B-PER
+u I-PER
+bus I-PER
+▁Lago B-LOC
+s I-LOC
+▁State I-LOC
+
+▁Ayo B-PER
+dele I-PER
+▁Fay I-PER
+ose I-PER
+▁PDP B-ORG
+▁Bis B-PER
+i I-PER
+▁Kola I-PER
+wol I-PER
+e I-PER
+
+▁Ndi B-PER
+rika I-PER
+▁Aku I-PER
+a I-PER
+bia I-PER
+▁A B-LOC
+saba I-LOC
+▁today B-DATE
+
+▁Ske B-PER
+gg I-PER
+▁2005. B-DATE
+
+▁Aina B-PER
+▁Chi I-PER
+zur I-PER
+u I-PER
+▁58 B-DATE
+▁year I-DATE
+▁old I-DATE
+
+▁Saka B-PER
+▁Balo I-PER
+gun I-PER
+▁O B-LOC
+yo I-ORG
+▁PDP I-ORG
+
+▁North B-LOC
+▁Bank I-LOC
+▁area I-LOC
+▁of I-LOC
+▁Maku I-LOC
+rdi I-LOC
+
+▁Sabi B-PER
+an I-PER
+▁past I-DATE
+▁week I-DATE
+
+▁North B-ORG
+▁Sur I-ORG
+ry I-ORG
+▁High I-ORG
+▁School I-ORG
+
+▁A B-PER
+ya B-PER
+▁May B-DATE
+▁2018 I-DATE
+
+▁Adam B-PER
+▁Zam I-PER
+pas I-PER
+
+▁C B-ORG
+TV I-ORG
+▁News I-ORG
+▁46 B-DATE
+- I-DATE
+year I-DATE
+- I-DATE
+old I-DATE
+▁Core B-PER
+y I-PER
+▁Hur I-PER
+ren I-PER
+▁Bow B-LOC
+sman I-LOC
+, I-LOC
+▁Man I-LOC
+. I-LOC
+▁north B-LOC
+west I-LOC
+▁of I-LOC
+▁Win I-LOC
+ni I-LOC
+pe I-LOC
+g I-LOC
+▁Sa B-LOC
+skat I-LOC
+che I-LOC
+wan I-LOC
+
+▁yesterday B-DATE
+▁Mac B-LOC
+e I-LOC
+▁Head I-LOC
+▁Athen B-LOC
+ry I-LOC
+
+▁Lago B-LOC
+s I-LOC
+
+▁10 B-DATE
+:45 I-DATE
+▁p I-DATE
+. I-DATE
+m I-DATE
+▁King B-LOC
+man I-LOC
+
+▁Job B-PER
+▁Si I-PER
+kha I-PER
+la I-PER
+
+▁O B-PER
+ye I-PER
+tola I-PER
+▁Ismail B-PER
+▁Om I-PER
+ipi I-PER
+dan I-PER
+▁Tin B-PER
+u I-PER
+bu I-PER
+
+▁July B-DATE
+▁2016 I-DATE
+▁UK B-LOC
+▁5 B-DATE
+▁- I-DATE
+▁week I-DATE
+▁Brad B-LOC
+ford I-LOC
+▁Al I-LOC
+ha I-LOC
+mbra I-LOC
+▁Asia B-LOC
+
+▁Thu B-DATE
+▁04 I-DATE
+▁Feb I-DATE
+, I-DATE
+▁1988 I-DATE
+▁U B-PER
+ban I-PER
+wa I-PER
+▁I I-PER
+bi I-PER
+mina I-PER
+▁Kasi B-PER
+e I-PER
+mobi I-PER
+
+▁News B-PER
+om I-PER
+▁Jerry B-PER
+▁Brown I-PER
+
+▁US B-LOC
+
+▁Germany B-LOC
+
+▁Og B-LOC
+ami I-LOC
+nana I-LOC
+▁A B-ORG
+kao I-ORG
+lisa I-ORG
+▁Onu B-ORG
+▁Off B-ORG
+a I-ORG
+▁university I-ORG
+▁1998 B-DATE
+▁2006. B-DATE
+
+▁Eg B-PER
+wu I-PER
+ime I-PER
+▁Bu B-PER
+bara I-PER
+ye I-PER
+▁ne B-PER
+ice B-PER
+▁Chi I-PER
+jek I-PER
+wu I-PER
+
+▁Ka B-PER
+chisi B-PER
+de I-PER
+▁N I-PER
+wa I-PER
+mak I-PER
+a I-PER
+
+▁Kenya B-LOC
+
+▁First B-ORG
+▁American I-ORG
+▁Trust I-ORG
+▁F I-ORG
+SB I-ORG
+▁Amazon B-ORG
+. I-ORG
+com I-ORG
+
+▁Trump B-PER
+▁Obama B-PER
+
+▁Ha B-PER
+zel I-PER
+▁Oy I-PER
+eze I-PER
+▁Ono I-PER
+du I-PER
+en I-PER
+yi I-PER
+
+▁Ghana B-LOC
+
+▁Nge B-PER
+sina I-PER
+▁Ez I-PER
+iam I-PER
+aka I-PER
+▁Or B-ORG
+
+▁Sama B-PER
+teh I-PER
+
+▁— B-PER
+T B-PER
+imi B-PER
+▁Martin I-PER
+
+▁Cro B-PER
+n I-PER
+▁Mille B-ORG
+▁Lac I-ORG
+s I-ORG
+▁Energy I-ORG
+▁Cooper I-ORG
+ative I-ORG
+
+▁E B-PER
+ji I-PER
+uwa I-PER
+eme I-PER
+on I-PER
+u I-PER
+▁last B-DATE
+▁night I-DATE
+▁Ben B-LOC
+in B-LOC
+
+▁A B-ORG
+FL I-ORG
+
+▁Me B-PER
+linda I-PER
+
+▁Dil B-PER
+lman I-PER
+
+▁M B-PER
+g B-PER
+beke I-PER
+▁Og I-PER
+odo I-PER
+▁22 B-DATE
+▁weeks I-DATE
+▁ago I-DATE
+
+▁Guido B-PER
+▁Ver I-PER
+bis I-PER
+t I-PER
+
+▁Qi B-LOC
+ong I-LOC
+hai I-LOC
+
+▁Ok B-PER
+pala I-PER
+▁Jar B-PER
+untu I-PER
+▁30 B-DATE
+-10- I-DATE
+2010 I-DATE
+
+▁Smart B-ORG
+▁Portfolio I-ORG
+s I-ORG
+▁LLC I-ORG
+▁First B-ORG
+▁Trust I-ORG
+▁En I-ORG
+han I-ORG
+ced I-ORG
+▁Se B-ORG
+curi I-ORG
+ties I-ORG
+▁Exchange I-ORG
+▁Commission I-ORG
+
+▁Georgia B-LOC
+▁Le B-PER
+van I-PER
+▁A I-PER
+kin I-PER
+
+▁S B-ORG
+NA I-ORG
+
+▁Manda B-LOC
+ue I-LOC
+
+▁Jesus B-PER
+
+▁The B-ORG
+▁I I-ORG
+vy I-ORG
+▁Cafe I-ORG
+
+▁Gut B-PER
+u I-PER
+▁early B-DATE
+▁this I-DATE
+▁year I-DATE
+▁M B-ORG
+DC I-ORG
+▁Tho B-PER
+ko I-PER
+zani I-PER
+▁Khu I-PER
+pe I-PER
+
+▁N B-PER
+wa I-PER
+bu I-PER
+go I-PER
+▁Ama I-PER
+ka I-PER
+▁Og B-LOC
+ami I-LOC
+nana I-LOC
+▁jun I-LOC
+ction I-LOC
+
+▁G B-PER
+inger I-PER
+
+▁Og B-PER
+ech I-PER
+uk I-PER
+wu I-PER
+kana I-PER
+▁Bir B-LOC
+nin I-LOC
+▁Ke I-LOC
+bbi I-LOC
+▁Maha B-PER
+ja I-PER
+▁O I-PER
+ny I-PER
+edik I-PER
+ach I-PER
+uk I-PER
+wu I-PER
+
+▁Hospital B-ORG
+▁Es I-ORG
+ikum I-ORG
+o I-ORG
+▁63 B-DATE
+▁year I-DATE
+▁old I-DATE
+
+▁France B-LOC
+▁Friday B-DATE
+▁last B-DATE
+▁24 I-DATE
+▁hours I-DATE
+▁day I-DATE
+
+▁Frank B-PER
+▁Fer I-PER
+ti I-PER
+tta I-PER
+▁III I-PER
+
+▁Lili B-PER
+an I-PER
+▁Af I-PER
+eg I-PER
+ba I-PER
+is I-PER
+▁Lili B-PER
+ans I-PER
+▁Co I-PER
+uch I-PER
+▁N B-ORG
+ollywood I-ORG
+▁Ini B-PER
+▁E I-LOC
+do I-LOC
+
+▁July B-DATE
+▁25 I-DATE
+▁ I-DATE
+, I-DATE
+▁1994 I-DATE
+▁Scott B-PER
+▁Peter I-PER
+son I-PER
+
+▁Mohammed B-PER
+▁9 B-ORG
+mobile I-ORG
+
+▁March B-DATE
+▁Lex B-ORG
+ington I-ORG
+- I-ORG
+Fa I-ORG
+y I-ORG
+ette I-ORG
+▁County I-ORG
+▁Health I-ORG
+▁Department I-ORG
+s I-ORG
+▁Tuesday B-DATE
+
+▁Holland B-PER
+▁Marvel B-ORG
+▁Studios I-ORG
+▁Sony B-ORG
+▁Sony B-ORG
+▁Pictures I-ORG
+▁Marvel B-ORG
+
+▁Nigeria B-LOC
+
+▁Maine B-LOC
+
+▁Wood B-PER
+er I-PER
+son I-PER
+
+▁Lago B-LOC
+s I-LOC
+▁O B-PER
+basa B-PER
+
+▁O B-ORG
+PC I-ORG
+
+▁Muse B-PER
+veni I-PER
+▁Balo B-LOC
+gun I-LOC
+▁Stadium I-LOC
+▁Buhari B-PER
+
+▁last B-DATE
+▁weeks I-DATE
+▁Cri B-PER
+s I-PER
+s I-PER
+▁Brian B-PER
+a I-PER
+▁Lat I-PER
+rise I-PER
+
+▁F B-PER
+iyo I-PER
+si I-PER
+▁Mai B-PER
+ger I-PER
+o I-PER
+▁ne B-PER
+ice B-PER
+▁Os I-PER
+ita I-PER
+dim I-PER
+ma I-PER
+
+▁I B-PER
+nak B-PER
+pose I-PER
+imo I-PER
+ku I-PER
+mo I-PER
+▁Fund B-PER
+u I-PER
+diye I-PER
+gha I-PER
+
+▁Citi B-ORG
+group I-ORG
+▁Inc I-ORG
+. I-ORG
+
+▁ B-ORG
+
+▁Judi B-PER
+th I-PER
+▁Andrew I-PER
+▁Cre I-PER
+ps I-PER
+▁Delta B-LOC
+▁Patricia B-PER
+▁James I-PER
+▁Matthew I-PER
+s I-PER
+▁Liberty B-LOC
+▁Center I-LOC
+▁Cliff B-PER
+ord I-PER
+▁Jud I-PER
+y I-PER
+▁Knapp I-PER
+▁Jr I-PER
+. I-PER
+▁Swan B-LOC
+ton I-LOC
+▁Mark B-PER
+▁Michelle I-PER
+▁Knapp I-PER
+▁Arch B-LOC
+bold I-LOC
+
+▁CV B-PER
+
+▁Argentina B-LOC
+▁Saturday B-DATE
+▁Sunday B-DATE
+
+▁Fem B-PER
+i I-PER
+▁Ade I-PER
+bay I-PER
+os I-PER
+▁BN B-ORG
+▁TV I-ORG
+
+▁Co B-PER
+uma I-PER
+din I-PER
+
+▁Ez B-PER
+wn I-PER
+ayi I-PER
+▁Chi I-PER
+dik I-PER
+e I-PER
+▁Dari B-LOC
+▁Or I-LOC
+lu I-LOC
+▁E B-PER
+jia I-PER
+matu I-PER
+▁one B-DATE
+▁month I-DATE
+
+▁ B-ORG
+UNC I-ORG
+
+▁Tada B-PER
+shi I-PER
+▁Hi I-PER
+rama I-PER
+tsu I-PER
+
+▁Ji B-LOC
+gawa I-LOC
+▁State I-LOC
+
+▁S B-ORG
+
+▁The B-ORG
+▁100 I-ORG
+k I-ORG
+▁Club I-ORG
+▁Ege B-ORG
+mba I-ORG
+▁Obi B-PER
+ene I-PER
+
+▁2022 B-DATE
+▁Africa B-LOC
+▁Victoria B-LOC
+▁Island I-LOC
+▁Lago B-LOC
+s B-LOC
+
+▁Ade B-PER
+riy I-PER
+ike I-PER
+
+▁today B-DATE
+▁O B-PER
+drom B-PER
+▁today B-DATE
+
+▁ B-ORG
+ENT B-ORG
+
+▁Trump B-PER
+
+▁Er B-PER
+em B-PER
+iem I-PER
+
+▁Og B-PER
+bog I-PER
+u I-PER
+▁Hospital B-ORG
+▁O I-ORG
+raj I-ORG
+imet I-ORG
+och I-ORG
+uk I-ORG
+wu I-ORG
+
+▁68 B-DATE
+▁year I-DATE
+▁old I-DATE
+▁Pod B-ORG
+ia I-ORG
+try I-ORG
+▁Service I-ORG
+
+▁Olu B-PER
+sola I-PER
+▁Ak B-LOC
+pa I-LOC
+w I-LOC
+fu I-LOC
+▁02 B-DATE
+▁Apr I-DATE
+, I-DATE
+▁1985 I-DATE
+
+▁summer B-DATE
+▁Warren B-PER
+
+▁01 B-DATE
+/02/ I-DATE
+04 I-DATE
+▁KO B-PER
+TES B-PER
+L I-PER
+ENT I-PER
+, I-PER
+▁ I-PER
+ANT I-PER
+▁O I-PER
+DE I-PER
+WY I-PER
+JU I-PER
+, I-PER
+▁M I-PER
+. I-PER
+D I-PER
+. I-PER
+
+▁Thu B-DATE
+▁30 I-DATE
+▁Nov I-DATE
+▁1995 I-DATE
+▁5 I-DATE
+: I-DATE
+▁42 I-DATE
+▁PM I-DATE
+▁ B-ORG
+PEL B-ORG
+VIS I-ORG
+▁H B-ORG
+▁UNI I-ORG
+
+▁Du B-PER
+ro B-PER
+timi I-PER
+▁Of I-PER
+un I-PER
+nek I-PER
+a I-PER
+
+▁Manga B-PER
+h I-PER
+
+▁Fri B-DATE
+▁07 I-DATE
+▁Jun I-DATE
+▁1985 I-DATE
+▁55 B-DATE
+▁year I-DATE
+▁old I-DATE
+▁O B-LOC
+lo I-LOC
+hi I-ORG
+
+▁Gre B-PER
+tz I-PER
+inger I-PER
+
+▁Card B-PER
+i I-PER
+▁B I-PER
+
+▁Peter B-PER
+▁Oko I-PER
+ye I-PER
+▁Mr B-PER
+▁P I-PER
+
+▁Japan B-LOC
+
+▁Mon B-DATE
+▁01 I-DATE
+▁Nov I-DATE
+▁1993 I-DATE
+▁7 I-DATE
+: I-DATE
+▁00 I-DATE
+▁PM I-DATE
+▁US B-LOC
+▁ABD I-LOC
+
+▁Chi B-LOC
+
+▁Alaska B-ORG
+▁Na I-ORG
+tive I-ORG
+▁Language I-ORG
+▁Center I-ORG
+
+▁Du B-LOC
+nde I-LOC
+e I-LOC
+▁Robert B-PER
+▁James I-PER
+▁Bob I-PER
+▁Dun I-PER
+can I-PER
+▁1946 B-DATE
+
+▁AF B-ORG
+OF I-ORG
+
+▁Jum B-PER
+be I-PER
+▁A I-PER
+dong I-PER
+▁Mu I-PER
+hanga I-PER
+
+▁Mak B-PER
+inde I-PER
+
+▁Hospital B-ORG
+▁Ayo I-ORG
+mi I-ORG
+de I-ORG
+▁this B-DATE
+▁afternoon I-DATE
+
+▁Walter B-PER
+s I-PER
+
+▁Of B-LOC
+i I-ORG
+amba I-LOC
+p I-ORG
+
+▁Anne B-PER
+▁Ha I-PER
+tha I-PER
+way I-PER
+
+▁Jika B-PER
+▁I I-PER
+je I-PER
+ama I-PER
+ka I-PER
+▁22 B-DATE
+▁weeks I-DATE
+▁ago I-DATE
+
+▁Guy B-ORG
+ana I-ORG
+▁Def I-ORG
+ence I-ORG
+▁Force I-ORG
+s I-ORG
+▁Guy B-LOC
+ana I-LOC
+▁Ir B-PER
+fa I-PER
+an I-PER
+▁Ali I-PER
+
+▁P B-ORG
+
+▁14 B-DATE
+-09- I-DATE
+1987 I-DATE
+▁E B-ORG
+de I-ORG
+▁Du B-ORG
+tse I-ORG
+
+▁Att B-PER
+ah I-PER
+▁If I-PER
+e I-PER
+chi I-PER
+▁R I-PER
+. I-PER
+▁Nor I-PER
+car I-PER
+
+▁N B-ORG
+SR I-ORG
+▁ B-ORG
+PAC I-ORG
+
+▁Oh B-PER
+pan I-PER
+ah I-PER
+▁Chi I-PER
+ny I-PER
+ere I-PER
+▁W I-PER
+. I-PER
+▁MED I-PER
+▁O I-PER
+dong I-PER
+▁15 B-DATE
+▁Jan I-DATE
+▁2003 I-DATE
+▁5 I-DATE
+: I-DATE
+▁24 I-DATE
+▁AM I-DATE
+
+▁Australia B-LOC
+
+▁This B-DATE
+▁morning I-DATE
+▁Ef B-PER
+e I-PER
+▁A B-ORG
+rino I-ORG
+la I-ORG
+▁hospital I-ORG
+▁I B-LOC
+wo I-LOC
+▁Il B-PER
+emo I-PER
+bola I-PER
+
+▁F B-ORG
+
+▁1913 B-DATE
+▁Victor B-PER
+▁Ka I-PER
+plan I-PER
+
+▁N B-ORG
+SR I-ORG
+▁90 B-DATE
+' I-DATE
+S I-DATE
+
+▁Pedro B-PER
+▁Abu B-LOC
+ja I-LOC
+▁Forum B-ORG
+▁of I-ORG
+▁Form I-ORG
+er I-ORG
+▁Deput I-ORG
+y I-ORG
+▁Governo I-ORG
+rs I-ORG
+▁of I-ORG
+▁Nigeria I-ORG
+▁FF I-ORG
+D I-ORG
+GN I-ORG
+▁Lucky B-PER
+▁Ima I-PER
+su I-PER
+en I-PER
+
+▁27 B-DATE
+-06- I-DATE
+1971 I-DATE
+▁1: I-DATE
+▁10 I-DATE
+▁AM I-DATE
+▁ABD B-ORG
+O I-ORG
+MEN I-ORG
+▁ B-ORG
+PEL I-ORG
+VIS I-ORG
+
+▁Social B-ORG
+▁Work I-ORG
+SW I-ORG
+▁In B-PER
+tapa I-PER
+▁A B-PER
+ila B-PER
+
+▁Che B-PER
+kiri B-PER
+fag I-PER
+
+▁Ada B-PER
+iba I-PER
+▁I I-PER
+hu I-PER
+oma I-PER
+
+▁O B-PER
+ny B-PER
+ej I-PER
+uru I-PER
+chi I-PER
+▁O B-PER
+ny B-PER
+ej I-PER
+uru I-PER
+chi I-PER
+
+▁Bor B-PER
+
+▁Ok B-PER
+araka I-PER
+y I-PER
+▁Ade I-PER
+wo I-PER
+ye I-PER
+▁afternoon B-DATE
+▁ I-DATE
+eve I-DATE
+
+▁P B-PER
+ETER B-PER
+
+. B-PER
+In B-PER
+men B-PER
+
+▁La B-PER
+mbo I-PER
+
+▁Umar B-PER
+u I-PER
+▁Yar I-PER
+A I-PER
+dua I-PER
+
+▁Si B-PER
+mi I-PER
+▁sy I-PER
+mp I-PER
+ly I-PER
+simi I-PER
+
+▁Ty B-PER
+ler I-PER
+▁Pol B-PER
+
+▁Patient B-PER
+▁E I-PER
+bele I-PER
+chu I-PER
+kw I-PER
+u I-PER
+▁Kola I-PER
+wol I-PER
+e I-PER
+
+▁Hospital B-ORG
+▁E I-ORG
+bu I-ORG
+be I-ORG
+chu I-ORG
+kw I-ORG
+u I-ORG
+▁Hospital B-ORG
+▁E I-ORG
+bu I-ORG
+be I-ORG
+chu I-LOC
+kw I-ORG
+u I-ORG
+
+▁SEP B-PER
+
+▁ET B-ORG
+
+▁Ne B-LOC
+ther I-LOC
+▁St I-LOC
+owe I-LOC
+y I-LOC
+
+▁D B-ORG
+Ti I-ORG
+gress I-ORG
+▁February B-DATE
+▁2022 I-DATE
+▁F B-ORG
+IBA B-ORG
+
+▁Au B-LOC
+▁R B-ORG
+▁19 B-DATE
+▁November I-DATE
+▁2000 I-DATE
+▁16 I-DATE
+: I-DATE
+▁58 I-DATE
+
+▁Jos B-LOC
+▁North I-LOC
+▁Kaz B-LOC
+
+▁Il B-PER
+em I-PER
+oba I-PER
+yo I-PER
+▁Di I-PER
+ken I-PER
+na I-PER
+▁Abu B-LOC
+ja I-LOC
+
+▁Richard B-PER
+▁Mille I-PER
+▁last B-DATE
+▁month I-DATE
+▁ten B-DATE
+- I-DATE
+year I-DATE
+
+▁Harry B-PER
+
+▁Patrick B-PER
+▁Wood I-PER
+▁Cr I-PER
+usius I-PER
+▁age B-DATE
+▁21, I-DATE
+
+▁VAN B-LOC
+CO I-LOC
+U I-LOC
+VER I-LOC
+▁British B-LOC
+▁Columbia I-LOC
+s I-LOC
+▁coast I-LOC
+
+▁Sar B-ORG
+o I-ORG
+▁Life I-ORG
+Car I-ORG
+e I-ORG
+▁G B-PER
+be I-PER
+mile I-PER
+ke I-PER
+▁O I-PER
+tun I-PER
+
+▁Chi B-PER
+m I-PER
+zu I-PER
+rum I-PER
+▁Oba I-PER
+lol I-PER
+uwa I-PER
+▁Chi B-PER
+sim I-PER
+diri I-PER
+▁last B-DATE
+▁night I-DATE
+▁Ik B-LOC
+eja I-LOC
+
+▁Stanley B-PER
+▁Kub I-PER
+rick I-PER
+▁2001 B-DATE
+▁1968 B-DATE
+
+▁Walter B-PER
+▁Ak I-PER
+pani I-PER
+▁Pro B-ORG
+vidu I-ORG
+s I-ORG
+Bank I-ORG
+▁Pro B-ORG
+vidu I-ORG
+s I-ORG
+Eco I-ORG
+▁MasterCard I-ORG
+
+▁O B-PER
+ka B-PER
+for I-PER
+▁Ot I-PER
+isi I-PER
+▁56 B-DATE
+▁yr I-DATE
+▁OR B-LOC
+▁2100 B-DATE
+▁Tu B-DATE
+e I-DATE
+▁17 I-DATE
+▁Nov I-DATE
+, I-DATE
+▁1998 I-DATE
+
+▁Hin B-PER
+a I-PER
+▁Khan I-PER
+▁Too B-ORG
+fani I-ORG
+
+▁Washington B-LOC
+▁Pick B-PER
+ett I-PER
+
+▁Kara B-PER
+▁Zor I-PER
+- I-PER
+El I-PER
+s I-PER
+▁Lena B-PER
+▁Lut I-PER
+hor I-PER
+▁Kati I-PER
+e I-PER
+▁McG I-PER
+rath I-PER
+
+▁Da B-PER
+mila I-PER
+re I-PER
+▁Og I-PER
+u I-PER
+chi I-PER
+▁J I-PER
+. I-PER
+▁N I-PER
+
+▁Ola B-PER
+▁I I-PER
+re I-PER
+wol I-PER
+e I-PER
+▁52 B-DATE
+▁yo I-DATE
+▁yesterday B-DATE
+▁Jos B-ORG
+▁TS I-ORG
+ICU I-ORG
+
+▁Pedro B-PER
+▁Abu B-LOC
+ja I-LOC
+▁Forum B-ORG
+▁of I-ORG
+▁Form I-ORG
+er I-ORG
+▁Deput I-ORG
+y I-ORG
+▁Governo I-ORG
+rs I-ORG
+▁of I-ORG
+▁Nigeria I-ORG
+▁FF I-ORG
+D I-ORG
+GN I-ORG
+▁Lucky B-PER
+▁Ima I-PER
+su I-PER
+en I-PER
+
+▁Hunter B-PER
+▁Bi I-PER
+dens I-PER
+
+▁NI B-ORG
+GER B-ORG
+IAN I-ORG
+▁TRI I-ORG
+B I-ORG
+UNE I-ORG
+
+▁Pat B-PER
+▁McG I-PER
+rath I-PER
+
+▁22 B-DATE
+▁May I-DATE
+, I-DATE
+▁2016 I-DATE
+▁Os B-ORG
+ho I-ORG
+g I-ORG
+bo I-ORG
+▁Sul B-ORG
+eja I-ORG
+
+▁E B-PER
+wa I-PER
+olu I-PER
+wa I-PER
+▁Do I-PER
+yin I-PER
+sola I-PER
+
+▁W B-LOC
+ORT B-LOC
+HING I-LOC
+TON I-LOC
+▁Wort B-ORG
+h I-ORG
+ington I-ORG
+▁High I-ORG
+▁School I-ORG
+▁Tro B-ORG
+jan I-ORG
+s I-ORG
+▁Thursday B-DATE
+▁11 B-DATE
+:05 I-DATE
+▁a I-DATE
+. I-DATE
+m I-DATE
+
+▁Abhi B-PER
+sh I-PER
+ek I-PER
+▁Mumbai B-LOC
+▁Indian B-LOC
+▁state I-LOC
+▁of I-LOC
+▁Maha I-LOC
+rash I-LOC
+tra I-LOC
+▁An B-PER
+il I-PER
+▁Mis I-PER
+hra I-PER
+▁ B-DATE
+thir I-DATE
+ty I-DATE
+▁years I-DATE
+▁India B-LOC
+▁Fi B-DATE
+fte I-DATE
+en I-DATE
+▁years I-DATE
+▁Indian B-ORG
+▁Ministry I-ORG
+
+▁Shanghai B-ORG
+▁stock I-ORG
+▁exchange I-ORG
+▁Tuesday B-DATE
+
+▁Penn B-LOC
+▁Station I-LOC
+
+▁20 B-DATE
+▁years I-DATE
+▁ago I-DATE
+▁ B-LOC
+RCA I-LOC
+▁2 B-DATE
+▁weeks I-DATE
+▁ago I-DATE
+▁Hospital B-ORG
+▁Jar I-ORG
+
+▁4 B-DATE
+▁months I-DATE
+▁ago I-DATE
+▁Oli B-PER
+lea I-PER
+nya I-PER
+▁N I-PER
+wi I-PER
+nya I-PER
+
+▁The B-ORG
+▁PU I-ORG
+NCH I-ORG
+▁Mog B-PER
+halu I-PER
+▁2023 B-DATE
+▁A B-ORG
+DC I-ORG
+▁Root B-ORG
+s I-ORG
+▁Television I-ORG
+▁Dum B-PER
+ebi I-PER
+▁Ka I-PER
+ch I-PER
+ik I-PER
+wu I-PER
+
+▁fb B-ORG
+
+▁80- B-DATE
+year I-DATE
+- I-DATE
+old I-DATE
+▁Sam B-PER
+boo I-PER
+
+▁Oso B-LOC
+▁5 B-DATE
+/9 I-DATE
+
+▁Dag B-LOC
+way I-LOC
+
+▁van B-PER
+co I-PER
+▁Zo B-PER
+syn I-PER
+
+▁Fai B-PER
+qa I-PER
+h I-PER
+
+▁Maro B-PER
+o I-PER
+cool I-PER
+ay I-PER
+▁18 B-DATE
+-10- I-DATE
+1981 I-DATE
+▁11 B-DATE
+: I-DATE
+▁30 I-DATE
+▁am I-DATE
+
+▁Hospital B-ORG
+▁Obi I-LOC
+nna I-LOC
+▁Hospital B-ORG
+▁Obi I-ORG
+nna I-LOC
+
+▁Bus B-PER
+ayo B-PER
+
+▁If B-PER
+e I-PER
+chu I-PER
+kw I-PER
+ude I-PER
+▁Oba I-PER
+sie I-PER
+che I-PER
+kwa I-PER
+
+▁Gay B-PER
+▁Tar I-PER
+ca I-PER
+mo I-PER
+
+▁Patient B-PER
+▁Woo I-PER
+ne I-PER
+h I-PER
+geh I-PER
+▁A I-PER
+jar I-PER
+
+▁13 B-DATE
+▁Jan I-DATE
+, I-DATE
+▁2021 I-DATE
+▁Bir B-LOC
+nin I-LOC
+▁Ke I-LOC
+bbi I-LOC
+▁Du B-LOC
+tse I-LOC
+
+▁Noch B-PER
+ume I-PER
+e I-PER
+▁He I-PER
+villa I-PER
+r I-PER
+▁Lo B-PER
+bo I-PER
+day I-PER
+▁M B-LOC
+ma I-LOC
+bat I-LOC
+ho I-LOC
+
+▁Congo B-ORG
+▁Mum B-LOC
+ias I-LOC
+▁Gar B-LOC
+issa I-LOC
+
+▁Kle B-PER
+rman I-PER
+▁GL I-PER
+▁1985 B-DATE
+
+▁Anna B-PER
+lay I-PER
+▁Ew I-PER
+amb I-PER
+allah I-PER
+▁22 B-DATE
+▁weeks I-DATE
+▁ago I-DATE
+
+▁Os B-PER
+e B-PER
+kah I-PER
+lay I-PER
+▁Og I-PER
+ah I-PER
+
+▁Show B-PER
+bo I-PER
+se I-PER
+a I-PER
+▁Kay B-PER
+lom I-PER
+be I-PER
+e I-PER
+▁09 B-DATE
+▁March I-DATE
+▁2006 I-DATE
+▁8 B-DATE
+20 I-DATE
+▁am I-DATE
+
+▁Chi B-PER
+kao I-PER
+dina I-PER
+ka I-PER
+▁30 B-DATE
+y I-DATE
+/ I-DATE
+o I-DATE
+▁5 B-DATE
+▁weeks I-DATE
+▁ago I-DATE
+
+▁Chi B-PER
+maz I-PER
+uru I-PER
+▁Bata B-ORG
+gara I-ORG
+wa I-ORG
+▁hospital I-ORG
+▁27 B-DATE
+/03/ I-DATE
+1986 I-DATE
+
+▁Lar B-PER
+bal B-LOC
+lar I-PER
+▁Un I-LOC
+guar I-LOC
+▁Oo B-LOC
+goo I-LOC
+raba I-LOC
+che I-LOC
+
+▁N B-PER
+zub I-PER
+ech I-PER
+uk I-PER
+wu I-PER
+
+▁I B-PER
+hea I-PER
+nyi I-PER
+▁Ayo I-PER
+mi I-PER
+de I-PER
+
+▁18 B-DATE
+▁23 I-DATE
+▁28 B-DATE
+▁y I-DATE
+/ I-DATE
+o I-DATE
+▁Go B-PER
+
+▁85 B-DATE
+▁y I-DATE
+/ I-DATE
+o I-DATE
+▁Ja B-LOC
+chu I-LOC
+kw I-LOC
+um I-LOC
+ma I-LOC
+
+▁yesterday B-DATE
+▁Bu B-PER
+mba I-PER
+
+▁Hospital B-LOC
+▁Moc I-LOC
+oo I-LOC
+
+▁Roche B-ORG
+▁Bay B-ORG
+er I-ORG
+
+▁Ding B-PER
+
+▁Og B-PER
+bo I-PER
+mo I-PER
+
+▁Mai B-PER
+muna I-PER
+▁Chin I-PER
+we I-PER
+ot I-PER
+ito I-PER
+▁left B-LOC
+▁front I-LOC
+opa I-LOC
+rie I-LOC
+tal I-LOC
+▁Chi I-LOC
+du I-LOC
+be I-LOC
+▁region I-LOC
+
+▁GI B-PER
+
+▁Fo B-PER
+ley I-PER
+
+▁PER B-ORG
+L I-ORG
+
+▁Bryan B-PER
+▁D B-ORG
+HS I-ORG
+
+▁Old B-PER
+enburg I-PER
+
+▁Nigeria B-LOC
+
+▁Patriot B-ORG
+s I-ORG
+
+▁Marc B-PER
+▁Ra I-PER
+valo I-PER
+mana I-PER
+na I-PER
+▁Di B-PER
+dier I-PER
+▁Rat I-PER
+si I-PER
+raka I-PER
+▁2001 B-DATE
+
+▁Saturday B-DATE
+▁Sunday B-DATE
+▁Donald B-PER
+▁Trump I-PER
+▁U B-LOC
+. I-LOC
+S I-LOC
+. I-LOC
+▁Europe B-LOC
+▁Britain B-LOC
+▁Ireland B-LOC
+
+▁Moje B-ORG
+c I-ORG
+▁International I-ORG
+▁Limited I-ORG
+
+▁Ni B-PER
+yo I-PER
+ola I-PER
+▁Chi B-PER
+ye I-PER
+▁yesterday B-DATE
+
+▁Yamaha B-ORG
+
+▁San B-ORG
+▁Diego I-ORG
+▁Water I-ORG
+color I-ORG
+▁Society I-ORG
+
+▁ B-ORG
+CBN I-ORG
+▁Ko B-PER
+fo I-PER
+▁Salam I-PER
+- I-PER
+A I-PER
+lada I-PER
+
+▁Sim B-PER
+s I-PER
+▁Sim B-PER
+s I-PER
+
+▁Hospital B-ORG
+▁M I-ORG
+masi I-ORG
+chu I-ORG
+kw I-ORG
+u I-ORG
+▁Ade B-PER
+sida I-PER
+▁6 B-DATE
+▁week I-DATE
+▁Hospital B-ORG
+▁Yen I-ORG
+agoa I-ORG
+
+▁Ade B-PER
+wol I-PER
+e I-PER
+▁Ade I-PER
+bay I-PER
+o I-PER
+▁Social B-ORG
+▁Democratic I-ORG
+▁Party I-ORG
+S B-ORG
+DP I-ORG
+▁OS B-PER
+ARE B-PER
+TIN I-PER
+▁OS I-PER
+ADE I-PER
+BA I-PER
+W I-PER
+ME I-PER
+▁1993 B-DATE
+▁SDP B-ORG
+▁2023 B-DATE
+
+▁F B-LOC
+lin I-LOC
+t I-LOC
+, I-LOC
+▁Michigan I-LOC
+▁Family B-ORG
+▁Dollar I-ORG
+
+▁Kevin B-PER
+▁Magnus I-PER
+sen I-PER
+▁Nico B-PER
+▁H I-PER
+lk I-PER
+enberg I-PER
+▁Max B-PER
+▁Chi I-PER
+l I-PER
+ton I-PER
+
+▁Led B-PER
+ger B-PER
+
+▁Fo B-PER
+lor B-PER
+un I-PER
+sho I-PER
+▁Ade I-PER
+ola I-PER
+▁A B-PER
+rike I-PER
+▁Gold I-PER
+
+▁Chi B-PER
+e I-PER
+hidra I-PER
+▁Oy I-PER
+ele I-PER
+ke I-PER
+
+▁Sar B-PER
+▁Massa B-PER
+r I-PER
+co I-PER
+o I-PER
+▁Thu B-DATE
+▁18 I-DATE
+▁Dec I-DATE
+, I-DATE
+▁2008 I-DATE
+
+▁Maine B-LOC
+▁David B-PER
+▁He I-PER
+id I-PER
+rich I-PER
+▁Maine B-ORG
+▁Office I-ORG
+▁of I-ORG
+▁Mari I-ORG
+ju I-ORG
+ana I-ORG
+▁Policy I-ORG
+
+▁Obi B-PER
+adi I-PER
+▁I B-PER
+funa I-PER
+nya I-PER
+chu I-PER
+kw I-PER
+u I-PER
+▁last B-DATE
+▁night I-DATE
+▁N B-ORG
+ne I-ORG
+oma I-ORG
+▁labor I-ORG
+▁ I-ORG
+ward I-ORG
+
+▁Rick B-PER
+ett I-PER
+s I-PER
+
+▁De B-PER
+bina I-PER
+▁Bonne I-PER
+rje I-PER
+e I-PER
+▁Kaj B-PER
+ol I-PER
+▁Shah B-PER
+▁Ruk I-PER
+h I-PER
+▁Khan I-PER
+
+▁Florida B-LOC
+▁Democrat B-ORG
+▁Democratic B-ORG
+▁Republican B-ORG
+▁Republican B-ORG
+
+▁Versailles B-LOC
+
+▁Progres B-ORG
+sive I-ORG
+s I-ORG
+▁Governo I-ORG
+rs I-ORG
+▁Forum I-ORG
+▁Abubakar B-PER
+▁Bag I-PER
+udu I-PER
+▁Ke B-LOC
+bbi I-LOC
+▁State I-LOC
+▁Tin B-PER
+u B-PER
+bu I-PER
+▁next B-DATE
+▁years I-DATE
+
+▁three B-DATE
+▁months I-DATE
+▁News B-ORG
+om I-ORG
+
+▁Washington B-LOC
+▁Park I-LOC
+▁44 B-DATE
+- I-DATE
+year I-DATE
+- I-DATE
+old I-DATE
+
+▁Ron B-PER
+▁Karen B-PER
+▁Os B-LOC
+hawa I-LOC
+▁Da B-PER
+kota B-PER
+
+▁T B-PER
+cha B-PER
+i I-PER
+▁A B-PER
+skar I-PER
+▁Sali I-PER
+m I-PER
+dja I-PER
+nov I-PER
+
+▁Wood B-LOC
+bury I-LOC
+▁County I-LOC
+▁G B-ORG
+OP I-ORG
+
+▁43 B-DATE
+- I-DATE
+year I-DATE
+- I-DATE
+old I-DATE
+▁Indian B-ORG
+▁Air I-ORG
+▁Force I-ORG
+▁I I-ORG
+AF I-ORG
+▁Monday B-DATE
+▁12 B-DATE
+▁hours I-DATE
+▁Ch B-LOC
+hat I-LOC
+tis I-LOC
+garh I-LOC
+s I-LOC
+▁Bila I-LOC
+spur I-LOC
+▁district I-LOC
+
+▁Lo B-PER
+eff I-PER
+ler I-PER
+▁Dream B-ORG
+▁2011, B-DATE
+
+▁Da B-PER
+mi B-PER
+
+▁Zuckerberg B-PER
+
+▁I B-PER
+dika I-PER
+▁Ama I-PER
+ef I-PER
+ule I-PER
+▁N B-LOC
+wak I-LOC
+amma I-LOC
+▁War I-LOC
+d I-LOC
+
+▁Macron B-PER
+▁Cam B-LOC
+e I-LOC
+roon I-LOC
+
+▁Hol B-PER
+ba I-PER
+▁Notre B-ORG
+▁Dame I-ORG
+
+▁Johnson B-PER
+▁San B-LOC
+▁Diego I-LOC
+
+▁Cyn B-PER
+thi I-PER
+a I-PER
+▁Obi I-PER
+- I-PER
+U I-PER
+chen I-PER
+du I-PER
+
+▁Times B-ORG
+▁of I-ORG
+▁Malta I-ORG
+
+▁F B-ORG
+
+▁China B-ORG
+s I-ORG
+▁Plan I-ORG
+ning I-ORG
+▁Board I-ORG
+
+▁Indonesia B-LOC
+
+▁Ke B-PER
+ir I-PER
+▁Star I-PER
+mer I-PER
+▁Trump B-PER
+▁Donald B-PER
+▁Trump I-PER
+▁British B-ORG
+▁Government I-ORG
+
+▁Alexander B-PER
+
+▁Hospital B-ORG
+▁Ak I-ORG
+pan I-ORG
+▁Za B-LOC
+ria I-LOC
+▁city I-LOC
+▁Saturday B-DATE
+▁10 I-DATE
+▁November I-DATE
+, I-DATE
+▁2007 I-DATE
+
+▁16 B-DATE
+▁March I-DATE
+, I-DATE
+▁1994 I-DATE
+▁Za B-LOC
+ria I-LOC
+▁Maku B-LOC
+rdi I-LOC
+
+▁I B-PER
+hu I-PER
+oma I-PER
+▁In B-PER
+ango I-PER
+
+▁GI B-PER
+
+▁S B-ORG
+
+▁SA B-ORG
+▁M B-DATE
+ID I-DATE
+▁80 I-DATE
+' I-DATE
+S I-DATE
+
+▁A B-PER
+/ B-PER
+N B-PER
+do B-PER
+chu I-PER
+kw I-PER
+u I-PER
+▁PT I-PER
+
+▁Mark B-PER
+▁D I-PER
+. I-PER
+▁Eng I-PER
+, I-PER
+▁M I-PER
+. I-PER
+D I-PER
+
+▁GI B-PER
+
+▁20 B-DATE
+/07/ I-DATE
+2003 I-DATE
+▁9 I-DATE
+: I-DATE
+▁06 I-DATE
+▁AM I-DATE
+▁CH B-ORG
+EST I-ORG
+▁ABD B-ORG
+▁ B-ORG
+PEL B-ORG
+VIS I-ORG
+
+▁Buck B-PER
+▁Sho B-PER
+la I-PER
+
+▁IS B-ORG
+
+▁Bol B-PER
+uwa I-PER
+tif I-PER
+e I-PER
+▁Chi I-PER
+eke I-PER
+zie I-PER
+
+. B-PER
+N B-PER
+wa B-PER
+chine I-PER
+mere I-PER
+
+▁Lo B-PER
+ong B-PER
+y I-PER
+▁Ah I-PER
+no I-PER
+o I-PER
+
+▁Beck B-PER
+▁Beck B-PER
+▁War B-PER
+d I-PER
+▁Men B-PER
+del I-PER
+son I-PER
+▁Mo B-PER
+ck I-PER
+▁Er B-PER
+ba I-PER
+ugh I-PER
+▁1961 B-DATE
+
+▁Theo B-PER
+phra I-PER
+▁3 B-DATE
+rd I-DATE
+▁century I-DATE
+▁BC I-DATE
+▁Theo B-PER
+phra I-PER
+stus I-PER
+▁1998. B-DATE
+
+▁Ish B-PER
+ola I-PER
+▁Ji I-PER
+go I-PER
+▁If B-PER
+ech I-PER
+uk I-PER
+wu I-PER
+kw I-PER
+uru I-PER
+▁Bilal I-PER
+
+▁Candi B-PER
+ce I-PER
+
+▁Hou B-ORG
+thi I-ORG
+▁Saudi B-LOC
+
+▁Apple B-ORG
+▁Retail I-ORG
+▁Store I-ORG
+▁Apple B-ORG
+s I-ORG
+
+▁Paul B-PER
+▁C I-PER
+line I-PER
+▁New B-ORG
+▁York I-ORG
+▁University I-ORG
+
+▁Boeing B-ORG
+▁Airbus B-ORG
+▁last B-DATE
+▁year I-DATE
+
+▁Pe B-PER
+du I-PER
+el I-PER
+
+▁Mit B-PER
+ema I-PER
+▁O I-PER
+bor I-PER
+dor I-PER
+
+▁Hannah B-PER
+▁Owen I-PER
+▁Blue B-ORG
+▁Cross I-ORG
+▁Le I-ORG
+w I-ORG
+k I-ORG
+nor I-ORG
+▁Eric B-PER
+
+▁Baltimore B-LOC
+▁She B-PER
+ila I-PER
+▁Di I-PER
+xon I-PER
+
+▁Cook B-LOC
+▁County I-LOC
+▁Brand B-PER
+on I-PER
+▁Johnson I-PER
+▁McC B-LOC
+or I-LOC
+mi I-LOC
+ck I-LOC
+▁Place I-LOC
+
+▁Kay B-PER
+ne I-PER
+▁West I-PER
+▁Adam B-PER
+▁Levi I-PER
+ne I-PER
+
+▁Ko B-LOC
+gi I-LOC
+▁N B-ORG
+LC I-ORG
+
+▁ B-ORG
+CERT I-ORG
+- I-ORG
+In I-ORG
+▁Zoom B-ORG
+
+▁Houston B-LOC
+
+▁France B-LOC
+▁Second B-DATE
+▁World I-DATE
+▁War I-DATE
+▁Philippe B-PER
+▁P I-PER
+tain I-PER
+▁French B-ORG
+▁State I-ORG
+▁three I-DATE
+cade I-DATE
+
+▁22 B-DATE
+▁yr I-DATE
+▁old I-DATE
+▁Das B-PER
+ola I-PER
+▁Ade I-PER
+yey I-PER
+e I-PER
+▁11 B-DATE
+am I-DATE
+▁this I-DATE
+▁morning I-DATE
+
+▁Gordon B-PER
+
+▁Nicolas B-PER
+▁Aga I-PER
+pia I-PER
+dis I-PER
+▁Old B-LOC
+▁Montreal I-LOC
+▁Montreal B-ORG
+s I-LOC
+▁Pala I-LOC
+is I-LOC
+▁de I-LOC
+▁Justice I-LOC
+▁Jan B-DATE
+
+▁Boris B-PER
+▁Johnson I-PER
+▁January B-DATE
+▁UK B-LOC
+
+▁N B-PER
+wol I-PER
+isa I-PER
+▁Jesu I-PER
+mi I-PER
+yen I-PER
+
+▁Og B-PER
+un B-PER
+sola I-PER
+▁Er I-PER
+em I-PER
+iem I-PER
+i I-PER
+▁56 B-DATE
+▁yr I-DATE
+▁OR B-LOC
+▁26 B-DATE
+-09- I-DATE
+2008 I-DATE
+
+▁Chi B-PER
+e I-PER
+hidra I-PER
+▁N I-PER
+ke I-PER
+dini I-PER
+ru I-PER
+ka I-PER
+▁Obi B-PER
+▁War B-ORG
+ri I-ORG
+
+▁New B-LOC
+▁Jersey I-LOC
+▁Rut B-LOC
+gers I-LOC
+- I-LOC
+E I-LOC
+a I-LOC
+gle I-LOC
+ton I-LOC
+
+▁early B-DATE
+▁1950 I-DATE
+s I-DATE
+▁Alfred B-PER
+o I-PER
+▁Di I-PER
+▁St I-PER
+fano I-PER
+▁El B-ORG
+▁Ball I-ORG
+et I-ORG
+▁Az I-ORG
+ul I-ORG
+▁Ball I-ORG
+et I-ORG
+
+▁Al B-PER
+- I-PER
+M I-PER
+usta I-PER
+pha I-PER
+▁AA B-ORG
+▁Nigeria B-LOC
+
+▁north B-LOC
+ern I-LOC
+▁N I-LOC
+SW I-LOC
+
+▁Brown B-PER
+▁NAV B-ORG
+S I-ORG
+UP I-ORG
+▁Enterprise I-ORG
+▁Web I-ORG
+▁team I-ORG
+▁90 B-DATE
+▁days I-DATE
+
+▁Gomb B-LOC
+e I-ORG
+▁Fal B-PER
+obi I-PER
+▁On I-PER
+asan I-PER
+wo I-PER
+
+▁Ra B-PER
+puru I-PER
+chi I-PER
+▁Chi I-PER
+kan I-PER
+yi I-PER
+nak I-PER
+pere I-PER
+
+▁O B-PER
+goo I-PER
+▁Ade B-PER
+ar I-PER
+▁Im I-PER
+mah I-PER
+E B-PER
+h B-PER
+remmo B-PER
+rlo I-PER
+
+▁Ngo B-PER
+wari I-PER
+▁Ob I-PER
+in I-PER
+wa I-PER
+
+▁C B-PER
+lem B-PER
+ence I-PER
+▁age B-DATE
+▁of I-DATE
+▁32 I-DATE
+
+▁I B-PER
+he I-PER
+chi I-PER
+tur I-PER
+u I-PER
+▁Amin I-PER
+ah I-PER
+▁Aba I-PER
+
+▁Gaza B-LOC
+▁border I-LOC
+▁region I-LOC
+▁south B-LOC
+ern I-LOC
+▁Israel I-LOC
+
+▁Israel B-LOC
+▁Israel B-LOC
+
+▁I B-PER
+bia I-PER
+ma I-PER
+▁Ayo B-PER
+tola I-PER
+▁Poti B-LOC
+skum I-LOC
+▁morning I-DATE
+▁N B-PER
+nen I-PER
+na I-PER
+ya I-PER
+▁last B-DATE
+▁night I-DATE
+▁Le B-ORG
+kki I-ORG
+▁clinic I-ORG
+
+▁Sele B-PER
+na I-PER
+▁Quint I-PER
+an I-PER
+illa I-PER
+
+▁14 B-DATE
+/12/ I-DATE
+20 I-DATE
+23 I-DATE
+▁Kan B-PER
+ayo I-PER
+chu I-PER
+kw I-PER
+u I-PER
+▁11 B-DATE
+▁years I-DATE
+▁of I-DATE
+▁age I-DATE
+▁5 B-DATE
+▁days I-DATE
+
+▁Chin B-PER
+wa I-PER
+ta I-PER
+▁Di I-PER
+ken I-PER
+na I-PER
+▁Kano B-LOC
+▁We B-DATE
+d I-DATE
+▁03 I-DATE
+▁Dec I-DATE
+, I-DATE
+▁2008 I-DATE
+
+▁An B-PER
+en I-PER
+ech I-PER
+uk I-PER
+wu I-PER
+▁N I-PER
+wan I-PER
+k I-PER
+wo I-PER
+▁11 B-DATE
+:22 I-DATE
+pm I-DATE
+▁11 B-DATE
+pm I-DATE
+▁We B-DATE
+d I-DATE
+▁02 I-DATE
+▁Nov I-DATE
+, I-DATE
+▁1988 I-DATE
+
+▁Marc B-PER
+▁Bro I-PER
+u I-PER
+illard I-PER
+▁this B-DATE
+▁morning I-DATE
+
+▁S B-ORG
+d I-ORG
+▁Abu B-LOC
+ja I-LOC
+
+▁Daniel B-PER
+s I-PER
+
+▁Portland B-ORG
+▁Ha B-PER
+te I-PER
+
+▁Japanese B-ORG
+▁Bili I-ORG
+ary I-ORG
+▁A I-ORG
+tres I-ORG
+ia I-ORG
+▁Registr I-ORG
+y I-ORG
+▁J I-ORG
+BAR I-ORG
+▁10- B-DATE
+year I-DATE
+
+▁U B-PER
+g B-PER
+eanu I-PER
+go I-PER
+
+▁GI B-PER
+
+▁P B-ORG
+NA I-ORG
+
+▁Fore B-PER
+
+▁B B-PER
+
+▁Sal B-PER
+lay I-PER
+
+▁Abd B-PER
+
+▁James B-PER
+▁Bai I-PER
+rd I-PER
+▁We I-PER
+a I-PER
+ver I-PER
+
+▁I B-PER
+bin I-PER
+ye I-PER
+▁Kam B-PER
+fe I-PER
+ech I-PER
+uk I-PER
+wu I-PER
+▁Thu B-DATE
+▁10 I-DATE
+▁Dec I-DATE
+, I-DATE
+▁2015 I-DATE
+
+▁Texas B-LOC
+▁Monday B-DATE
+
+▁En B-PER
+atay I-PER
+▁O I-PER
+on I-PER
+dah I-PER
+▁40 B-DATE
+yr I-DATE
+▁old I-DATE
+▁Su I-LOC
+ni I-LOC
+▁Pieter B-LOC
+ma I-LOC
+ritz I-LOC
+burg I-LOC
+▁state I-LOC
+▁22 B-DATE
+/11/ I-DATE
+2022 I-DATE
+
+▁P B-ORG
+
+▁Ze B-PER
+us I-PER
+▁Are B-PER
+s I-PER
+▁These B-PER
+us I-PER
+▁Athen B-LOC
+a I-LOC
+
+▁Love B-PER
+
+▁Nigeria B-LOC
+▁five B-DATE
+▁years I-DATE
+▁Muhammad B-PER
+u I-PER
+▁Buhari I-PER
+
+▁Bella B-PER
+s I-PER
+
+▁O B-ORG
+SH I-ORG
+▁Mamma B-PER
+
+▁Tra B-LOC
+vis I-LOC
+▁County I-LOC
+▁Margaret B-PER
+▁Moore I-PER
+▁Pa B-PER
+x I-PER
+ton I-PER
+▁Paul B-PER
+▁Paul B-PER
+
+▁T B-ORG
+NM I-ORG
+
+. B-PER
+Chi B-PER
+eke B-PER
+zie I-PER
+▁9 B-DATE
+▁weeks I-DATE
+▁Cu B-PER
+ka I-PER
+men I-PER
+ah I-PER
+▁9 B-DATE
+▁weeks I-DATE
+
+▁Association B-ORG
+▁fra I-ORG
+naise I-ORG
+▁des I-ORG
+▁march I-ORG
+s I-ORG
+▁financier I-ORG
+s I-ORG
+▁AM I-ORG
+AFI I-ORG
+▁France B-LOC
+
+▁Russia B-LOC
+▁Medvedev B-PER
+
+▁01 B-DATE
+-01- I-DATE
+2021 I-DATE
+▁Ye B-PER
+wand I-PER
+e I-PER
+▁N I-PER
+na I-PER
+bu I-PER
+ik I-PER
+em I-PER
+▁A I-PER
+ke I-PER
+▁Chi B-PER
+bun I-PER
+na I-PER
+
+▁Ade B-PER
+y I-PER
+inka I-PER
+▁Grand I-PER
+son I-PER
+▁Inter B-ORG
+pol I-ORG
+▁United B-LOC
+▁Kingdom I-LOC
+▁UK I-LOC
+
+▁Ag B-PER
+bom I-PER
+ma I-PER
+▁M B-PER
+g I-PER
+ben I-PER
+ka I-PER
+▁N B-LOC
+s I-LOC
+ukka I-LOC
+▁this B-DATE
+▁morning I-DATE
+▁M B-PER
+mere I-PER
+mik I-PER
+wu I-PER
+▁last B-DATE
+▁night I-DATE
+▁Wu B-ORG
+kari I-ORG
+▁clinic I-ORG
+
+▁La B-PER
+wa I-PER
+ck I-PER
+
+▁Hospital B-ORG
+▁La I-ORG
+ito I-ORG
+
+▁On B-PER
+yin I-PER
+ye I-PER
+▁A B-ORG
+chie I-ORG
+vas I-ORG
+▁Entertainment I-ORG
+▁Und B-ORG
+a I-ORG
+ground I-ORG
+▁media I-ORG
+▁outfit I-ORG
+▁Daniel B-PER
+▁Cole I-PER
+▁Chi I-PER
+ori I-PER
+
+▁American B-ORG
+▁Organization I-ORG
+▁august B-DATE
+▁2000 I-DATE
+
+▁Elizabeth B-PER
+▁A I-PER
+▁Ea I-PER
+ton I-PER
+, I-PER
+▁M I-PER
+. I-PER
+D I-PER
+
+▁2 B-DATE
+▁days I-DATE
+▁Da B-PER
+le I-PER
+▁Merkel I-PER
+▁Dr B-ORG
+. I-ORG
+▁John I-ORG
+▁C I-ORG
+. I-ORG
+▁Corri I-ORG
+gan I-ORG
+▁Mental I-ORG
+▁Health I-ORG
+▁Center I-ORG
+▁2017 B-DATE
+-07- I-DATE
+07 I-DATE
+▁1: B-DATE
+30 I-DATE
+▁pm I-DATE
+
+▁Monica B-PER
+
+▁Um B-LOC
+ua I-LOC
+hia I-LOC
+▁Olay B-PER
+emi I-PER
+▁O I-PER
+lor I-PER
+un I-PER
+le I-PER
+ke I-PER
+
+▁Park B-ORG
+s I-ORG
+▁and I-ORG
+▁Rec I-ORG
+re I-ORG
+ation I-ORG
+▁Josh B-PER
+▁Gad I-PER
+
+▁O B-PER
+bot I-PER
+▁Oba I-PER
+dara I-PER
+▁If B-LOC
+e I-LOC
+
+▁Chat B-ORG
+tano I-ORG
+oga I-ORG
+▁fire I-ORG
+▁department I-ORG
+
+▁Vi B-PER
+nce I-PER
+
+▁C B-LOC
+handler I-LOC
+▁Arizona B-LOC
+
+▁Ai B-PER
+mies I-PER
+▁five B-DATE
+- I-DATE
+year I-DATE
+- I-DATE
+old I-DATE
+▁I B-PER
+vy I-PER
+
+▁Eve B-PER
+lyn I-PER
+▁St I-PER
+. I-PER
+▁ I-PER
+Germain I-PER
+
+▁Oy B-PER
+ed I-PER
+apo I-PER
+
+▁Fan B-PER
+iran I-PER
+
+▁Sunday B-DATE
+▁01 I-DATE
+▁March I-DATE
+▁1992 I-DATE
+▁1: I-DATE
+▁27 I-DATE
+▁PM I-DATE
+▁UNI B-ORG
+LAT I-ORG
+▁UP I-ORG
+▁E I-ORG
+XT I-ORG
+▁US B-LOC
+
+▁F B-ORG
+FP I-ORG
+▁today B-DATE
+
+▁OR B-LOC
+
+▁Dil B-LOC
+
+▁Hospital B-ORG
+▁Chi I-ORG
+kan I-ORG
+yi I-ORG
+nak I-ORG
+pere I-ORG
+▁this B-DATE
+▁morning I-DATE
+▁05 B-DATE
+30 I-DATE
+▁O B-ORG
+SH I-ORG
+▁Medicine I-ORG
+▁NH I-ORG
+
+▁GU B-PER
+
+▁Ab B-PER
+
+▁N B-ORG
+ollywood I-ORG
+▁Des B-PER
+mond I-PER
+▁Elliot I-PER
+▁Monday B-DATE
+▁Victoria B-PER
+
+▁Nigeria B-LOC
+
+▁Obi B-PER
+dim I-PER
+aru I-PER
+▁E I-PER
+deki I-PER
+
+▁Ryan B-PER
+▁Reyn I-PER
+old I-PER
+s I-PER
+
+▁K B-ORG
+ANU I-ORG
+
+▁Mu B-PER
+cana I-PER
+▁Ac I-PER
+▁56 B-DATE
+▁yr I-DATE
+▁OR B-LOC
+▁S B-ORG
+▁Mon B-DATE
+▁14 I-DATE
+▁Mar I-DATE
+, I-DATE
+▁2011 I-DATE
+
+▁Calvin B-PER
+▁Bas I-PER
+sey I-PER
+
+▁PS B-ORG
+
+▁Paul B-PER
+▁Oko I-PER
+ye I-PER
+▁Rud B-PER
+e I-PER
+boy I-PER
+▁Paul B-PER
+▁Mr B-PER
+▁P I-PER
+▁P B-ORG
+- I-ORG
+S I-ORG
+quar I-ORG
+e I-ORG
+
+▁Mont B-PER
+gom I-PER
+ery I-PER
+▁18 B-DATE
+▁years I-DATE
+▁old I-DATE
+
+▁Ja B-PER
+c I-PER
+que I-PER
+line I-PER
+▁Much I-PER
+azo I-PER
+re I-PER
+ka I-PER
+
+▁3 B-DATE
+▁days I-DATE
+▁3 B-DATE
+▁days I-DATE
+▁3 B-DATE
+▁days I-DATE
+▁ago I-DATE
+▁Uz B-PER
+o I-PER
+din I-PER
+ma I-PER
+▁Chi I-PER
+ko I-PER
+di I-PER
+
+▁Trump B-PER
+▁earlier B-DATE
+▁this I-DATE
+▁month I-DATE
+B B-PER
+iden B-PER
+▁Bi B-PER
+den I-PER
+
+▁12 B-DATE
+/11/ I-DATE
+2005 I-DATE
+▁Du B-ORG
+tse I-ORG
+▁Kaduna B-ORG
+
+▁tonight B-DATE
+▁Maria B-PER
+▁Angel B-PER
+
+▁I B-PER
+he B-PER
+chi I-PER
+tur I-PER
+u I-PER
+▁Um I-PER
+ean I-PER
+om I-PER
+
+▁O B-PER
+zo B-PER
+e I-PER
+mena I-PER
+▁O I-PER
+lago I-PER
+ke I-PER
+▁56 B-DATE
+▁yr I-DATE
+▁OR B-LOC
+▁S B-ORG
+▁Sun B-DATE
+▁31 I-DATE
+▁Jul I-DATE
+, I-DATE
+▁1988 I-DATE
+
+▁last B-DATE
+▁week I-DATE
+▁Kato B-ORG
+nah I-ORG
+▁ I-ORG
+jewelry I-ORG
+▁store I-ORG
+▁Mount B-LOC
+▁Kis I-LOC
+co I-LOC
+
+▁Kel B-PER
+ley I-PER
+▁Facebook B-ORG
+▁Twitter B-ORG
+
+▁LA B-ORG
+A I-ORG
+▁five B-DATE
+▁years I-DATE
+
+▁Tsa B-ORG
+is I-PER
+▁D I-ORG
+PP I-ORG
+▁China B-LOC
+▁Hong B-LOC
+▁Kong I-LOC
+
+▁Mani B-PER
+low I-PER
+
+▁Hoo B-ORG
+ker I-ORG
+▁Fur I-ORG
+ni I-ORG
+ture I-ORG
+
+▁Angel B-PER
+
+▁Empire B-ORG
+▁State I-ORG
+▁Index I-ORG
+▁Phil B-ORG
+ly I-ORG
+▁Fed I-ORG
+▁Index I-ORG
+
+▁Bash B-PER
+ir I-PER
+▁Adi I-PER
+le I-PER
+▁front I-LOC
+opa I-LOC
+rie I-LOC
+tal I-LOC
+▁O I-LOC
+moto I-LOC
+sho I-LOC
+▁region I-LOC
+
+▁Africa B-LOC
+▁200 B-DATE
+, I-DATE
+000 I-DATE
+▁years I-DATE
+▁ago I-DATE
+▁today B-DATE
+
+▁Patient B-PER
+▁Zi I-PER
+kora I-PER
+ife I-PER
+chu I-PER
+ck I-PER
+wu I-PER
+▁Hospital B-ORG
+▁So I-ORG
+s I-ORG
+och I-ORG
+uk I-ORG
+wu I-ORG
+▁night B-DATE
+▁04 I-DATE
+▁September I-DATE
+, I-DATE
+▁1986 I-DATE
+▁Onu B-LOC
+ek I-LOC
+wu I-LOC
+si I-LOC
+▁street I-LOC
+
+▁Apple B-ORG
+▁iTunes B-ORG
+
+▁Nigeria B-LOC
+▁Ghana B-LOC
+
+▁Nike B-PER
+
+▁Collins B-PER
+
+▁U B-LOC
+. I-LOC
+S I-LOC
+. I-LOC
+▁24 B-DATE
+▁hour I-DATE
+▁period I-DATE
+▁0 B-DATE
+:00 I-DATE
+▁AM I-DATE
+▁ET I-DATE
+▁December B-DATE
+▁2 I-DATE
+nd I-DATE
+
+▁The B-ORG
+▁African I-ORG
+▁Leadership I-ORG
+▁Magazine I-ORG
+▁Africa B-LOC
+▁London B-LOC
+▁July B-DATE
+
+▁33 B-DATE
+▁year I-DATE
+▁old I-DATE
+▁Chin B-PER
+we I-PER
+ik I-PER
+pe I-PER
+▁Joko B-LOC
+ta I-LOC
+de I-LOC
+▁street I-LOC
+▁today B-DATE
+
+▁Mac B-PER
+le I-PER
+od I-PER
+▁Ban B-PER
+ting I-PER
+
+▁N B-PER
+chet I-PER
+ach I-PER
+uk I-PER
+wu I-PER
+▁N I-PER
+do I-PER
+chu I-PER
+kw I-PER
+u I-PER
+▁Off B-ORG
+a I-ORG
+▁hospital I-ORG
+
+▁Steven B-PER
+s I-PER
+▁A I-PER
+▁Low B-PER
+e I-PER
+▁J I-PER
+
+▁Bay B-PER
+▁Bon I-PER
+gay I-PER
+▁Che B-PER
+mu I-PER
+▁Om B-LOC
+oh I-LOC
+▁this B-DATE
+▁morning I-DATE
+▁O B-PER
+jo B-PER
+e I-PER
+▁last B-DATE
+▁night I-DATE
+▁Ka B-ORG
+de I-ORG
+▁clinic I-ORG
+
+▁Borg B-ORG
+en I-ORG
+▁F B-ORG
+DI I-ORG
+▁Asian B-ORG
+▁South B-LOC
+▁Korea I-LOC
+▁Singapore B-LOC
+▁Hong B-LOC
+▁Kong I-LOC
+▁Taiwan B-LOC
+▁1970 B-DATE
+▁1990. B-DATE
+
+▁Ah B-PER
+je I-PER
+bah I-PER
+day I-PER
+▁Tu B-DATE
+e I-DATE
+▁14 I-DATE
+▁Jan I-DATE
+, I-DATE
+▁2025 I-DATE
+
+▁Amanda B-PER
+
+▁Chin B-PER
+we I-PER
+▁O I-PER
+dig I-PER
+bo I-PER
+eg I-PER
+wu I-PER
+▁Guinness B-ORG
+▁Nigeria I-ORG
+Bel I-ORG
+sha I-ORG
+gy I-ORG
+
+▁Brazil B-LOC
+▁PSG B-ORG
+▁Neymar B-PER
+▁Messi B-PER
+s I-PER
+▁NBA B-ORG
+▁Stephen B-PER
+▁Cur I-PER
+ry I-PER
+▁Golden B-ORG
+▁State I-ORG
+▁Warriors I-ORG
+
+▁12 B-DATE
+-01- I-DATE
+1979 I-DATE
+▁Ab B-PER
+assa I-PER
+y I-PER
+▁Op I-PER
+oh I-PER
+▁Sam B-PER
+may I-PER
+
+▁Lan B-PER
+umi I-PER
+▁Norm I-PER
+ilo I-PER
+a I-PER
+▁22 B-DATE
+▁weeks I-DATE
+▁ago I-DATE
+
+▁Baro B-PER
+cha I-PER
+▁Co B-PER
+on B-PER
+ah I-PER
+▁ne B-PER
+ice B-PER
+▁Man I-PER
+gue I-PER
+
+▁Bauch B-LOC
+i I-LOC
+▁State I-LOC
+▁Isa B-PER
+▁Yu I-PER
+guda I-PER
+
+▁ABD B-ORG
+
+▁IP B-ORG
+Od I-ORG
+▁last B-DATE
+▁year I-DATE
+
+▁On B-PER
+uk I-PER
+wo I-PER
+▁Chi I-PER
+dim I-PER
+ma I-PER
+
+▁A B-ORG
+MV I-ORG
+CA I-ORG
+▁Jack B-PER
+tone I-PER
+▁Al I-PER
+uf I-PER
+wani I-PER
+▁A B-ORG
+MV I-ORG
+CA I-ORG
+
+▁Kwe B-PER
+nto I-PER
+▁E I-PER
+bid I-PER
+ough I-PER
+a I-PER
+▁O B-LOC
+dina I-LOC
+kach I-LOC
+uk I-LOC
+wu I-LOC
+▁Aba I-LOC
+kali I-LOC
+ki I-LOC
+▁Ach B-PER
+ike I-PER
+▁one B-DATE
+▁month I-DATE
+
+▁Bank B-PER
+o I-PER
+lay I-PER
+▁Marco I-PER
+
+▁Es B-PER
+sien I-PER
+▁Mali B-LOC
+
+▁Lago B-LOC
+s I-LOC
+
+▁Tony B-PER
+▁Skole I-PER
+▁East B-ORG
+▁Tennessee I-ORG
+▁State I-ORG
+▁University I-ORG
+
+▁U B-PER
+bo I-PER
+chi I-PER
+oma I-PER
+▁I I-PER
+reti I-PER
+▁22 B-DATE
+▁weeks I-DATE
+▁ago I-DATE
+
+▁OR B-ORG
+IF I-ORG
+
+▁Colo B-ORG
+gne I-ORG
+▁Wolf B-ORG
+sburg I-ORG
+
+▁Kaduna B-LOC
+▁Hospital I-LOC
+, I-ORG
+▁Kab I-LOC
+ba I-LOC
+▁AT I-LOC
+▁1 I-DATE
+AM I-DATE
+▁Abdul B-PER
+quad I-PER
+ri I-PER
+
+▁Iz B-PER
+un I-PER
+du I-PER
+▁Olu I-PER
+chi I-PER
+▁El B-PER
+uma I-PER
+
+▁Nigeria B-LOC
+▁next B-DATE
+▁year I-DATE
+
+▁Kep B-ORG
+▁20 I-ORG
+▁Hospital I-ORG
+▁Chu B-LOC
+bun I-LOC
+na I-LOC
+
+▁Beijing B-LOC
+
+▁I B-PER
+boro I-PER
+▁La B-ORG
+fia I-ORG
+▁hospital I-ORG
+▁Fri B-DATE
+▁19 I-DATE
+▁Nov I-DATE
+, I-DATE
+▁1976 I-DATE
+
+▁Ndi B-PER
+rika I-PER
+▁Ada I-PER
+o I-PER
+bu I-PER
+
+▁Lo B-PER
+pate I-PER
+▁Leonard B-PER
+▁Jack B-PER
+▁F I-PER
+. I-PER
+▁Mat I-PER
+lock I-PER
+▁Re B-PER
+agan I-PER
+▁Gor B-PER
+bach I-PER
+ev I-PER
+▁National B-ORG
+▁Public I-ORG
+▁Radio I-ORG
+▁August B-DATE
+▁2 I-DATE
+▁ I-DATE
+, I-DATE
+▁2004 I-DATE
+
+▁Em B-PER
+e B-PER
+fi I-PER
+ele I-PER
+
+▁Hong B-LOC
+▁Kong I-LOC
+▁Thursday B-DATE
+▁morning I-DATE
+
+▁Ade B-PER
+boy I-PER
+e I-PER
+▁Aku I-PER
+do I-PER
+
+▁UK B-LOC
+
+▁Holl B-PER
+y B-PER
+▁Anderson I-PER
+▁Snow B-ORG
+▁Bowl I-ORG
+
+▁Gav B-PER
+est I-PER
+on I-PER
+
+▁22 B-DATE
+▁yr I-DATE
+▁old I-DATE
+▁Chu B-PER
+kw B-PER
+u I-PER
+eme I-PER
+ka I-PER
+▁Baba I-PER
+ng I-PER
+ida I-PER
+▁11 B-DATE
+am I-DATE
+▁this I-DATE
+▁morning I-DATE
+
+▁Nan B-ORG
+jing I-ORG
+▁Austin B-PER
+
+▁Lang B-PER
+o I-PER
+▁O I-PER
+kong I-PER
+▁68 B-DATE
+▁year I-DATE
+▁old I-DATE
+▁Asa B-ORG
+man I-ORG
+kese I-ORG
+▁ED I-ORG
+▁15 B-DATE
+▁March I-DATE
+▁2011 I-DATE
+▁13 B-DATE
+: I-DATE
+▁40 I-DATE
+
+▁Ulu B-PER
+mma I-PER
+▁Rah I-PER
+mah I-PER
+
+▁Maga B-PER
+ni I-PER
+▁Mol I-PER
+ayo I-PER
+
+▁A B-PER
+kao I-PER
+lisa I-PER
+▁Oba I-PER
+▁Cala B-LOC
+bar I-LOC
+▁today B-DATE
+
+▁PT B-PER
+▁PT B-PER
+▁RE B-PER
+NAL B-PER
+▁Y B-DATE
+ESTER I-DATE
+DAY I-DATE
+
+▁Ce B-PER
+ze I-PER
+
+▁Malam B-PER
+i I-PER
+▁Ng B-PER
+ige I-PER
+
+▁Kamal B-PER
+▁A B-PER
+biye I-PER
+▁Nimi B-PER
+
+▁E B-PER
+hin I-PER
+ze I-PER
+▁Or B-LOC
+lu I-LOC
+
+▁ART B-ORG
+▁south B-LOC
+▁Square I-LOC
+▁One I-LOC
+▁Miss B-LOC
+issa I-LOC
+uga I-LOC
+
+▁Kano B-LOC
+▁State I-LOC
+
+▁America B-LOC
+
+▁Bot B-LOC
+s I-LOC
+wana I-LOC
+▁European B-ORG
+▁Union I-ORG
+▁Mood B-ORG
+ys I-ORG
+▁Rating I-ORG
+▁Agency I-ORG
+▁Mas B-PER
+isi I-PER
+s I-PER
+
+▁Ke B-PER
+le I-PER
+chi I-PER
+▁Any I-PER
+ikud I-PER
+e I-PER
+▁Arsenal B-ORG
+▁Football I-ORG
+▁Club I-ORG
+
+▁11- B-DATE
+day I-DATE
+▁old I-DATE
+▁L B-ORG
+
+▁Jin B-PER
+mi I-PER
+▁E B-PER
+bu I-PER
+be I-PER
+▁Ud I-PER
+um I-PER
+ma I-PER
+▁Wednesday B-DATE
+, I-DATE
+▁28 I-DATE
+-12- I-DATE
+2003 I-DATE
+
+▁Och B-PER
+
+▁25 B-DATE
+▁December I-DATE
+▁1987 I-DATE
+▁2: I-DATE
+▁38 I-DATE
+▁AM I-DATE
+▁CH B-ORG
+▁CO B-ORG
+sol I-ORG
+
+▁N B-ORG
+ollywood I-ORG
+▁Emilia B-PER
+▁Di I-PER
+ke I-PER
+
+▁N B-PER
+wa B-PER
+bi I-PER
+aran I-PER
+eke I-PER
+ya I-PER
+▁Ade I-PER
+boy I-PER
+e I-PER
+
+▁Angel B-PER
+▁Sam B-PER
+mie I-PER
+
+▁Pe B-PER
+eta I-PER
+▁Kat B-PER
+nis I-PER
+s I-PER
+
+▁Sanders B-PER
+▁Democrat B-ORG
+
+▁Ad B-PER
+anna B-PER
+
+▁Fala B-PER
+no I-PER
+
+▁10 B-DATE
+am I-DATE
+▁the B-ORG
+▁Non I-ORG
+▁Prophet I-ORG
+s I-ORG
+
+▁Nigeria B-LOC
+
+▁22 B-DATE
+▁year I-DATE
+▁old I-DATE
+▁Chi B-PER
+ka I-PER
+di I-PER
+bia I-PER
+▁O B-LOC
+wo I-LOC
+
+▁C B-ORG
+▁5. I-DATE
+
+▁Any B-PER
+iki B-PER
+re I-PER
+▁Mad I-PER
+
+▁Bol B-PER
+uwa I-PER
+tif I-PER
+e I-PER
+▁Chi I-PER
+m I-PER
+sina I-PER
+fog I-PER
+oz I-PER
+iem I-PER
+▁Kam B-PER
+s I-PER
+iyo I-PER
+chu I-PER
+kw I-PER
+u I-PER
+
+▁2021 B-DATE
+▁All B-ORG
+▁Progres I-ORG
+sive I-ORG
+s I-ORG
+▁Congress I-ORG
+▁APC B-ORG
+
+▁China B-ORG
+s I-ORG
+▁Foreign I-ORG
+▁Ministry I-ORG
+▁China B-LOC
+
+▁Chi B-PER
+ko B-PER
+dina I-PER
+ka I-PER
+▁Uz B-PER
+o I-PER
+e I-PER
+chie I-PER
+
+▁En B-ORG
+ugu I-ORG
+▁Hospital I-ORG
+, I-ORG
+▁Gomb I-ORG
+e I-LOC
+▁AT B-DATE
+▁1 I-DATE
+AM I-DATE
+▁Ag B-PER
+bo I-PER
+
+▁Gaza B-LOC
+▁border I-LOC
+▁region I-LOC
+▁south B-LOC
+ern I-LOC
+▁Israel I-LOC
+
+▁Os B-PER
+un I-PER
+to I-PER
+hun I-PER
+▁Friday B-DATE
+, I-DATE
+▁July I-DATE
+▁31, I-DATE
+▁age B-DATE
+▁of I-DATE
+▁67 B-DATE
+▁years I-DATE
+▁I B-LOC
+je B-LOC
+tu I-LOC
+▁Os B-LOC
+og I-LOC
+bo I-LOC
+▁Os B-LOC
+un I-LOC
+▁state I-LOC
+
+▁Hal B-PER
+ak I-PER
+
+▁Norwegian B-ORG
+▁Public I-ORG
+▁Road I-ORG
+s I-ORG
+▁Administration I-ORG
+▁past B-DATE
+▁50 I-DATE
+▁years I-DATE
+▁1975 B-DATE
+
+▁Phil B-PER
+▁Spencer I-PER
+▁Microsoft B-ORG
+▁Xbox I-ORG
+
+▁Ever B-PER
+s I-PER
+▁August B-DATE
+▁N B-ORG
+RB I-ORG
+
+▁Sho B-PER
+s I-PER
+tak I-PER
+ovich I-PER
+
+▁Saturday B-DATE
+▁western B-LOC
+▁Japan I-LOC
+
+▁W B-ORG
+▁F B-ORG
+DP I-ORG
+
+▁Sri B-LOC
+nagar I-LOC
+▁Indian B-LOC
+▁Kashmir I-LOC
+▁21 B-DATE
+▁March I-DATE
+▁2017. I-DATE
+
+▁O B-PER
+dega I-PER
+▁A I-PER
+iye I-PER
+ku I-PER
+
+▁Da B-PER
+mie I-PER
+ibi I-PER
+▁E I-PER
+wol I-PER
+l I-PER
+▁B I-PER
+. I-PER
+▁N I-PER
+wane I-PER
+zi I-PER
+▁Sun B-DATE
+▁24 I-DATE
+▁Oct I-DATE
+▁1999 I-DATE
+▁5 I-DATE
+: I-DATE
+▁07 I-DATE
+▁PM I-DATE
+▁ B-ORG
+
+▁NC B-ORG
+DC I-ORG
+▁Chi B-PER
+kwe I-PER
+▁I I-PER
+he I-PER
+kwe I-PER
+a I-PER
+zu I-PER
+▁yesterday B-DATE
+
+▁Lauren B-PER
+▁Young I-PER
+▁an B-DATE
+▁hour I-DATE
+▁Thursday B-DATE
+▁morning I-DATE
+
+▁Da B-PER
+bira I-PER
+▁Du B-LOC
+tse I-LOC
+
+▁Barra B-PER
+h I-PER
+▁Look B-PER
+▁Sala B-LOC
+ga I-LOC
+
+▁Kati B-PER
+e I-PER
+▁Coelho I-PER
+▁April B-DATE
+▁22. I-DATE
+
+▁Ne B-PER
+ng I-PER
+imo I-PER
+te I-PER
+▁37 B-DATE
+▁year I-DATE
+▁old I-DATE
+
+▁1960 B-DATE
+▁1969 B-DATE
+▁Chief B-ORG
+s I-ORG
+▁Tex I-ORG
+ans I-ORG
+▁10 B-DATE
+▁year I-DATE
+▁A B-ORG
+FL I-ORG
+
+▁O B-ORG
+NC I-ORG
+▁today B-DATE
+
+▁1990 B-DATE
+s I-DATE
+▁Raj B-PER
+ini I-PER
+kan I-PER
+th I-PER
+
+▁E B-PER
+bid B-PER
+ough I-PER
+a I-PER
+▁Kaka B-PER
+▁M B-LOC
+ma I-LOC
+dua I-LOC
+buch I-LOC
+i I-LOC
+▁ I-LOC
+
+▁Nielsen B-PER
+▁Ty B-PER
+ler I-PER
+▁Perry I-PER
+
+▁Rom B-PER
+i I-PER
+▁7 B-DATE
+▁PM I-DATE
+▁on I-DATE
+25 I-DATE
+▁Feb I-DATE
+▁1978 I-DATE
+
+▁De B-PER
+Luc I-PER
+a I-PER
+▁Rom B-PER
+il I-PER
+da I-PER
+▁Croc I-PER
+amo I-PER
+▁two I-DATE
+▁months I-DATE
+
+▁NS B-ORG
+ICU I-ORG
+
+▁France B-LOC
+▁Spain B-LOC
+
+▁14 B-DATE
+▁days I-DATE
+▁O B-PER
+goo I-PER
+doo I-PER
+▁Bere I-PER
+
+▁The B-ORG
+▁100 I-ORG
+k I-ORG
+▁Club I-ORG
+▁Ege B-ORG
+mba I-ORG
+▁Obi B-PER
+ene I-PER
+
+▁NI B-ORG
+GER B-ORG
+IAN I-ORG
+▁TRI I-ORG
+B I-ORG
+UNE I-ORG
+
+▁Cur B-PER
+tis I-PER
+
+▁this B-DATE
+▁year I-DATE
+▁Hay B-PER
+es I-PER
+
+▁I B-PER
+bere I-PER
+dem I-PER
+▁Um B-PER
+e I-PER
+alo I-PER
+
+▁N B-ORG
+ollywood I-ORG
+
+▁If B-PER
+e I-PER
+adi I-PER
+go I-PER
+▁Kaduna B-LOC
+▁Chia B-PER
+mak B-PER
+a I-PER
+▁O I-PER
+raj I-PER
+imet I-PER
+och I-PER
+uk I-PER
+wu I-PER
+
+▁LAS B-ORG
+IX I-ORG
+▁G I-ORG
+TT I-ORG
+▁RE I-ORG
+TED I-ORG
+▁TH I-ORG
+IS I-ORG
+▁AM I-ORG
+▁AT I-ORG
+
+▁N B-ORG
+HA I-ORG
+▁Tay B-PER
+o I-PER
+▁Haa I-PER
+strup I-PER
+
+▁mid B-DATE
+-2020 I-DATE
+s I-DATE
+▁British B-ORG
+▁Army I-ORG
+
+▁Sher B-PER
+i I-PER
+fat I-PER
+▁Son I-PER
+a I-PER
+ike I-PER
+▁Ez B-PER
+e I-PER
+aw I-PER
+em I-PER
+▁a B-DATE
+▁week I-DATE
+
+▁Gross B-ORG
+▁National I-ORG
+▁Happ I-ORG
+ines I-ORG
+s I-ORG
+▁Commission I-ORG
+▁G I-ORG
+NH I-ORG
+C I-ORG
+
+▁Clare B-ORG
+▁Be I-ORG
+ef I-ORG
+▁Plan I-ORG
+▁Au B-ORG
+burn I-ORG
+▁Lodge I-ORG
+▁Hotel I-ORG
+▁last B-DATE
+▁January I-DATE
+
+▁La B-PER
+con I-PER
+qua I-PER
+h I-PER
+▁morning B-DATE
+▁03 I-DATE
+▁November I-DATE
+, I-DATE
+▁1987 I-DATE
+▁O B-PER
+jo B-PER
+e I-PER
+
+▁Twitter B-ORG
+
+▁Philadelphia B-LOC
+
+▁2000 B-DATE
+▁Onu B-LOC
+▁As I-LOC
+ata I-LOC
+▁En B-LOC
+ugu I-LOC
+▁metropol I-LOC
+is I-LOC
+▁Ana B-LOC
+mbra I-LOC
+▁State I-LOC
+
+▁Sala B-PER
+din I-PER
+
+▁Lago B-LOC
+s I-LOC
+▁5 B-DATE
+▁days I-DATE
+
+▁Sunday B-DATE
+▁night I-DATE
+▁Twitter B-ORG
+
+▁E B-PER
+wa I-PER
+tomi I-PER
+▁Saf I-PER
+iyah I-PER
+▁23 B-DATE
+▁May I-DATE
+, I-DATE
+▁1985 I-DATE
+
+▁Saturday B-DATE
+▁State B-LOC
+▁House I-LOC
+▁Marina B-LOC
+
+▁O B-PER
+koro I-PER
+a I-PER
+for I-PER
+▁Ali B-PER
+pha I-PER
+
+▁NBC B-ORG
+Univers I-ORG
+al I-ORG
+
+▁Ez B-PER
+ichi I-PER
+▁Maha I-PER
+ja I-PER
+▁I B-ORG
+kot I-ORG
+▁Ek I-ORG
+pene I-ORG
+▁hospital I-ORG
+
+▁Kat B-ORG
+sina I-ORG
+▁State I-ORG
+▁Mass I-ORG
+▁Transit I-ORG
+KT B-ORG
+STA I-ORG
+▁Ji B-LOC
+bia I-LOC
+- I-LOC
+Kat I-LOC
+sina I-LOC
+▁Road I-LOC
+
+▁Og B-PER
+un B-PER
+sola I-PER
+▁Chi I-PER
+kel I-PER
+ue I-PER
+▁Iki B-LOC
+run I-LOC
+
+▁An B-PER
+cel I-PER
+otti I-PER
+▁Pick B-PER
+ford I-PER
+▁Manchester B-ORG
+▁United I-ORG
+▁weekend B-DATE
+▁South B-PER
+gate I-PER
+
+▁Ko B-PER
+solu I-PER
+chu I-PER
+kw I-PER
+u I-PER
+▁Ada I-PER
+o I-PER
+gu I-PER
+▁40 B-DATE
+yr I-DATE
+▁old I-DATE
+▁33 B-LOC
+, I-LOC
+▁O I-LOC
+wer I-LOC
+ri I-LOC
+▁street I-LOC
+▁If B-LOC
+e I-LOC
+▁state I-LOC
+▁22 B-DATE
+/11/ I-DATE
+2022 I-DATE
+
+▁The B-ORG
+▁Patriot I-ORG
+s I-ORG
+▁2020 B-DATE
+
+▁Boeing B-ORG
+▁1978 B-DATE
+
+▁Fol B-PER
+a I-PER
+we I-PER
+▁Gomb B-LOC
+e I-LOC
+
+▁N B-ORG
+
+▁ B-ORG
+▁Mal B-LOC
+de I-LOC
+gem I-LOC
+▁Belgium B-LOC
+
+▁Na B-LOC
+sh I-LOC
+ville I-LOC
+
+▁Tem B-PER
+i I-PER
+▁O I-PER
+ted I-PER
+ola I-PER
+
+▁Esther B-PER
+
+▁Marg B-PER
+if I-PER
+▁Plat B-LOC
+eau I-LOC
+▁State I-LOC
+▁La B-PER
+long I-PER
+▁2023 B-DATE
+
+▁N B-ORG
+
+▁National B-ORG
+▁Council I-ORG
+▁of I-ORG
+▁Muslim I-ORG
+▁Youth I-ORG
+▁Organisation I-ORG
+s I-ORG
+▁NA I-ORG
+COM I-ORG
+YO I-ORG
+▁Muslim B-ORG
+▁Student I-ORG
+s I-ORG
+▁Society I-ORG
+▁of I-ORG
+▁Nigeria I-ORG
+▁MS I-ORG
+SN I-ORG
+▁Pen B-ORG
+te I-ORG
+co I-ORG
+stal I-ORG
+▁Fel I-ORG
+low I-ORG
+ship I-ORG
+▁of I-ORG
+▁Nigeria I-ORG
+▁ I-ORG
+PF I-ORG
+N I-ORG
+
+▁P B-ORG
+ASAN I-ORG
+
+▁Patient B-PER
+▁E I-PER
+bia I-PER
+ga I-PER
+▁Bam I-PER
+iro I-PER
+▁5 B-DATE
+▁days I-DATE
+▁ago I-DATE
+▁five B-DATE
+▁hours I-DATE
+
+▁Jab B-PER
+eka I-PER
+▁Phillip I-PER
+▁Mak B-PER
+
+▁The B-ORG
+▁Tro I-ORG
+jan I-ORG
+s I-ORG
+
+▁Pay B-PER
+al I-PER
+▁September B-DATE
+▁Anu B-PER
+rag I-PER
+▁Kash I-PER
+yap I-PER
+
+▁B B-PER
+light I-PER
+▁Russian B-LOC
+
+▁2019 B-DATE
+▁Sa B-PER
+dio I-PER
+▁Man I-PER
+e I-PER
+▁Diamond B-PER
+
+▁Arsenal B-ORG
+
+▁Ayo B-PER
+mi I-PER
+de I-PER
+▁Ade I-PER
+bis I-PER
+i I-PER
+▁one B-DATE
+▁week I-DATE
+▁ago I-DATE
+▁night B-DATE
+
+▁Hein B-ORG
+eken I-ORG
+
+▁An B-LOC
+wu I-LOC
+lika I-LOC
+▁market I-LOC
+▁Aw B-LOC
+gu I-LOC
+
+▁Florida B-LOC
+▁Bi B-PER
+den I-PER
+
+▁ B-PER
+RY B-PER
+NA I-PER
+▁R I-PER
+. I-PER
+▁ I-PER
+JES I-PER
+CD I-PER
+RIG I-PER
+
+▁Castro B-PER
+- I-PER
+K I-PER
+im I-PER
+ball I-PER
+
+▁Joy B-PER
+
+▁Noi B-PER
+mot I-PER
+▁Sala I-PER
+ko I-PER
+▁O I-PER
+ye I-PER
+dele I-PER
+
+▁F B-ORG
+CID I-ORG
+
+▁two B-DATE
+▁days I-DATE
+▁Twitter B-ORG
+
+▁Chris B-PER
+▁Lucas I-PER
+▁Ro I-PER
+ach I-PER
+▁2011 B-DATE
+▁2014 B-DATE
+
+▁Merc B-PER
+y I-PER
+▁2008. B-DATE
+
+▁U B-PER
+ger B-PER
+u I-PER
+omba I-PER
+▁Yen B-ORG
+agoa I-ORG
+▁hospital I-ORG
+▁Sun B-DATE
+▁05 I-DATE
+▁Jan I-DATE
+, I-DATE
+▁2025 I-DATE
+
+▁Sun B-DATE
+▁17 I-DATE
+▁Dec I-DATE
+▁1989 I-DATE
+▁2: I-DATE
+▁44 I-DATE
+▁PM I-DATE
+▁US B-LOC
+
+▁Maca B-PER
+roni I-PER
+▁St B-ORG
+▁Francis I-ORG
+▁Church I-ORG
+▁Ondo B-LOC
+▁State I-LOC
+
+Tu B-PER
+a B-PER
+lay B-PER
+▁I B-ORG
+funa I-ORG
+nya I-ORG
+chu I-ORG
+kw I-ORG
+u I-ORG
+▁Clinic I-ORG
+
+▁Twitter B-ORG
+▁Gua B-PER
+id I-PER
+▁Nico B-PER
+ls I-PER
+▁Maduro I-PER
+▁this B-DATE
+▁week I-DATE
+▁U B-LOC
+. I-LOC
+S I-LOC
+. I-LOC
+
+▁The B-ORG
+▁Hospital I-ORG
+▁for I-ORG
+▁Ort I-ORG
+ho I-ORG
+pedi I-ORG
+cs I-ORG
+▁Juan I-ORG
+
+▁One B-ORG
+▁Stop I-ORG
+▁Celebra I-ORG
+tion I-ORG
+▁LTD I-ORG
+
+▁Harrison B-PER
+
+▁Zlatan B-PER
+
+▁Minnesota B-LOC
+
+▁Marvel B-ORG
+
+▁Mira B-PER
+cle I-PER
+▁N I-PER
+nam I-PER
+oko I-PER
+▁Bela B-LOC
+tus I-LOC
+▁Road I-LOC
+, I-LOC
+▁Sab I-LOC
+on I-LOC
+▁Gar I-LOC
+i I-LOC
+▁Quart I-LOC
+ers I-LOC
+
+▁Empire B-ORG
+▁State I-ORG
+▁Index I-ORG
+▁Phil B-ORG
+ly I-ORG
+▁Fed I-ORG
+▁Index I-ORG
+
+▁Ef B-LOC
+u I-LOC
+iyo I-LOC
+mi I-LOC
+▁P I-LOC
+
+▁N B-ORG
+ollywood I-ORG
+
+▁I B-PER
+bier I-PER
+e I-PER
+▁Chin I-PER
+tur I-PER
+uka I-PER
+▁56 B-DATE
+▁yr I-DATE
+▁OR B-LOC
+▁Wednesday B-DATE
+▁13 I-DATE
+▁November I-DATE
+, I-DATE
+▁1996 I-DATE
+
+▁Zer B-PER
+ibe I-PER
+▁4 B-DATE
+▁months I-DATE
+
+▁Great B-LOC
+▁Britain I-LOC
+
+▁Resident B-PER
+e I-PER
+▁Visita B-PER
+nte I-PER
+
+▁Cole B-PER
+man I-PER
+
+▁Richmond B-ORG
+
+▁Og B-PER
+un I-PER
+biy I-PER
+i I-PER
+▁M I-PER
+g I-PER
+beke I-PER
+▁2: B-DATE
+▁33 I-DATE
+▁pm I-DATE
+▁15 B-DATE
+▁Dec I-DATE
+, I-DATE
+▁1976 I-DATE
+
+▁Uk B-PER
+pai I-PER
+▁yesterday B-DATE
+
+▁West B-LOC
+▁End I-LOC
+▁West B-LOC
+▁End I-LOC
+▁ I-LOC
+theater I-LOC
+s I-LOC
+▁London B-LOC
+
+▁Z B-PER
+wel I-PER
+i I-PER
+▁M I-PER
+khi I-PER
+ze I-PER
+▁March B-DATE
+▁31 I-DATE
+▁2020 I-DATE
+
+▁Max B-PER
+▁America B-LOC
+
+▁Patient B-PER
+▁Land I-PER
+ah I-PER
+▁Do I-PER
+ye I-PER
+h I-PER
+▁5 B-DATE
+▁days I-DATE
+▁ago I-DATE
+▁five B-DATE
+▁hours I-DATE
+
+▁A B-DATE
+▁year I-DATE
+▁and I-DATE
+▁a I-DATE
+▁half I-DATE
+▁later I-DATE
+▁Schu B-PER
+bert I-PER
+
+▁Mario B-PER
+ta I-PER
+▁last B-DATE
+▁week I-DATE
+▁Titan B-ORG
+s I-ORG
+▁Patriot B-ORG
+s I-ORG
+
+▁ B-ORG
+▁Gambar B-PER
+ny I-PER
+▁N I-PER
+wa I-PER
+o I-PER
+che I-PER
+
+▁Chap B-PER
+pell I-PER
+▁Ab I-ORG
+original I-ORG
+▁cri I-ORG
+cket I-ORG
+▁team I-ORG
+▁England B-LOC
+▁1868 B-DATE
+
+▁Olu B-PER
+segu I-PER
+n I-PER
+▁Ob I-PER
+asan I-PER
+jo I-PER
+▁Good B-PER
+luck I-PER
+▁Jonathan I-PER
+▁PDP B-ORG
+▁1999 B-DATE
+▁2003, B-DATE
+▁2011 B-DATE
+
+▁Chi B-PER
+medi I-PER
+▁If I-PER
+en I-PER
+na I-PER
+▁Kano B-LOC
+
+▁Er B-ORG
+ich I-ORG
+▁Lind I-ORG
+e I-ORG
+mann I-ORG
+▁Mental I-ORG
+▁Health I-ORG
+▁Center I-ORG
+
+▁FL B-ORG
+IR I-ORG
+▁Systems I-ORG
+▁FL B-ORG
+IR I-ORG
+▁Systems I-ORG
+▁Market B-ORG
+Be I-ORG
+at I-ORG
+
+▁Nie B-PER
+mist I-PER
+o I-PER
+
+▁O B-PER
+moto B-PER
+sho I-PER
+▁Obi I-PER
+oma I-PER
+▁Mon B-DATE
+▁23 I-DATE
+▁Aug I-DATE
+, I-DATE
+▁20 I-DATE
+27 I-DATE
+
+▁Sah B-PER
+no I-PER
+▁Ke I-PER
+to I-PER
+ye I-PER
+
+▁Cho B-PER
+kay B-PER
+loo I-PER
+▁Kam I-PER
+glo I-PER
+▁2 B-DATE
+▁weeks I-DATE
+
+▁Grande B-PER
+fe I-PER
+x I-PER
+
+▁King B-PER
+
+▁Delta B-LOC
+
+▁Central B-LOC
+▁I I-LOC
+owa I-LOC
+▁De B-PER
+ming I-PER
+
+▁M B-PER
+k I-PER
+pa I-PER
+uba I-PER
+▁N I-PER
+duk I-PER
+aku I-PER
+▁La B-LOC
+
+▁Kha B-PER
+w I-PER
+lah I-PER
+▁Bello I-PER
+▁Excel B-ORG
+si I-ORG
+or I-ORG
+▁Islamic I-ORG
+▁School I-ORG
+s I-ORG
+▁Satellite B-LOC
+▁Town I-LOC
+▁A B-LOC
+mu I-LOC
+wo I-LOC
+▁O I-LOC
+do I-LOC
+fin I-LOC
+▁Ni B-PER
+mot I-PER
+allah I-PER
+▁Ibrahim I-PER
+▁Od B-ORG
+um I-ORG
+ola I-ORG
+▁Junior I-ORG
+▁Second I-ORG
+ary I-ORG
+▁School I-ORG
+▁E B-LOC
+pe I-LOC
+
+▁A B-PER
+rino B-PER
+la I-PER
+▁Ade I-PER
+riy I-PER
+ike I-PER
+▁2 B-DATE
+▁weeks I-DATE
+
+▁North B-LOC
+▁America I-LOC
+▁April B-DATE
+▁15 I-DATE
+, I-DATE
+▁2016. I-DATE
+
+▁Tel B-ORG
+
+▁Feier B-PER
+s I-PER
+inger I-PER
+▁Borussia B-ORG
+▁Dortmund I-ORG
+
+▁Falcon B-ORG
+s I-ORG
+▁2012. B-DATE
+
+▁N B-PER
+wo I-PER
+kolo I-PER
+▁M B-ORG
+FB I-ORG
+
+▁22 B-DATE
+▁yr I-DATE
+▁old I-DATE
+▁Se B-PER
+gun I-PER
+▁Bola I-PER
+ti I-PER
+to I-PER
+▁11 B-DATE
+am I-DATE
+▁this I-DATE
+▁morning I-DATE
+
+▁Meg B-PER
+▁Charles B-PER
+▁Calvin B-PER
+
+▁Lago B-LOC
+s I-LOC
+- I-LOC
+A I-LOC
+be I-LOC
+ok I-LOC
+uta I-LOC
+▁Oba B-LOC
+de I-LOC
+yi I-LOC
+
+▁30 B-DATE
+s I-DATE
+▁40 B-DATE
+s I-DATE
+▁Indiana B-LOC
+
+▁Mod B-PER
+upe I-PER
+▁N I-PER
+na I-PER
+eme I-PER
+ka I-PER
+▁Mai B-LOC
+du I-LOC
+guri I-LOC
+
+▁Michelle B-PER
+▁K I-PER
+. I-PER
+▁Parti I-PER
+n I-PER
+▁W B-DATE
+ED B-DATE
+▁2019 I-DATE
+-04- I-DATE
+17 I-DATE
+▁1 I-DATE
+:13 I-DATE
+▁PM I-DATE
+
+▁the B-ORG
+▁So I-ORG
+x I-ORG
+
+▁ni B-PER
+cole I-PER
+dar I-PER
+
+▁Ob B-PER
+lo B-PER
+y I-PER
+may I-PER
+▁4 B-DATE
+▁months I-DATE
+
+▁London B-LOC
+▁Ken B-PER
+▁Living I-PER
+stone I-PER
+▁14 B-DATE
+▁years I-DATE
+▁ago I-DATE
+
+▁Marshall B-ORG
+▁House I-ORG
+
+▁1-2 B-DATE
+▁hours I-DATE
+▁Ali B-PER
+
+▁APC B-ORG
+
+▁Charles B-PER
+▁I I-PER
+. I-PER
+▁ I-PER
+. I-PER
+▁Sanders I-PER
+
+▁O B-PER
+▁today B-DATE
+
+▁Nigeria B-LOC
+
+▁Cha B-PER
+in I-PER
+
+▁Fan B-PER
+i I-PER
+- I-PER
+K I-PER
+ayo I-PER
+des I-PER
+
+▁Chi B-ORG
+du I-ORG
+maga I-ORG
+▁E I-ORG
+mete I-ORG
+media I-ORG
+▁ I-ORG
+Diagnos I-ORG
+tic I-ORG
+▁center I-ORG
+▁Ji B-LOC
+meta I-LOC
+
+▁Nigeria B-LOC
+
+▁Fun B-PER
+pere I-PER
+▁La I-PER
+midi I-PER
+▁Os B-LOC
+ho I-LOC
+g I-LOC
+bo I-LOC
+▁jun I-LOC
+ction I-LOC
+
+▁Sanchez B-PER
+▁Ang B-PER
+le I-PER
+
+▁last B-DATE
+▁seven I-DATE
+▁days I-DATE
+▁BH B-ORG
+EX I-ORG
+▁US B-LOC
+
+▁Bh B-PER
+m I-PER
+
+▁GI B-PER
+
+▁S B-ORG
+NK I-ORG
+▁Banda B-ORG
+i I-ORG
+▁Nintendo B-ORG
+
+▁Last B-DATE
+▁month I-DATE
+▁Boris B-PER
+▁Johnson I-PER
+▁October B-DATE
+
+▁Angel B-PER
+▁Sam B-PER
+mie I-PER
+
+▁2022 B-DATE
+▁Lago B-LOC
+s I-LOC
+▁Abu B-LOC
+ja I-LOC
+▁U B-PER
+gel I-PER
+o I-PER
+▁If I-PER
+ala I-PER
+de I-PER
+▁NA B-ORG
+F I-ORG
+DAC I-ORG
+
+▁Ad B-PER
+edig I-PER
+ba I-PER
+▁Chi I-PER
+ji I-PER
+ndum I-PER
+
+▁Bill B-PER
+ings I-PER
+ley I-PER
+▁Ri B-PER
+ley I-PER
+▁Be B-PER
+ard I-PER
+▁Mut B-PER
+ombo I-PER
+
+▁N B-PER
+wa I-PER
+dio I-PER
+gwa I-PER
+▁Ud B-PER
+odi I-PER
+▁Bir B-ORG
+nin I-ORG
+▁Ke I-ORG
+bbi I-ORG
+▁university I-ORG
+▁Ja B-LOC
+ling I-LOC
+o I-LOC
+▁N B-PER
+wa I-PER
+bu I-PER
+go I-PER
+
+▁Tin B-PER
+u I-PER
+bu I-PER
+
+▁Mata B-PER
+rah I-PER
+
+▁Sun B-DATE
+▁23 I-DATE
+▁Oct I-DATE
+, I-DATE
+▁1983 I-DATE
+▁Rut B-LOC
+ongo I-LOC
+▁Ge B-LOC
+de B-LOC
+
+▁Mo B-PER
+tanya I-PER
+▁Ez I-PER
+e I-PER
+udu I-PER
+▁En B-LOC
+ugu B-LOC
+
+▁AM B-ORG
+▁Lab I-ORG
+s I-ORG
+
+▁Nigeria B-ORG
+n I-ORG
+▁Tribun I-ORG
+e I-ORG
+▁Jordan B-LOC
+▁O B-PER
+jo I-PER
+
+▁Chi B-PER
+e I-PER
+ge I-PER
+▁Ac I-PER
+ko I-PER
+o I-PER
+▁today B-DATE
+
+▁Far B-PER
+dor B-PER
+ee I-PER
+▁Bab I-PER
+r I-PER
+inde I-PER
+
+▁Gian B-ORG
+ts I-ORG
+▁Ty B-PER
+ke I-PER
+▁Tol I-PER
+bert I-PER
+
+▁B B-PER
+▁this B-DATE
+▁morning I-DATE
+
+▁Harrison B-PER
+
+▁Ry B-ORG
+don I-ORG
+
+▁Hi B-ORG
+▁flow I-ORG
+▁FM I-ORG
+
+▁CH B-ORG
+
+▁APC B-ORG
+▁U B-PER
+ba I-PER
+▁San I-PER
+i I-PER
+▁San B-PER
+i I-PER
+▁Dat I-PER
+ti I-PER
+jo I-PER
+▁San B-PER
+i I-PER
+▁Sha I-PER
+aban I-PER
+
+▁Sean B-PER
+▁Dr I-PER
+is I-PER
+co I-PER
+ll I-PER
+
+▁Ali B-PER
+▁Roberto B-PER
+
+▁Fi B-PER
+ja I-PER
+bi I-PER
+
+▁To B-PER
+bela B-PER
+
+▁Deal B-ORG
+s I-ORG
+▁Fam I-ORG
+ous I-ORG
+▁Oy I-ORG
+ster I-ORG
+▁House I-ORG
+▁first B-DATE
+▁week I-DATE
+▁of I-DATE
+▁June I-DATE
+
+▁Cha B-PER
+vez I-PER
+▁Gor B-PER
+rin I-PER
+▁Andra B-PER
+des I-PER
+▁Switzerland B-LOC
+
+▁Ni B-PER
+ph I-PER
+key I-PER
+s I-PER
+
+▁Ren B-PER
+▁Z I-PER
+heng I-PER
+fei I-PER
+▁Huawei B-ORG
+▁33 B-DATE
+▁years I-DATE
+▁ago I-DATE
+
+▁Lago B-ORG
+s I-ORG
+▁State I-ORG
+▁government I-ORG
+▁MC B-PER
+▁Ol I-PER
+uomo I-PER
+
+▁By B-PER
+e I-PER
+key I-PER
+▁54 B-DATE
+- I-DATE
+year I-DATE
+- I-DATE
+old I-DATE
+▁34 B-DATE
+▁years I-DATE
+▁one B-DATE
+▁year I-DATE
+▁ago I-DATE
+
+▁Um B-ORG
+bre I-ORG
+lla I-ORG
+▁Entertainment I-ORG
+▁September B-DATE
+▁2012 I-DATE
+
+▁Chine B-PER
+mer I-PER
+em I-PER
+▁Jar B-PER
+untu I-PER
+▁Bi B-LOC
+da I-LOC
+▁this B-DATE
+▁morning I-DATE
+▁U B-PER
+bak I-PER
+amma I-PER
+▁last B-DATE
+▁night I-DATE
+▁Ji B-ORG
+meta I-ORG
+▁clinic I-ORG
+
+▁Vilnius B-LOC
+
+▁the B-ORG
+▁Raven I-ORG
+s I-ORG
+▁Raven B-ORG
+s I-ORG
+▁A B-ORG
+FC I-ORG
+
+▁A B-PER
+
+▁Donald B-PER
+▁Trump I-PER
+
+▁Ano B-PER
+
+▁22 B-DATE
+▁year I-DATE
+▁old I-DATE
+▁Uz B-PER
+oka I-PER
+▁Mai B-LOC
+du I-LOC
+guri I-LOC
+
+▁4: B-DATE
+30 I-DATE
+▁a I-DATE
+. I-DATE
+m I-DATE
+. I-DATE
+▁Sunday I-DATE
+▁Sanchez B-PER
+▁a B-DATE
+▁year I-DATE
+
+▁Central B-ORG
+▁Bank I-ORG
+▁of I-ORG
+▁Nigeria I-ORG
+s I-ORG
+▁Kings B-PER
+ley I-PER
+▁Mog I-PER
+halu I-PER
+▁African B-ORG
+▁Democratic I-ORG
+▁Congress I-ORG
+
+▁PDP B-ORG
+▁2023 B-DATE
+
+▁Eric B-PER
+▁2020 B-DATE
+▁2022 B-DATE
+
+▁CV B-ORG
+S I-ORG
+▁Wal B-ORG
+green I-ORG
+s I-ORG
+▁pharmacie I-ORG
+s I-ORG
+
+▁Nigeria B-LOC
+
+▁Texas B-LOC
+▁Greg B-PER
+▁Ab I-PER
+bot I-PER
+t I-PER
+
+▁Kola B-PER
+de I-PER
+▁E B-ORG
+de I-ORG
+▁hospital I-ORG
+▁Sat B-DATE
+▁26 I-DATE
+▁Dec I-DATE
+, I-DATE
+▁1998 I-DATE
+
+▁O B-ORG
+
+▁N B-ORG
+SS I-ORG
+
+▁Black B-ORG
+star I-ORG
+s I-ORG
+▁A B-PER
+samo I-PER
+ah I-PER
+▁G I-PER
+yan I-PER
+▁O B-PER
+hem I-PER
+mas I-PER
+
+▁Ki B-PER
+itan I-PER
+▁Ana I-PER
+ech I-PER
+elu I-PER
+▁11 B-DATE
+▁am I-DATE
+▁22 B-DATE
+minut I-DATE
+es I-DATE
+
+▁Um B-LOC
+ua I-LOC
+hia I-LOC
+▁Ken B-PER
+en I-PER
+na I-PER
+▁N I-PER
+kem I-PER
+dir I-PER
+im I-PER
+
+▁UC B-ORG
+▁Drake B-PER
+▁UC B-ORG
+▁152 B-DATE
+- I-DATE
+year I-DATE
+
+▁I B-PER
+ssa I-PER
+
+▁Ro B-PER
+ark I-PER
+
+▁International B-ORG
+▁Emer I-ORG
+gen I-ORG
+cy I-ORG
+▁Economic I-ORG
+▁Power I-ORG
+s I-ORG
+▁Act I-ORG
+▁Tik B-ORG
+T I-ORG
+ok I-ORG
+▁We B-ORG
+Chat I-ORG
+▁China B-LOC
+
+▁67 B-DATE
+▁yr I-DATE
+▁old I-DATE
+▁O B-PER
+mo B-PER
+lara I-PER
+▁Fund I-PER
+u I-PER
+diye I-PER
+gha I-PER
+
+▁China B-LOC
+
+▁Obi B-PER
+
+▁APC B-ORG
+▁Adam B-PER
+u I-PER
+▁Abdullah I-PER
+i I-PER
+▁May B-DATE
+▁26 I-DATE
+
+▁Sarah B-PER
+▁Palm I-PER
+er I-PER
+▁Le B-PER
+land I-PER
+▁Palm I-PER
+er I-PER
+
+▁O B-PER
+ladi I-PER
+ran I-PER
+▁Chi B-PER
+bud I-PER
+om I-PER
+▁O B-LOC
+shi I-LOC
+om I-LOC
+ole I-LOC
+▁ I-LOC
+ward I-LOC
+
+▁United B-ORG
+▁States I-ORG
+▁Agency I-ORG
+▁for I-ORG
+▁International I-ORG
+▁Development I-ORG
+▁USA I-ORG
+ID I-ORG
+▁J B-ORG
+h I-ORG
+pie I-ORG
+go I-ORG
+▁John I-ORG
+s I-ORG
+▁Hopkins I-ORG
+▁University I-ORG
+▁Nigeria B-LOC
+
+▁Brown B-ORG
+▁Capital I-ORG
+▁Management I-ORG
+▁LLC I-ORG
+
+▁Victor B-PER
+s I-PER
+▁Young B-PER
+
+▁GU B-PER
+▁late B-DATE
+▁this I-DATE
+▁afternoon I-DATE
+
+▁six B-DATE
+- I-DATE
+mont I-DATE
+h I-DATE
+▁Great B-LOC
+▁Lake I-LOC
+s I-LOC
+
+▁City B-ORG
+▁of I-ORG
+▁Clo I-ORG
+vis I-ORG
+
+▁Pal B-LOC
+ghar I-LOC
+▁district I-LOC
+
+▁Democrat B-ORG
+▁Oklahoma B-LOC
+▁City I-LOC
+▁Republican B-ORG
+
+▁Cross B-PER
+
+▁Ji B-LOC
+gawa I-LOC
+▁PDP B-ORG
+
+▁United B-ORG
+▁Nations I-ORG
+▁Nigeria B-LOC
+
+▁Lo B-ORG
+om I-ORG
+▁Solar I-ORG
+▁Far B-LOC
+id I-LOC
+abad I-LOC
+▁Har B-LOC
+yana I-LOC
+▁Lo B-ORG
+om I-ORG
+▁Solar I-ORG
+
+▁Federal B-LOC
+▁Capital I-LOC
+▁Terri I-LOC
+tory I-LOC
+▁Joseph B-PER
+ine I-PER
+▁Ade I-PER
+h I-PER
+
+▁ B-ORG
+KIA I-ORG
+
+▁WA B-ORG
+EC I-ORG
+
+▁Real B-ORG
+▁Clear I-ORG
+▁Politic I-ORG
+s I-ORG
+▁Fox B-ORG
+▁News I-ORG
+▁Bi B-PER
+den I-PER
+
+▁Gol B-PER
+ibe I-PER
+▁Og I-PER
+om I-PER
+eg I-PER
+bun I-PER
+am I-PER
+
+▁T B-ORG
+NM I-ORG
+
+▁Tu B-DATE
+e I-DATE
+▁15 I-DATE
+▁Mar I-DATE
+, I-DATE
+▁1988 I-DATE
+▁N B-PER
+kama I-PER
+▁Ez I-PER
+ichi I-PER
+▁Hospital B-ORG
+▁Poti I-ORG
+skum I-ORG
+
+▁This B-DATE
+▁morning I-DATE
+▁Chi B-PER
+m I-PER
+di I-PER
+om I-PER
+imi I-PER
+▁Fe B-ORG
+y I-ORG
+is I-ORG
+ayo I-ORG
+▁hospital I-ORG
+▁Bu B-LOC
+guma I-LOC
+▁Za B-PER
+una I-PER
+
+▁Nigeria B-LOC
+▁2023 B-DATE
+
+▁04 B-DATE
+-07- I-DATE
+2006 I-DATE
+▁Maku B-LOC
+rdi I-LOC
+▁Og B-LOC
+ami I-LOC
+nana I-LOC
+
+▁Petri B-PER
+
+▁Dubai B-LOC
+
+▁Arian B-PER
+a I-PER
+▁Grande I-PER
+
+▁I B-PER
+he I-PER
+chi I-PER
+ny I-PER
+ere I-PER
+▁Chin I-PER
+wei I-PER
+zu I-PER
+▁56 B-DATE
+▁yr I-DATE
+▁OR B-LOC
+▁S B-ORG
+▁08 B-DATE
+-11- I-DATE
+1989 I-DATE
+
+▁Abdul B-PER
+haram I-PER
+
+▁O B-PER
+
+▁4 B-DATE
+▁months I-DATE
+▁ago I-DATE
+▁Ag B-PER
+bo I-PER
+▁So I-PER
+kun I-PER
+bi I-PER
+
+▁If B-PER
+ech I-PER
+il I-PER
+uru I-PER
+▁Ka I-PER
+e I-PER
+tech I-PER
+uk I-PER
+wu I-PER
+
+▁Victor B-PER
+▁Uw I-PER
+ai I-PER
+fo I-PER
+▁His B-ORG
+▁TI I-ORG
+tib I-ORG
+itis I-ORG
+
+▁PT B-PER
+▁Mae I-PER
+zo I-PER
+
+▁Cambodia B-LOC
+
+▁Logg B-LOC
+ers I-LOC
+▁Trail I-LOC
+
+▁Mar B-PER
+issa I-PER
+▁Oklahoma B-LOC
+▁Mar B-PER
+issa I-PER
+
+▁Lago B-LOC
+s I-LOC
+
+▁La B-ORG
+bour I-ORG
+
+▁International B-DATE
+▁Day I-DATE
+▁Man B-LOC
+gro I-LOC
+▁War B-LOC
+ri I-LOC
+
+▁Wednesday B-DATE
+▁night I-DATE
+▁I B-ORG
+badan I-ORG
+▁South I-ORG
+- I-ORG
+West I-ORG
+▁Tradition I-ORG
+al I-ORG
+▁Rule I-ORG
+rs I-ORG
+▁Council I-ORG
+▁Rashid B-PER
+i I-PER
+▁La I-PER
+do I-PER
+ja I-PER
+
