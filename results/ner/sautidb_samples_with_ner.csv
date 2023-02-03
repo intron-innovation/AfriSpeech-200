@@ -1,0 +1,90 @@
+audio_paths,accent,fluentLanguage,user_ids,gender,sentenceID,transcript,duration,audio_ids,domain,split
+EFIKIBIBIO_EFIKIBIBIO_0014_M_B0098.wav,EFIKIBIBIO,EFIKIBIBIO,14,M,B0098,Philip looked back from the crest and saw Jeanne leaning over the canoe.,4.37,EFIKIBIBIO_EFIKIBIBIO_0014_M_B0098,general,train
+YORUBA_YORUBA_0049_M_A0496.wav,YORUBA,YORUBA,49,M,A0496,And Tom King patiently endured.,2.47,YORUBA_YORUBA_0049_M_A0496,general,dev
+IGBO_YORUBA_0060_F_B0124.wav,IGBO,YORUBA,60,F,B0124,"Two weeks passed, and in that time Thorpe left camp three times.",4.05,IGBO_YORUBA_0060_F_B0124,general,train
+IGBO_IGBO_0019_F_A0166.wav,IGBO,IGBO,19,F,A0166,Two days ago Jeanne learned where her father's men were hiding.,4.42,IGBO_IGBO_0019_F_A0166,general,train
+IGBO_WESTERN_0025_F_B0372.wav,IGBO,WESTERN,25,F,B0372,Mr McVeigh told me about him.,2.71,IGBO_WESTERN_0025_F_B0372,general,train
+IGBO_WESTERN_0025_F_B0241.wav,IGBO,WESTERN,25,F,B0241,The women they carried away with them to the Big Valley.,3.66,IGBO_WESTERN_0025_F_B0241,general,dev
+IGBO_YORUBA_0416_M_B0453.wav,IGBO,YORUBA,416,M,B0453,"Isaac Ford, the austere soldier of the Lord, the old hypocrite.",3.95,IGBO_YORUBA_0416_M_B0453,general,train
+IGBO_IGBO_0045_F_A0087.wav,IGBO,IGBO,45,F,A0087,"Philip bent lower, and stared into the face of the dead man.",3.1,IGBO_IGBO_0045_F_A0087,general,train
+YORUBA_YORUBA_0007_F_B0116.wav,YORUBA,YORUBA,7,F,B0116,"I have hunted along this ridge, replied Philip.",3.18,YORUBA_YORUBA_0007_F_B0116,general,train
+YORUBA_YORUBA_0006_M_B0496.wav,YORUBA,YORUBA,6,M,B0496,I have seen myself that one man contemplated by Pascal's philosophic eye.,4.87,YORUBA_YORUBA_0006_M_B0496,general,train
+YORUBA_YORUBA_0041_F_A0056.wav,YORUBA,YORUBA,41,F,A0056,Pearce's little eyes were fixed on him shrewdly.,6.71,YORUBA_YORUBA_0041_F_A0056,general,dev
+YORUBA_YORUBA_0063_F_B0182.wav,YORUBA,YORUBA,63,F,B0182,I was in New York when the crash came.,2.56,YORUBA_YORUBA_0063_F_B0182,general,train
+IGBO_WESTERN_0054_M_A0163.wav,IGBO,WESTERN,54,M,A0163,Philip made no effort to follow.,1.62,IGBO_WESTERN_0054_M_A0163,general,train
+YORUBA_YORUBA_0167_M_A0110.wav,YORUBA,YORUBA,167,M,A0110,"Much, replied Jeanne, as tersely.",3.09,YORUBA_YORUBA_0167_M_A0110,general,train
+IGBO_IGBO_0011_M_A0252.wav,IGBO,IGBO,11,M,A0252,O'Brien had been a clean living young man with ideals.,7.73,IGBO_IGBO_0011_M_A0252,general,train
+YORUBA_YORUBA_0172_F_A0225.wav,YORUBA,YORUBA,172,F,A0225,I was brought up the way most girls in Hawaii are brought up.,4.84,YORUBA_YORUBA_0172_F_A0225,general,train
+YORUBA_YORUBA_0089_M_A0166.wav,YORUBA,YORUBA,89,M,A0166,Two days ago Jeanne learned where her father's men were hiding.,3.86,YORUBA_YORUBA_0089_M_A0166,general,train
+YORUBA_YORUBA_0137_M_A0423.wav,YORUBA,YORUBA,137,M,A0423,McVeigh when he returns from a trip to Honolulu.,4.82,YORUBA_YORUBA_0137_M_A0423,general,train
+EDO_YORUBA_0053_M_A0056.wav,EDO,YORUBA,53,M,A0056,Pearce's little eyes were fixed on him shrewdly.,2.2,EDO_YORUBA_0053_M_A0056,general,train
+IGBO_WESTERN_0025_F_B0364.wav,IGBO,WESTERN,25,F,B0364,In the Bohemian Club of San Francisco there are some crack sailors.,4.26,IGBO_WESTERN_0025_F_B0364,general,dev
+YORUBA_YORUBA_0017_F_A0404.wav,YORUBA,YORUBA,17,F,A0404,Perrault found one with head buried in the grub box.,4.28,YORUBA_YORUBA_0017_F_A0404,general,dev
+IGBO_IGBO_0045_F_A0044.wav,IGBO,IGBO,45,F,A0044,Her own betrayal of herself was like tonic to Philip.,3.23,IGBO_IGBO_0045_F_A0044,general,train
+IGBO_WESTERN_0025_F_A0309.wav,IGBO,WESTERN,25,F,A0309,"White Leghorns, said Mrs Mortimer.",3.82,IGBO_WESTERN_0025_F_A0309,general,train
+YORUBA_YORUBA_0007_F_B0125.wav,YORUBA,YORUBA,7,F,B0125,It was the third or fourth time that Philip had heard MacDougall swear.,7.88,YORUBA_YORUBA_0007_F_B0125,general,train
+EDO_IGBO_0122_M_A0172.wav,EDO,IGBO,122,M,A0172,Gregson had left the outer door slightly ajar.,6.31,EDO_IGBO_0122_M_A0172,general,train
+YORUBA_YORUBA_0006_M_B0464.wav,YORUBA,YORUBA,6,M,B0464,I could not agree with Ernest.,2.5,YORUBA_YORUBA_0006_M_B0464,general,train
+IGBO_WESTERN_0054_M_B0471.wav,IGBO,WESTERN,54,M,B0471,"Also a fellow Senator, Chauncey Depew, said.",5.25,IGBO_WESTERN_0054_M_B0471,general,train
+YORUBA_YORUBA_0153_M_B0257.wav,YORUBA,YORUBA,153,M,B0257,Tudor surveyed him with withering disgust.,3.47,YORUBA_YORUBA_0153_M_B0257,general,train
+IGBO_WESTERN_0054_M_A0553.wav,IGBO,WESTERN,54,M,A0553,"I am writing these lines in Honolulu, Hawaii.",3.27,IGBO_WESTERN_0054_M_A0553,general,train
+YORUBA_YORUBA_0089_M_A0225.wav,YORUBA,YORUBA,89,M,A0225,I was brought up the way most girls in Hawaii are brought up.,4.2,YORUBA_YORUBA_0089_M_A0225,general,train
+YORUBA_YORUBA_0048_M_B0245.wav,YORUBA,YORUBA,48,M,B0245,Harrison is still my chauffeur.,4.77,YORUBA_YORUBA_0048_M_B0245,general,train
+YORUBA_YORUBA_0024_M_B0065.wav,YORUBA,YORUBA,24,M,B0065,"Now have you got anything to say against me, Mr Philip.",5.64,YORUBA_YORUBA_0024_M_B0065,general,train
+YORUBA_YORUBA_0006_M_B0220.wav,YORUBA,YORUBA,6,M,B0220,"Harry Bancroft, Dave lied.",1.84,YORUBA_YORUBA_0006_M_B0220,general,train
+IGBO_WESTERN_0025_F_B0312.wav,IGBO,WESTERN,25,F,B0312,"Dig in; you're sure good, was Daylight's answer.",3.5,IGBO_WESTERN_0025_F_B0312,general,dev
+YORUBA_YORUBA_0005_M_A0238.wav,YORUBA,YORUBA,5,M,A0238,It happened to him at the Gallina Society in Oakland one afternoon.,7.24,YORUBA_YORUBA_0005_M_A0238,general,train
+EDO_OTHERS_0038_M_B0194.wav,EDO,OTHERS,38,M,B0194,"Joan cried, with shining eyes.",2.7,EDO_OTHERS_0038_M_B0194,general,train
+IGBO_IGBO_0019_F_A0008.wav,IGBO,IGBO,19,F,A0008,"Gad, your letter came just in time.",2.62,IGBO_IGBO_0019_F_A0008,general,train
+IGBO_YORUBA_0018_M_B0245.wav,IGBO,YORUBA,18,M,B0245,Harrison is still my chauffeur.,4.62,IGBO_YORUBA_0018_M_B0245,general,train
+YORUBA_YORUBA_0102_F_B0079.wav,YORUBA,YORUBA,102,F,B0079,The truth of it set Jeanne quivering.,2.77,YORUBA_YORUBA_0102_F_B0079,general,train
+IGBO_IGBO_0045_F_B0255.wav,IGBO,IGBO,45,F,B0255,"Then, again, Tudor had such an irritating way about him.",3.47,IGBO_IGBO_0045_F_B0255,general,dev
+IGBO_IGBO_0019_F_B0280.wav,IGBO,IGBO,19,F,B0280,"Again the girls applauded, and Mrs Hall cried.",4.3,IGBO_IGBO_0019_F_B0280,general,train
+YORUBA_YORUBA_0022_M_B0529.wav,YORUBA,YORUBA,22,M,B0529,"Come on, Del Mar challenged.",2.52,YORUBA_YORUBA_0022_M_B0529,general,train
+YORUBA_YORUBA_0059_M_A0352.wav,YORUBA,YORUBA,59,M,A0352,"I'm sure going along with you all, Elijah.",1.91,YORUBA_YORUBA_0059_M_A0352,general,train
+YORUBA_YORUBA_0005_M_A0505.wav,YORUBA,YORUBA,5,M,A0505,We fished sharks on Niihau together.,3.54,YORUBA_YORUBA_0005_M_A0505,general,train
+YORUBA_YORUBA_0049_M_A0490.wav,YORUBA,YORUBA,49,M,A0490,Both Johnny and his mother shuffled their feet as they walked.,3.87,YORUBA_YORUBA_0049_M_A0490,general,train
+EDO_OTHERS_0175_F_B0361.wav,EDO,OTHERS,175,F,B0361,"There are the canals of China, and the Yang-tse River.",2.82,EDO_OTHERS_0175_F_B0361,general,train
+IGBO_IGBO_0010_M_B0521.wav,IGBO,IGBO,10,M,B0521,"And he thought of Oona, and of her words.",3.31,IGBO_IGBO_0010_M_B0521,general,train
+YORUBA_YORUBA_0022_M_A0149.wav,YORUBA,YORUBA,22,M,A0149,For an instant he saw Pierre drawn like a silhouette against the sky.,5.53,YORUBA_YORUBA_0022_M_A0149,general,dev
+IGBO_IGBO_0045_F_A0497.wav,IGBO,IGBO,45,F,A0497,King took every advantage he knew.,2.14,IGBO_IGBO_0045_F_A0497,general,train
+YORUBA_YORUBA_0008_M_B0372.wav,YORUBA,YORUBA,8,M,B0372,Mr McVeigh told me about him.,3.77,YORUBA_YORUBA_0008_M_B0372,general,train
+YORUBA_YORUBA_0024_M_A0569.wav,YORUBA,YORUBA,24,M,A0569,"At Lake Linderman I had one canoe, very good Peterborough canoe.",5.66,YORUBA_YORUBA_0024_M_A0569,general,dev
+EDO_YORUBA_0053_M_B0201.wav,EDO,YORUBA,53,M,B0201,I also understand that similar branch organizations have made their appearance in Europe.,4.27,EDO_YORUBA_0053_M_B0201,general,train
+YORUBA_YORUBA_0005_M_B0069.wav,YORUBA,YORUBA,5,M,B0069,Could the incident have anything to do with Jeanne and Pierre.,4.18,YORUBA_YORUBA_0005_M_B0069,general,dev
+EDO_IGBO_0122_M_A0496.wav,EDO,IGBO,122,M,A0496,And Tom King patiently endured.,3.55,EDO_IGBO_0122_M_A0496,general,dev
+EDO_YORUBA_0053_M_A0494.wav,EDO,YORUBA,53,M,A0494,O'Brien took off his coat and bared his right arm.,2.85,EDO_YORUBA_0053_M_A0494,general,train
+YORUBA_YORUBA_0132_M_B0298.wav,YORUBA,YORUBA,132,M,B0298,His hand shot out and clutched Crooked-Leg by the neck.,5.26,YORUBA_YORUBA_0132_M_B0298,general,train
+IGBO_IGBO_0045_F_A0326.wav,IGBO,IGBO,45,F,A0326,Cherokee identified himself with his instinct.,3.04,IGBO_IGBO_0045_F_A0326,general,train
+YORUBA_YORUBA_0009_M_A0033.wav,YORUBA,YORUBA,9,M,A0033,"He unfolded a long typewritten letter, and handed it to Gregson.",3.99,YORUBA_YORUBA_0009_M_A0033,general,train
+YORUBA_YORUBA_0024_M_A0524.wav,YORUBA,YORUBA,24,M,A0524,At once would be instituted a dozen cooperative commonwealth states.,5.58,YORUBA_YORUBA_0024_M_A0524,general,train
+YORUBA_YORUBA_0048_M_B0203.wav,YORUBA,YORUBA,48,M,B0203,A month in Australia would finish me.,5.62,YORUBA_YORUBA_0048_M_B0203,general,train
+YORUBA_HAUSA_0112_M_A0118.wav,YORUBA,HAUSA,112,M,A0118,Pierre obeys me when we are together.,2.32,YORUBA_HAUSA_0112_M_A0118,general,train
+OTHERS_OTHERS_0154_M_B0372.wav,OTHERS,OTHERS,154,M,B0372,Mr McVeigh told me about him.,2.28,OTHERS_OTHERS_0154_M_B0372,general,train
+YORUBA_YORUBA_0172_F_B0361.wav,YORUBA,YORUBA,172,F,B0361,"There are the canals of China, and the Yang-tse River.",3.35,YORUBA_YORUBA_0172_F_B0361,general,train
+IGBO_YORUBA_0060_F_B0201.wav,IGBO,YORUBA,60,F,B0201,I also understand that similar branch organizations have made their appearance in Europe.,4.3,IGBO_YORUBA_0060_F_B0201,general,train
+OTHERS_YORUBA_0101_M_A0163.wav,OTHERS,YORUBA,101,M,A0163,Philip made no effort to follow.,2.93,OTHERS_YORUBA_0101_M_A0163,general,train
+EDO_YORUBA_0053_M_A0138.wav,EDO,YORUBA,53,M,A0138,In the picture he saw each moment a greater resemblance to Jeanne.,3.71,EDO_YORUBA_0053_M_A0138,general,train
+EDO_OTHERS_0038_M_B0122.wav,EDO,OTHERS,38,M,B0122,Philip saw MacDougall soon after his short talk with Thorpe.,4.38,EDO_OTHERS_0038_M_B0122,general,train
+YORUBA_YORUBA_0041_F_A0277.wav,YORUBA,YORUBA,41,F,A0277,"McCoy found a stifling, poisonous atmosphere in the pent cabin.",4.89,YORUBA_YORUBA_0041_F_A0277,general,dev
+YORUBA_YORUBA_0030_M_A0481.wav,YORUBA,YORUBA,30,M,A0481,"Nimrod replied, with a slight manifestation of sensitiveness.",4.66,YORUBA_YORUBA_0030_M_A0481,general,train
+YORUBA_YORUBA_0048_M_A0252.wav,YORUBA,YORUBA,48,M,A0252,O'Brien had been a clean living young man with ideals.,5.54,YORUBA_YORUBA_0048_M_A0252,general,dev
+IGBO_IGBO_0045_F_B0447.wav,IGBO,IGBO,45,F,B0447,O'Brien emitted a shriek that sank swiftly to a gurgling sob.,5.21,IGBO_IGBO_0045_F_B0447,general,dev
+YORUBA_YORUBA_0004_F_A0083.wav,YORUBA,YORUBA,4,F,A0083,A shadow was creeping over Pierre's eyes.,4.71,YORUBA_YORUBA_0004_F_A0083,general,train
+YORUBA_YORUBA_0022_M_A0496.wav,YORUBA,YORUBA,22,M,A0496,And Tom King patiently endured.,3.56,YORUBA_YORUBA_0022_M_A0496,general,train
+IGBO_IGBO_0010_M_B0079.wav,IGBO,IGBO,10,M,B0079,The truth of it set Jeanne quivering.,2.77,IGBO_IGBO_0010_M_B0079,general,train
+YORUBA_YORUBA_0017_F_A0530.wav,YORUBA,YORUBA,17,F,A0530,"Ask him, I laughed, then turned to Pasquini.",4.61,YORUBA_YORUBA_0017_F_A0530,general,train
+YORUBA_YORUBA_0153_M_B0328.wav,YORUBA,YORUBA,153,M,B0328,"Change chairs, Daylight commanded.",2.49,YORUBA_YORUBA_0153_M_B0328,general,train
+YORUBA_YORUBA_0378_M_A0585.wav,YORUBA,YORUBA,378,M,A0585,"Wonder if he's a lion dog, Charles suggested.",4.71,YORUBA_YORUBA_0378_M_A0585,general,train
+IGBO_IGBO_0045_F_A0149.wav,IGBO,IGBO,45,F,A0149,For an instant he saw Pierre drawn like a silhouette against the sky.,3.99,IGBO_IGBO_0045_F_A0149,general,train
+YORUBA_YORUBA_0022_M_A0066.wav,YORUBA,YORUBA,22,M,A0066,He saw Jeanne falter for a moment.,4.18,YORUBA_YORUBA_0022_M_A0066,general,train
+IGBO_YORUBA_0549_M_A0083.wav,IGBO,YORUBA,549,M,A0083,A shadow was creeping over Pierre's eyes.,4.72,IGBO_YORUBA_0549_M_A0083,general,train
+YORUBA_YORUBA_0007_F_A0190.wav,YORUBA,YORUBA,7,F,A0190,Next to them the Canada jays were most persistent.,3.43,YORUBA_YORUBA_0007_F_A0190,general,train
+YORUBA_YORUBA_0048_M_B0462.wav,YORUBA,YORUBA,48,M,B0462,"One guess will do, Ernest retorted.",5.97,YORUBA_YORUBA_0048_M_B0462,general,train
+YORUBA_YORUBA_0007_F_A0509.wav,YORUBA,YORUBA,7,F,A0509,"Yet, in accordance with Ernest's test of truth, it worked.",4.68,YORUBA_YORUBA_0007_F_A0509,general,train
+YORUBA_YORUBA_0009_M_B0050.wav,YORUBA,YORUBA,9,M,B0050,All this day Gregson remained in the cabin.,2.57,YORUBA_YORUBA_0009_M_B0050,general,dev
+IGBO_IGBO_0056_M_B0029.wav,IGBO,IGBO,56,M,B0029,All operations have been carried on from Montreal and Toronto.,4.24,IGBO_IGBO_0056_M_B0029,general,train
+YORUBA_YORUBA_0288_M_A0357.wav,YORUBA,YORUBA,288,M,A0357,"A month passed by, and Bonanza Creek remained quiet.",5.23,YORUBA_YORUBA_0288_M_A0357,general,dev
+YORUBA_YORUBA_0348_M_B0384.wav,YORUBA,YORUBA,348,M,B0384,The skipper's and Nakata's gymnastics served as a translation without words.,7.6,YORUBA_YORUBA_0348_M_B0384,general,train
+IGBO_IGBO_0010_M_A0423.wav,IGBO,IGBO,10,M,A0423,McVeigh when he returns from a trip to Honolulu.,3.7,IGBO_IGBO_0010_M_A0423,general,dev
+EDO_OTHERS_0175_F_A0407.wav,EDO,OTHERS,175,F,A0407,"Mercedes screamed, cried, laughed, and manifested the chaotic abandonment of hysteria.",7.74,EDO_OTHERS_0175_F_A0407,general,train
