@@ -20,13 +20,15 @@ def extract_entities(csv, threshhold=0.8):
     for id in df.index:
         transcript = df.loc[id, "transcript"]
         entities = nlp(transcript)
+        entities_group = nlp.group_entities(entities)
+        
+        has_entity = 0
 
         per_list = []
         loc_list = []
         org_list = []
         other_entity = []
-
-        has_entity = 0
+        
 
         if len(entities) != 0:
             # fix for to ensure that entities is successfully saved as json.
@@ -36,7 +38,14 @@ def extract_entities(csv, threshhold=0.8):
                     if type(y[x]) == np.float32:
                         y[x] = float(y[x])
                 entities[i] = y
-            entities_group = nlp.group_entities(entities)
+            
+            for i in range(len(entities_group)):
+                y = entities_group[i]
+                for x in y.keys():
+                    if type(y[x]) == np.float32:
+                        y[x] = float(y[x])
+                entities_group[i] = y
+            
             # save entities
             for el in entities_group:
                 entity = el["entity_group"]
@@ -44,19 +53,20 @@ def extract_entities(csv, threshhold=0.8):
                 word = el["word"]
 
                 if entity == "PER":
-                    if score > threshhold:
+                    if score >= threshhold:
                         per_list.append(word)
                         has_entity = 1
 
                 elif entity == "LOC":
-                    if score > threshhold:
+                    if score >= threshhold:
                         loc_list.append(word)
                         has_entity = 1
 
                 elif entity == "ORG":
-                    if score > threshhold:
+                    if score >= threshhold:
                         org_list.append(word)
                         has_entity = 1
+                        
                 else:
                     other_entity.append({"entity": entity, "word": word})
 
@@ -65,6 +75,8 @@ def extract_entities(csv, threshhold=0.8):
         df.loc[id, "LOC"] = f"{loc_list}" if len(loc_list) != 0 else ""
         df.loc[id, "ORG"] = f"{org_list}" if len(org_list) != 0 else ""
         df.loc[id, "entities"] = json.dumps(entities) if len(entities) != 0 else ""
+        df.loc[id, "entities_group"] = json.dumps(entities_group) if len(entities_group) != 0 else ""
+        df.loc[id, "entities_others"] = json.dumps(other_entity) if len(other_entity) != 0 else ""
 
     df["has_entity"] = df["has_entity"].astype(int)
     df.to_csv(
