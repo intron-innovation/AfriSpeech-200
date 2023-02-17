@@ -8,6 +8,7 @@ import os
 os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
 os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
 
+import gc
 import numpy as np
 import torch
 import time
@@ -24,6 +25,9 @@ from src.utils.audio_processing import load_audio_file, AudioConfig
 from src.utils.prepare_dataset import load_afri_speech_data
 from src.utils.text_processing import clean_text
 from src.utils.utils import parse_argument, write_pred_inference_df
+
+gc.collect()
+torch.cuda.empty_cache()
 
 processor = None
 device = None
@@ -157,21 +161,25 @@ def transcribe_whisper(args, model, loader, split):
     data = pd.DataFrame(dict(hypothesis=hypotheses, reference=references,
                              audio_paths=paths, accent=accents))
 
-    data["pred_clean"] = [clean_text(text) for text in data["hypothesis"]]
-    data["ref_clean"] = [clean_text(text) for text in data["reference"]]
+    pred_clean = [clean_text(text) for text in data["hypothesis"]]
+    ref_clean = [clean_text(text) for text in data["reference"]]
+    
+    pred_clean = [text if text != "" else "abcxyz" for text in pred_clean]
+    ref_clean = [text if text != "" else "abcxyz" for text in ref_clean]
+    
+    data["pred_clean"] = pred_clean
+    data["ref_clean"] = ref_clean
 
     all_wer = jiwer.wer(list(data["ref_clean"]), list(data["pred_clean"]))
     print(f"Cleanup WER: {all_wer * 100:.2f} %")
 
     normalizer = EnglishTextNormalizer()
-
-    gt_normalized, pred_normalized = [], []
-    for i, (gt_text, pred_text) in enumerate(zip(data["reference"], data["hypothesis"])):
-        gt = normalizer(gt_text)
-        pred = normalizer(pred_text)
-        if gt != "":
-            gt_normalized.append(gt)
-            pred_normalized.append(pred)
+    
+    pred_normalized = [normalizer(text) for text in data["hypothesis"]]
+    gt_normalized = [normalizer(text) for text in data["reference"]]
+    
+    pred_normalized = [text if text != "" else "abcxyz" for text in pred_normalized]
+    gt_normalized = [text if text != "" else "abcxyz" for text in gt_normalized]
 
     whisper_wer = jiwer.wer(gt_normalized, pred_normalized)
     print(f"EnglishTextNormalizer WER: {whisper_wer * 100:.2f} %")
@@ -217,7 +225,10 @@ if __name__ == "__main__":
     
     if "whisper" in args.model_id_or_path and os.path.isdir(args.model_id_or_path):
         # load model and processor
-        processor = WhisperProcessor.from_pretrained(args.model_id_or_path)
+        try:
+            processor = WhisperProcessor.from_pretrained(args.model_id_or_path)
+        except Exception as e:
+            processor = WhisperProcessor.from_pretrained(os.path.dirname(args.model_id_or_path))
         model = WhisperForConditionalGeneration.from_pretrained(args.model_id_or_path)
     elif "whisper" in args.model_id_or_path:
         whisper_model = args.model_id_or_path.split("_")[1]

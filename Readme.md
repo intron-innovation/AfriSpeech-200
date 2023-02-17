@@ -244,6 +244,8 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 
 11. To run Active Learning code, create a config file similar to `src/config/config_al_xlsr_general.ini`, and run
  `python3 src/train/train.py -c src/config/config_al_xlsr_general.ini`
+ 
+ 12. Multi-GPU training: `python3  -m torch.distributed.launch --nproc_per_node 1 src/train/whisper_finetuning.py -c src/config/whisper-all-2m-4gpu.ini`
 
 
 ### Benchmark Results

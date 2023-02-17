@@ -12,6 +12,7 @@ os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
 os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
 os.environ["WANDB_DISABLED"] = "true"
 
+import gc
 import argparse
 import pandas as pd
 from pathlib import Path
@@ -38,6 +39,8 @@ from src.utils.prepare_dataset import load_custom_dataset
 from src.utils.text_processing import clean_text
 from src.utils.sampler import IntronSeq2SeqTrainer
 
+gc.collect()
+torch.cuda.empty_cache()
 
 set_seed(1778)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

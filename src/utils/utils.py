@@ -40,7 +40,9 @@ def write_pred_inference_df(model_id_or_path, predictions_df, wer, output_dir=".
     :param wer: float
     :return: DataFrame
     """
-    if "checkpoints" in model_id_or_path or os.path.isdir(model_id_or_path):
+    if "checkpoints" in model_id_or_path and '/data/AfriSpeech-Dataset-Paper' in model_id_or_path:
+        model_id_or_path = model_id_or_path.split("/")[-1]
+    elif "checkpoints" in model_id_or_path or os.path.isdir(model_id_or_path):
         model_id_or_path = model_id_or_path.split("/")[3]
     else:
         model_id_or_path = model_id_or_path.replace("/", "-")

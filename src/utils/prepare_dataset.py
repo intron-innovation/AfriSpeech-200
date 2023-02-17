@@ -101,6 +101,7 @@ def load_afri_speech_data(
             )
     
     # drop inaudible
+    data["text"] = data["transcript"]
     data["is_inaudible"] = data.text.apply(detect_inaudible)
     data["text"] = data.text.apply(replace_inaudible)
     print(f"inaudible: {len(data[data['is_inaudible'] > 0])}")
@@ -119,8 +120,16 @@ def load_afri_speech_data(
     print("before dedup", data.shape)
     data.drop_duplicates(subset=["audio_paths"], inplace=True)
     print("after dedup", data.shape)
+    
     if split == 'dev' and "1m_data_index" in data_path:
-        data = data.sample(frac=0.5, random_state=1)
+        cv = data[data.source=='common-voice']
+        cv = cv.sample(frac=0.3, random_state=1)
+        
+        rest = data[data.source!='common-voice']
+        
+        data = pd.concat([rest, cv], sort=False, ignore_index=True)
+        data = data.sample(frac=1.0, random_state=1)
+        
         print("dev new size", data.shape)
     print(f"transcript len: max {data['nchars'].max()}, min {data['nchars'].min()}")
     print(f"audio duration: max {data['duration'].max()}, min {data['duration'].min()}")

@@ -25,8 +25,8 @@ def load_audio_file(file_path):
         data, sr = librosa.core.load(file_path, sr=AudioConfig.sr)
         if sr != AudioConfig.sr:
             data = librosa.resample(data, sr, AudioConfig.sr)
-        if len(data) < sr:
-            data = pad_zeros(data, AudioConfig.sr, AudioConfig.sr)
+        #if len(data) < sr:
+        #    data = pad_zeros(data, AudioConfig.sr, AudioConfig.sr)
     except Exception as e:
         print(f"audio: {file_path} not found {str(e)}")
         print(traceback.format_exc())
