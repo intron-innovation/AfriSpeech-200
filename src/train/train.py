@@ -1,4 +1,10 @@
 import os
+
+os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
+os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
+os.environ["WANDB_DISABLED"] = "true"
+
+import gc
 import argparse
 import configparser
 import random
@@ -9,10 +15,6 @@ import pandas as pd
 from pathlib import Path
 import numpy as np
 from tqdm import tqdm
-
-os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
-os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
-os.environ["WANDB_DISABLED"] = "true"
 
 import torch
 from torch.utils.data import DataLoader
@@ -28,6 +30,9 @@ from transformers.trainer_utils import get_last_checkpoint
 from src.utils.text_processing import clean_text
 from src.utils.prepare_dataset import DataConfig, data_prep, DataCollatorCTCWithPaddingGroupLen
 from src.utils.sampler import IntronTrainer
+
+gc.collect()
+torch.cuda.empty_cache()
 
 warnings.filterwarnings('ignore')
 wer_metric = load_metric("wer")

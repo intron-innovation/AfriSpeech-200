@@ -226,9 +226,16 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 
 2. Activate the virtual environment `conda activate afrispeech`
 
-3. Install pytorch for your operating system by following https://pytorch.org/, e.g. `pytorch==1.8.1 torchaudio==0.8.1 cudatoolkit=10.2 -c pytorch`
+3. Install pytorch for your operating system by following https://pytorch.org/, e.g. `conda install pytorch==1.8.1 torchaudio==0.8.1 cudatoolkit=10.2 -c pytorch`
 
-4. Install ffmpeg `sudo apt install ffmpeg`
+4. Install ffmpeg and sox `sudo apt install ffmpeg`
+```
+sudo add-apt-repository ppa:mc3man/trusty-media  
+sudo apt-get update  
+sudo apt-get install ffmpeg  
+sudo apt-get install frei0r-plugins 
+sudo apt -y install sox
+```
 
 5. Install requirements `pip3 install -r requirements.txt`
 

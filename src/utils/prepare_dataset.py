@@ -186,6 +186,7 @@ def load_custom_dataset(config, data_path, split,
 def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets):
     create_new_vocab = False
     vocab_file_name = None
+    ckpt_parent = os.path.dirname(model_path)
 
     if os.path.isdir(model_path) and 'vocab.json' in os.listdir(model_path):
         vocab_files = ['preprocessor_config.json', 'tokenizer_config.json', 'vocab.json', 'special_tokens_map.json']
@@ -196,7 +197,13 @@ def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets):
             print(f"vocab detected at {vocab_file_name}")
         else:
             create_new_vocab = True
-
+    elif os.path.isdir(ckpt_parent) and len(os.listdir(ckpt_parent)) > 0:
+        vocab_file_name = [x for x in os.listdir(ckpt_parent) if 'vocab' in x]
+        if len(vocab_file_name) > 0:
+            vocab_file_name = os.path.join(ckpt_parent, vocab_file_name[0])
+            print(f"vocab detected at {vocab_file_name}")
+        else:
+            create_new_vocab = True
     elif os.path.isdir(checkpoints_path) and len(os.listdir(checkpoints_path)) > 0:
         vocab_file_name = [x for x in os.listdir(checkpoints_path) if 'vocab' in x]
         if len(vocab_file_name) > 0:
