@@ -7,8 +7,9 @@ from datetime import datetime
 import pandas as pd
 import subprocess
 
-os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
-os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
+data_home = "data2"
+os.environ['TRANSFORMERS_CACHE'] = f'/{data_home}/.cache/'
+os.environ['XDG_CACHE_HOME'] = f'/{data_home}/.cache/'
 
 from datasets import load_dataset, load_metric, Dataset
 from dataclasses import dataclass
@@ -37,7 +38,7 @@ logger.setLevel(logging_level)
 PROCESSOR = None
 CONFIG = None
 MAX_MODEL_AUDIO_LEN_SECS = 87
-
+ACCENT_LABEL_MAP = {}
 
 class DataConfig:
     def __init__(self, **kwargs):
@@ -46,7 +47,7 @@ class DataConfig:
 
             
 def load_afri_speech_data(
-    data_path, max_audio_len_secs=17, audio_dir="./data/", 
+    data_path, max_audio_len_secs=17, audio_dir=f"./{data_home}/", 
     return_dataset=True, split="dev", gpu=-1, domain='all',
     max_transcript_len=-1, min_transcript_len=-1
 ):
@@ -108,6 +109,23 @@ def load_afri_speech_data(
     else:
         return data
             
+def expand_vocab(vocab_dict, train_path, vocab_file_name):
+    data = pd.read_csv(train_path)
+    accent_list = list(data.accent.unqiue())
+    domain_list = list(data.domain.unique())
+    vad_list = ['speech', 'no_speech']
+    # age_group_list = list(data.age_group.unique())
+    # ner_tag_list
+    # clinical_tag_list
+    new_tags = accent_list + domain_list + vad_list
+    for tag in new_tags:
+        vocab_dict[f"<|{tag}|>"] = len(vocab_dict)
+    
+    with open(vocab_file_name, 'w') as vocab_file:
+        json.dump(vocab_dict, vocab_file)
+    
+    return vocab_dict, vocab_file_name
+    
         
 def data_prep(config):
     # Prepare data for the model
@@ -119,8 +137,9 @@ def data_prep(config):
     raw_dataset = load_data(config.train_path, config.val_path, config.aug_path)
     logger.debug(f"...Data Read Complete in {time.time() - start:.4f}. Starting Tokenizer...")
 
-    vocab_file_name = load_vocab(config.model_path, config.ckpt_path, config.exp_dir, raw_dataset)
-    PROCESSOR = load_processor(vocab_file_name)
+    vocab_file_name = load_vocab(config.model_path, config.ckpt_path, 
+                                 config.exp_dir, raw_dataset, config.train_path)
+    PROCESSOR = load_processor(vocab_file_name, train_path)
     logger.debug(f"...Load vocab and processor complete in {time.time() - start:.4f}.\n"
                  f"Loading dataset...")
 
@@ -152,7 +171,7 @@ def load_custom_dataset(config, data_path, split,
                             prepare=prepare, return_dataset=return_dataset)
 
 
-def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets):
+def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets, train_path=None):
     create_new_vocab = False
     vocab_file_name = None
 
@@ -188,7 +207,8 @@ def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets):
             vocab_dict = json.load(vocab_file)
     else:
         vocab_dict = {}
-
+    
+    vocab_dict, vocab_file_name = expand_vocab(vocab_dict, train_path, vocab_file_name)
     logger.info(f"---vocab dict: {len(vocab_dict)}\n{vocab_dict}")
     return vocab_file_name
 
@@ -253,16 +273,22 @@ def transform_audio(audio_path):
     except Exception as e:
         print(f"{audio_path} not found {str(e)}")
         speech, fs = librosa.load(
-            '/data/data/intron/e809b58c-4f05-4754-b98c-fbf236a88fbc/544bbfe5e1c6f8afb80c4840b681908d.wav',
+            f'/{data_home}/data/intron/e809b58c-4f05-4754-b98c-fbf236a88fbc/544bbfe5e1c6f8afb80c4840b681908d.wav',
             sr=AudioConfig.sr)
 
     return PROCESSOR(speech, sampling_rate=AudioConfig.sr).input_values
 
 
-def transform_labels(text):
+def transform_labels(text, accent, domain, vad):
     text = clean_text(text)
     with PROCESSOR.as_target_processor():
         labels = PROCESSOR(text.lower()).input_ids
+        print(labels)
+        print(type(labels)
+        label_accent = PROCESSOR(accent).input_ids
+        label_domain = PROCESSOR(domain).input_ids
+        label_vad = PROCESSOR(vad).input_ids
+
     return labels
 
 
@@ -297,13 +323,15 @@ class CustomASRDataset(torch.utils.data.Dataset):
         text = self.asr_data[idx]['transcript']
         accent = self.asr_data[idx]['accent']
         audio_idx = self.asr_data[idx]['audio_ids']
+        domain = self.asr_data[idx]['domain']
+        vad = self.asr_data[idx].get('vad', 'speech')
         
         if self.prepare:
             input_audio, label = self.transform(audio_path, text)
             result = {'input_features': input_audio, 'input_lengths': len(input_audio)}
         else:
             input_audio = self.transform(audio_path)
-            label = self.target_transform(text)
+            label = self.target_transform(text, accent, domain, vad)
             result = {'input_values': input_audio[0], 'input_lengths': len(input_audio[0])}
 
         result.update({'labels': label, 'accent': accent, 'audio_idx': audio_idx})

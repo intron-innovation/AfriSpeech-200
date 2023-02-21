@@ -6,7 +6,7 @@ from torch.utils.data import IterableDataset, RandomSampler, Sampler, Sequential
 import datasets
 from datasets import load_dataset, Dataset
 import transformers
-from transformers import Trainer, set_seed
+from transformers import Trainer, set_seed, is_apex_available
 from transformers.utils import is_datasets_available
 from transformers.trainer_utils import get_last_checkpoint, is_main_process, has_length
 from transformers.trainer_pt_utils import (
@@ -19,6 +19,12 @@ from transformers.trainer_pt_utils import (
     SequentialDistributedSampler,
 )
 
+if is_apex_available():
+    from apex import amp
+    
+if version.parse(torch.__version__) >= version.parse("1.6"):
+    _is_native_amp_available = True
+    from torch.cuda.amp import autocast
 
 def get_length_grouped_indices(lengths, batch_size, mega_batch_mult=None, generator=None):
     """
@@ -102,6 +108,69 @@ class IntronTrainer(Trainer):
     def __init__(self, sampler=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.sampler = sampler
+    
+    def _prepare_inputs(self, inputs: Dict[str, Union[torch.Tensor, Any]]) -> Dict[str, Union[torch.Tensor, Any]]:
+        for k, v in inputs.items():
+            if isinstance(v, torch.Tensor):
+                kwargs = dict(device=self.args.device)
+                if self.deepspeed and inputs[k].dtype != torch.int64:
+                    kwargs.update(dict(dtype=self.args.hf_deepspeed_config.dtype()))
+                inputs[k] = v.to(**kwargs)
+
+            if k == 'labels': # labels are list of tensor, not tensor, special handle here
+                for i in range(len(inputs[k])):
+                   
+                    kwargs = dict(device=self.args.device)
+                    if self.deepspeed and inputs[k][i].dtype != torch.int64:
+                        kwargs.update(dict(dtype=self.args.hf_deepspeed_config.dtype()))
+                    inputs[k][i] = inputs[k][i].to(**kwargs)
+
+        if self.args.past_index >= 0 and self._past is not None:
+            inputs["mems"] = self._past
+
+        return inputs
+
+    def training_step(self, model: nn.Module, inputs: Dict[str, Union[torch.Tensor, Any]]) -> torch.Tensor:
+        """
+        Perform a training step on a batch of inputs.
+        Subclass and override to inject custom behavior.
+        Args:
+            model (:obj:`nn.Module`):
+                The model to train.
+            inputs (:obj:`Dict[str, Union[torch.Tensor, Any]]`):
+                The inputs and targets of the model.
+                The dictionary will be unpacked before being fed to the model. Most models expect the targets under the
+                argument :obj:`labels`. Check your model's documentation for all accepted arguments.
+        Return:
+            :obj:`torch.Tensor`: The tensor with training loss on this batch.
+        """
+
+        model.train()
+        inputs = self._prepare_inputs(inputs)
+
+        if self.use_amp:
+            with autocast():
+                loss = self.compute_loss(model, inputs)
+        else:
+            loss = self.compute_loss(model, inputs)
+
+        if self.args.n_gpu > 1:
+            loss = loss.mean()
+
+        if self.args.gradient_accumulation_steps > 1:
+            loss = loss / self.args.gradient_accumulation_steps
+
+        if self.use_amp:
+            self.scaler.scale(loss).backward()
+        elif self.use_apex:
+            with amp.scale_loss(loss, self.optimizer) as scaled_loss:
+                scaled_loss.backward()
+        elif self.deepspeed:
+            self.deepspeed.backward(loss)
+        else:
+            loss.backward()
+
+        return loss.detach()
     
     def _get_train_sampler(self) -> Optional[torch.utils.data.Sampler]:
         if self.train_dataset is None or not has_length(self.train_dataset):
