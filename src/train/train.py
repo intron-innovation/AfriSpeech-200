@@ -80,6 +80,7 @@ def data_setup(config):
         min_transcript_len=int(config['hyperparameters']['min_transcript_len']),
         domain=config['data']['domain'],
         seed=int(config['hyperparameters']['data_seed']),
+        expand_vocab=True if config['hyperparameters']['expand_vocab'] == "True" else False
     )
     return data_config
 
@@ -299,6 +300,14 @@ if __name__ == "__main__":
 
     model.save_pretrained(checkpoints_path)
     PROCESSOR.save_pretrained(checkpoints_path)
+    
+    print("*** Evaluate ***")
+    metrics = trainer.evaluate()
+    metrics["eval_samples"] = len(val_dataset)
+
+    trainer.log_metrics("eval", metrics)
+    trainer.save_metrics("eval", metrics)
+
 
     if 'aug' in config['data']:
         # after baseline is completed
@@ -376,4 +385,5 @@ if __name__ == "__main__":
 
             # define path for checkpoints for new AL round
             model.save_pretrained(new_al_round_checkpoint_path)
-
+            
+            results = {}

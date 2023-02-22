@@ -38,7 +38,7 @@ logger.setLevel(logging_level)
 PROCESSOR = None
 CONFIG = None
 MAX_MODEL_AUDIO_LEN_SECS = 87
-ACCENT_LABEL_MAP = {}
+LABEL_MAP = {}
 
 class DataConfig:
     def __init__(self, **kwargs):
@@ -109,9 +109,10 @@ def load_afri_speech_data(
     else:
         return data
             
-def expand_vocab(vocab_dict, train_path, vocab_file_name):
-    data = pd.read_csv(train_path)
-    accent_list = list(data.accent.unqiue())
+def expand_vocab(vocab_dict, train_path, val_path, vocab_file_name):
+    data = pd.concat([pd.read_csv(train_path), pd.read_csv(val_path)])
+    n = len(vocab_dict)
+    accent_list = list(data.accent.unique())
     domain_list = list(data.domain.unique())
     vad_list = ['speech', 'no_speech']
     # age_group_list = list(data.age_group.unique())
@@ -119,8 +120,18 @@ def expand_vocab(vocab_dict, train_path, vocab_file_name):
     # clinical_tag_list
     new_tags = accent_list + domain_list + vad_list
     for tag in new_tags:
-        vocab_dict[f"<|{tag}|>"] = len(vocab_dict)
+        if f"<|{tag}|>" not in vocab_dict:
+            vocab_dict[f"<|{tag}|>"] = n
+            LABEL_MAP[tag] = n
+            n += 1
+        else:
+            LABEL_MAP[tag] = vocab_dict[f"<|{tag}|>"]
     
+    vocab_dict[f"<|unk|>"] = len(vocab_dict)
+    LABEL_MAP["unk"] = len(vocab_dict)
+    
+    print("vocab_dict", len(vocab_dict))
+    print("LABEL_MAP", len(LABEL_MAP))
     with open(vocab_file_name, 'w') as vocab_file:
         json.dump(vocab_dict, vocab_file)
     
@@ -138,8 +149,9 @@ def data_prep(config):
     logger.debug(f"...Data Read Complete in {time.time() - start:.4f}. Starting Tokenizer...")
 
     vocab_file_name = load_vocab(config.model_path, config.ckpt_path, 
-                                 config.exp_dir, raw_dataset, config.train_path)
-    PROCESSOR = load_processor(vocab_file_name, train_path)
+                                 config.exp_dir, raw_dataset, config.expand_vocab,
+                                 config.train_path, config.val_path)
+    PROCESSOR = load_processor(vocab_file_name)
     logger.debug(f"...Load vocab and processor complete in {time.time() - start:.4f}.\n"
                  f"Loading dataset...")
 
@@ -171,7 +183,8 @@ def load_custom_dataset(config, data_path, split,
                             prepare=prepare, return_dataset=return_dataset)
 
 
-def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets, train_path=None):
+def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets, 
+               expand_vocab_arg=None, train_path=None, val_path=None):
     create_new_vocab = False
     vocab_file_name = None
 
@@ -208,7 +221,8 @@ def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets, train_path=N
     else:
         vocab_dict = {}
     
-    vocab_dict, vocab_file_name = expand_vocab(vocab_dict, train_path, vocab_file_name)
+    if expand_vocab_arg:
+        vocab_dict, vocab_file_name = expand_vocab(vocab_dict, train_path, val_path, vocab_file_name)
     logger.info(f"---vocab dict: {len(vocab_dict)}\n{vocab_dict}")
     return vocab_file_name
 
@@ -279,16 +293,22 @@ def transform_audio(audio_path):
     return PROCESSOR(speech, sampling_rate=AudioConfig.sr).input_values
 
 
+def concat_labels(text, domain, accent, vad, mode="prepend"):
+    if mode=="prepend":
+        return [domain] + [accent] + [vad] + text
+    elif mode=="append":
+        return text + [domain] + [accent] + [vad]
+    raise NotImplementedError
+
+    
 def transform_labels(text, accent, domain, vad):
     text = clean_text(text)
     with PROCESSOR.as_target_processor():
-        labels = PROCESSOR(text.lower()).input_ids
-        print(labels)
-        print(type(labels)
-        label_accent = PROCESSOR(accent).input_ids
-        label_domain = PROCESSOR(domain).input_ids
-        label_vad = PROCESSOR(vad).input_ids
-
+        labels_text = PROCESSOR(text.lower()).input_ids
+        label_accent = LABEL_MAP.get(accent, LABEL_MAP["unk"])
+        label_domain = LABEL_MAP.get(domain, LABEL_MAP["unk"])
+        label_vad = LABEL_MAP.get(vad, LABEL_MAP["unk"])
+    labels = concat_labels(labels_text, label_domain, label_accent, label_vad, mode="prepend")
     return labels
 
 
@@ -341,7 +361,7 @@ class CustomASRDataset(torch.utils.data.Dataset):
 @dataclass
 class DataCollatorCTCWithPaddingGroupLen:
     processor: Wav2Vec2Processor
-    padding: Union[bool, str] = True
+    padding: Union[bool, str] = "longest"
     max_length: Optional[int] = None
     max_length_labels: Optional[int] = None
     pad_to_multiple_of: Optional[int] = None
@@ -373,5 +393,8 @@ class DataCollatorCTCWithPaddingGroupLen:
         # replace padding with -100 to ignore loss correctly
         labels = labels_batch["input_ids"].masked_fill(labels_batch.attention_mask.ne(1), -100)
         batch["labels"] = labels
+        
+        if "attention_mask" in batch:
+            batch["attention_mask"] = batch["attention_mask"].to(torch.long)
 
         return batch
