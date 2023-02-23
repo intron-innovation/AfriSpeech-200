@@ -109,7 +109,7 @@ def compute_metric(pred):
                              references=label_str_list)
         
     # wer, _, _ = compute_wer(pred.predictions, pred.label_ids)
-    return wer
+    return {"wer": wer}
 
 
 def compute_wer(logits, label_ids):
