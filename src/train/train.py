@@ -18,6 +18,7 @@ os.environ["WANDB_DISABLED"] = "true"
 import torch
 from torch.utils.data import DataLoader
 from datasets import load_metric
+import evaluate
 from transformers import (
     Wav2Vec2ForCTC,
     HubertForCTC,
@@ -26,12 +27,13 @@ from transformers import (
     )
 from transformers.trainer_utils import get_last_checkpoint
 
-from src.utils.text_processing import clean_text
+from src.utils.text_processing import clean_text, strip_task_tags
 from src.utils.prepare_dataset import DataConfig, data_prep, DataCollatorCTCWithPaddingGroupLen
 from src.utils.sampler import IntronTrainer
 
 warnings.filterwarnings('ignore')
 wer_metric = load_metric("wer")
+# wer_metric = evaluate.load("wer")
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 SAMPLING_RATE = 16000
 PROCESSOR = None
@@ -80,7 +82,8 @@ def data_setup(config):
         min_transcript_len=int(config['hyperparameters']['min_transcript_len']),
         domain=config['data']['domain'],
         seed=int(config['hyperparameters']['data_seed']),
-        expand_vocab=True if config['hyperparameters']['expand_vocab'] == "True" else False
+        expand_vocab=True if ('expand_mode' in config['hyperparameters']) and (config['hyperparameters']['expand_vocab'] == "True") else False,
+        expand_mode=config['hyperparameters']['expand_mode'] if 'expand_mode' in config['hyperparameters'] else None
     )
     return data_config
 
@@ -90,7 +93,22 @@ def get_data_collator():
 
 
 def compute_metric(pred):
-    wer, _, _ = compute_wer(pred.predictions, pred.label_ids)
+    pred_logits = pred.predictions
+    pred_ids = np.argmax(pred_logits, axis=-1)
+
+    pred.label_ids[pred.label_ids == -100] = PROCESSOR.tokenizer.pad_token_id
+
+    pred_str_list = PROCESSOR.batch_decode(pred_ids)
+    # we do not want to group tokens when computing the metrics
+    label_str_list = PROCESSOR.batch_decode(pred.label_ids, group_tokens=False)
+    
+    pred_str_list = [strip_task_tags(text) for text in pred_str_list]
+    label_str_list = [strip_task_tags(text) for text in label_str_list]
+    
+    wer = wer_metric.compute(predictions=pred_str_list,
+                             references=label_str_list)
+        
+    # wer, _, _ = compute_wer(pred.predictions, pred.label_ids)
     return wer
 
 
@@ -98,18 +116,26 @@ def compute_wer(logits, label_ids):
     label_ids[label_ids == -100] = PROCESSOR.tokenizer.pad_token_id
 
     pred_ids = torch.argmax(torch.tensor(logits), axis=-1)
-    predicted_transcription = PROCESSOR.batch_decode(pred_ids)[0]
+    predicted_transcript = PROCESSOR.batch_decode(pred_ids)[0]
 
     text = PROCESSOR.batch_decode(label_ids, group_tokens=False)[0]
-    target_transcription = text.lower()
+    target_transcript = text.lower()
+    
+    predicted_transcript = strip_task_tags(predicted_transcript)
+    target_transcript = strip_task_tags(target_transcript)
 
-    wer = wer_metric.compute(predictions=[predicted_transcription],
-                             references=[target_transcription])
-    return {"wer": wer}, target_transcription, predicted_transcription
+    wer = wer_metric.compute(predictions=[predicted_transcript],
+                             references=[target_transcript])
+    return {"wer": wer}, target_transcript, predicted_transcript
 
 
 def get_checkpoint(checkpoint_path, model_path):
     last_checkpoint_ = None
+    
+    ckpt_files = os.listdir(checkpoint_path)
+    if "pytorch_model.bin" in ckpt_files:
+        return checkpoint_path, checkpoint_path
+    
     if os.path.isdir(checkpoint_path):
         last_checkpoint_ = get_last_checkpoint(checkpoint_path)
         if last_checkpoint_ is None and len(os.listdir(checkpoint_path)) > 0:
@@ -123,7 +149,7 @@ def get_checkpoint(checkpoint_path, model_path):
                 "the `--output_dir` or add `--overwrite_output_dir` to train from scratch."
             )
 
-    # use last checkpoint if exist
+    # use last checkpoint if exist 
     if last_checkpoint_:
         checkpoint = last_checkpoint_
     elif os.path.isdir(model_path):
@@ -293,20 +319,21 @@ if __name__ == "__main__":
         tokenizer=PROCESSOR.feature_extractor,
         sampler=config['data']['sampler'] if 'sampler' in config['data'] else None
     )
-
-    PROCESSOR.save_pretrained(checkpoints_path)
-
-    trainer.train(resume_from_checkpoint=checkpoint_)
-
-    model.save_pretrained(checkpoints_path)
-    PROCESSOR.save_pretrained(checkpoints_path)
     
-    print("*** Evaluate ***")
-    metrics = trainer.evaluate()
-    metrics["eval_samples"] = len(val_dataset)
+    if config['hyperparameters']['do_train'] == "True":
+        PROCESSOR.save_pretrained(checkpoints_path)
+        
+        trainer.train(resume_from_checkpoint=checkpoint_)
 
-    trainer.log_metrics("eval", metrics)
-    trainer.save_metrics("eval", metrics)
+        model.save_pretrained(checkpoints_path)
+        PROCESSOR.save_pretrained(checkpoints_path)
+
+    if config['hyperparameters']['do_eval'] == "True":
+        metrics = trainer.evaluate()
+        metrics["eval_samples"] = len(val_dataset)
+
+        trainer.log_metrics("eval", metrics)
+        trainer.save_metrics("eval", metrics)
 
 
     if 'aug' in config['data']:

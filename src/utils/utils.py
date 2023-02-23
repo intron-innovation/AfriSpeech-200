@@ -84,7 +84,7 @@ def parse_argument():
     parser.add_argument(
         "--data_csv_path",
         type=str,
-        default="./data/intron-dev-public-3232.csv",
+        default="./data/intron-dev-public-3231-clean.csv",
         help="path to data csv file",
     )
     parser.add_argument(

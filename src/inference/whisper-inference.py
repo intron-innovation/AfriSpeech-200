@@ -4,9 +4,9 @@
 ################################
 
 import os
-
-os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
-os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
+data_home = "data2"
+os.environ['TRANSFORMERS_CACHE'] = f'/{data_home}/.cache/'
+os.environ['XDG_CACHE_HOME'] = f'/{data_home}/.cache/'
 
 import numpy as np
 import torch
@@ -22,7 +22,7 @@ from transformers import WhisperProcessor, WhisperForConditionalGeneration
 
 from src.utils.audio_processing import load_audio_file, AudioConfig
 from src.utils.prepare_dataset import load_afri_speech_data
-from src.utils.text_processing import clean_text
+from src.utils.text_processing import clean_text, strip_task_tags, get_task_tags
 from src.utils.utils import parse_argument, write_pred_inference_df
 
 processor = None
@@ -36,7 +36,7 @@ class AfriSpeechWhisperDataset(torch.utils.data.Dataset):
     """
 
     def __init__(self, data_path, split="dev", device="cpu", model_id="whisper",
-                 max_audio_len_secs=17, audio_dir="./data/", gpu=-1
+                 max_audio_len_secs=17, audio_dir=f"./{data_home}/", gpu=-1
                  ):
         self.dataset = load_afri_speech_data(
             data_path=data_path,
@@ -54,6 +54,8 @@ class AfriSpeechWhisperDataset(torch.utils.data.Dataset):
         audio_path = self.dataset[item]['audio_paths']
         text = self.dataset[item]['text']
         accent = self.dataset[item]['accent']
+        domain = self.dataset[item]['domain']
+        vad = self.dataset[item].get('vad', 'speech')
 
         audio = load_audio_file(audio_path)
         if 'whisper' in self.model_id and os.path.isdir(args.model_id_or_path):
@@ -73,7 +75,7 @@ class AfriSpeechWhisperDataset(torch.utils.data.Dataset):
             )
             audio = input_features.input_values[0]
 
-        return (audio, text, audio_path, accent)
+        return (audio, text, audio_path, accent, domain, vad)
 
     
     
@@ -94,6 +96,8 @@ class LibriSpeechDataset(torch.utils.data.Dataset):
         text = self.dataset[item]['text']
         accent = "US English"
         audio_path = self.dataset[item]['file']
+        domain = "general"
+        vad = "speech"
         
         audio = np.asarray(audio)
         if 'whisper' in self.model_id and os.path.isdir(self.model_id):
@@ -114,7 +118,7 @@ class LibriSpeechDataset(torch.utils.data.Dataset):
             )
             audio = input_features.input_values[0]
 
-        return (audio, text, audio_path, accent)
+        return (audio, text, audio_path, accent, domain, vad)
 
     
 def transcribe_whisper(args, model, loader, split):
@@ -122,6 +126,7 @@ def transcribe_whisper(args, model, loader, split):
     hypotheses = []
     references = []
     paths = []
+    task_tags = []
     accents = []
     if "whisper" in args.model_id_or_path and os.path.isdir(args.model_id_or_path):
         model.config.forced_decoder_ids = processor.get_decoder_prompt_ids(language = "en", task = "transcribe")
@@ -132,24 +137,27 @@ def transcribe_whisper(args, model, loader, split):
     # transcribe_options = dict(task="transcribe", **options)
     # transcription = model.transcribe(audio, **transcribe_options)["text"]
 
-    for audio_or_mels, texts, audio_path, accent in tqdm(loader):
+    for audio_or_mels, texts, audio_path, accent, domain, vad in tqdm(loader):
         if "whisper" in args.model_id_or_path and os.path.isdir(args.model_id_or_path):
             audio_or_mels = audio_or_mels.to(device)
             with torch.no_grad():
                 pred_ids = model.generate(audio_or_mels)
             results = processor.batch_decode(pred_ids, skip_special_tokens = True)
-            hypotheses.extend([result for result in results])
         elif 'whisper' in args.model_id_or_path:
             results = model.decode(audio_or_mels, options)
-            hypotheses.extend([result.text for result in results])
+            results = [result.text for result in results]
         else:
             audio_or_mels = audio_or_mels.to(device)
             with torch.no_grad():
                 logits = model(audio_or_mels).logits
             pred_ids = torch.argmax(torch.tensor(logits), dim=-1)
             results = processor.batch_decode(pred_ids)
-            hypotheses.extend([result for result in results])
         
+        if "<|" in results[0]:
+            task_tags.extend([get_task_tags(text) for text in results])
+            hypotheses.extend([strip_task_tags(text) for text in results])
+        else:
+            hypotheses.extend(results)
         references.extend(texts)
         paths.extend(audio_path)
         accents.extend(accent)
@@ -159,6 +167,7 @@ def transcribe_whisper(args, model, loader, split):
 
     data["pred_clean"] = [clean_text(text) for text in data["hypothesis"]]
     data["ref_clean"] = [clean_text(text) for text in data["reference"]]
+    data["pred_task_tags"] = task_tags
 
     all_wer = jiwer.wer(list(data["ref_clean"]), list(data["pred_clean"]))
     print(f"Cleanup WER: {all_wer * 100:.2f} %")
@@ -231,5 +240,6 @@ if __name__ == "__main__":
         model = AutoModelForCTC.from_pretrained(args.model_id_or_path).to(device)
 
     model = model.to(device)
+    model.eval()
 
     transcribe_whisper(args, model, data_loader, split)

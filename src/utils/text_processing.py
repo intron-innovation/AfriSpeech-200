@@ -26,3 +26,9 @@ def clean_text(text):
     text = re.sub(r"[^a-zA-Z0-9\s\.\,\-\?\:\'\/\(\)\[\]\+\%]", '', text)
     return text
 
+
+def strip_task_tags(s):
+    return s[s.rfind('>')+1:]
+
+def get_task_tags(s):
+    return s[:s.rfind('>')]
