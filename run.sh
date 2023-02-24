@@ -19,9 +19,9 @@ domains=("general" "clinical" "all" )
 # models_list=( "facebook/wav2vec2-large-robust-ft-libri-960h")
 # domains=("clinical") 
 
-for dataset in ${datasets[@]}; 
-do
-    echo dataset: $dataset
+# for dataset in ${datasets[@]}; 
+# do
+#     echo dataset: $dataset
 
 #     for model in ${models_list[@]}; 
 #     do
@@ -68,14 +68,14 @@ do
     
     
     
-    for model in ${gcp_azure_models[@]}; 
-    do
-        echo model: $model
-        python3 bin/gcp_speech_api.py --model_id_or_path $model \
-            --audio_dir $audio_dir --data_csv_path $dataset
-    done
+#     for model in ${gcp_azure_models[@]}; 
+#     do
+#         echo model: $model
+#         python3 bin/gcp_speech_api.py --model_id_or_path $model \
+#             --audio_dir $audio_dir --data_csv_path $dataset
+#     done
 
-done
+# done
 
 
 # python3 src/train/train.py -c src/config/config_xlsr_group_lengths.ini
@@ -83,3 +83,22 @@ done
 # python3 src/train/train.py -c src/config/config_xlsr.ini
 
 # python3 src/train/train.py -c src/config/config_xlsr_all_unfreeze_encoder.ini
+
+python3 src/train/train.py -c src/config/config_xlsr_group_lengths_multi_task-prepend.ini
+python3 src/train/train.py -c src/config/config_xlsr_group_lengths_multi_task-append.ini
+
+# Generative vs Multiple losses
+# rerun baseline
+# add vad augmented samples
+# append
+# prepend
+# ablations
+# remove vad
+# remove accent prediction
+# remove domain prediction
+
+# Loss weights 
+# equal
+# one high vs rest s
+# [0.1, 0.25, 0.33, 0.5, 0.67, 0.75, 0.9]
+# higher to ASR, rest equal
