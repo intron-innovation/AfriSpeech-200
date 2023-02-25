@@ -30,6 +30,7 @@ from transformers.trainer_utils import get_last_checkpoint
 from src.utils.text_processing import clean_text, strip_task_tags
 from src.utils.prepare_dataset import DataConfig, data_prep, DataCollatorCTCWithPaddingGroupLen
 from src.utils.sampler import IntronTrainer
+from src.train.model import Wav2Vec2ForCTCnCLS
 
 warnings.filterwarnings('ignore')
 wer_metric = load_metric("wer")
@@ -93,6 +94,37 @@ def get_data_collator():
 
 
 def compute_metric(pred):
+
+    accent_pred_logits = pred.predictions[1]
+    accent_pred_ids = np.argmax(accent_pred_logits, axis=-1)
+    accent_total = len(pred.label_ids[1])
+    accent_correct = (accent_pred_ids == pred.label_ids[1]).sum().item() # label = (ctc_label, accent_label, domain_label, vad_label)
+    
+    domain_pred_logits = pred.predictions[2]
+    domain_pred_ids = np.argmax(domain_pred_logits, axis=-1)
+    domain_total = len(pred.label_ids[2])
+    domain_correct = (domain_pred_ids == pred.label_ids[2]).sum().item() # label = (ctc_label, accent_label, domain_label, vad_label)
+
+    vad_pred_logits = pred.predictions[3]
+    vad_pred_ids = np.argmax(vad_pred_logits, axis=-1)
+    vad_total = len(pred.label_ids[3])
+    vad_correct = (vad_pred_ids == pred.label_ids[3]).sum().item() # label = (ctc_label, accent_label, domain_label, vad_label)
+
+
+
+    ctc_pred_logits = pred.predictions[0]
+    ctc_pred_ids = np.argmax(ctc_pred_logits, axis=-1)
+    pred.label_ids[0][pred.label_ids[0] == -100] = PROCESSOR.tokenizer.pad_token_id
+    ctc_pred_str = PROCESSOR.batch_decode(ctc_pred_ids)
+    # we do not want to group tokens when computing the metrics
+    ctc_label_str = PROCESSOR.batch_decode(pred.label_ids[0], group_tokens=False)
+    
+    wer = wer_metric.compute(predictions=ctc_pred_str, references=ctc_label_str)
+    return {"accent_acc": accent_correct/accent_total, "domain_acc": domain_correct/domain_total,   "vad_acc":vad_correct/vad_total, "wer": wer, "accent_total": accent_total, "domain_total": domain_total, "vad_total": vad_total,  "strlen": len(ctc_label_str)}
+
+
+
+
     pred_logits = pred.predictions
     pred_ids = np.argmax(pred_logits, axis=-1)
 
@@ -218,8 +250,12 @@ if __name__ == "__main__":
     start = time.time()
     # Detecting last checkpoint.
     last_checkpoint, checkpoint_ = get_checkpoint(checkpoints_path, config['models']['model_path'])
-
-    CTC_model_class = Wav2Vec2ForCTC if 'hubert' not in config['models']['model_path'] else HubertForCTC
+    if config['experiments']['no_heads']==4:
+        CTC_model_class = Wav2Vec2ForCTCnCLS
+    elif 'hubert' not in config['models']['model_path']:
+        CTC_model_class= Wav2Vec2ForCTC 
+    else:
+        CTC_model_class= HubertForCTC
 
     models_with_different_vocab = ['jonatasgrosman/wav2vec2-large-xlsr-53-english',
                                    'facebook/wav2vec2-large-960h-lv60-self',

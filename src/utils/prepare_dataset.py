@@ -110,6 +110,7 @@ def load_afri_speech_data(
         return data
             
 def expand_vocab(vocab_dict, train_path, val_path, vocab_file_name):
+    return vocab_dict, vocab_file_name
     data = pd.concat([pd.read_csv(train_path), pd.read_csv(val_path)])
     n = len(vocab_dict)
     accent_list = list(data.accent.unique())
@@ -318,7 +319,8 @@ def transform_labels(text, accent, domain, vad, expand_vocab_mode):
         label_accent = LABEL_MAP.get(accent, LABEL_MAP["unk"])
         label_domain = LABEL_MAP.get(domain, LABEL_MAP["unk"])
         label_vad = LABEL_MAP.get(vad, LABEL_MAP["unk"])
-    labels = concat_labels(labels_text, label_domain, label_accent, label_vad, mode=expand_vocab_mode)
+    # labels = concat_labels(labels_text, label_domain, label_accent, label_vad, mode=expand_vocab_mode)
+    labels = [labels_text, label_domain, label_accent, label_vad]
     return labels
 
 
@@ -366,7 +368,8 @@ class CustomASRDataset(torch.utils.data.Dataset):
             label = self.target_transform(text, accent, domain, vad, self.expand_vocab_mode)
             result = {'input_values': input_audio[0], 'input_lengths': len(input_audio[0])}
 
-        result.update({'labels': label, 'accent': accent, 'audio_idx': audio_idx})
+        #result.update({'labels': label, 'accent': accent, 'audio_idx': audio_idx})
+        result.update({'labels': label[0], 'accent': accent[1], 'domain': label[2], 'vad':label[3], 'audio_idx': audio_idx})
         return result
 
 
@@ -385,6 +388,10 @@ class DataCollatorCTCWithPaddingGroupLen:
 
         input_features = [{"input_values": feature["input_values"]} for feature in features]
         label_features = [{"input_ids": feature["labels"]} for feature in features]
+        accent =[feature["accent"] for feature in features]
+        domain = [feature["domain"] for feature in features]
+        vad = [feature["vad"] for feature in features]
+        
 
         batch = self.processor.pad(
             input_features,
@@ -404,7 +411,7 @@ class DataCollatorCTCWithPaddingGroupLen:
 
         # replace padding with -100 to ignore loss correctly
         labels = labels_batch["input_ids"].masked_fill(labels_batch.attention_mask.ne(1), -100)
-        batch["labels"] = labels
+        batch["labels"] = (labels,  torch.tensor(accent),  torch.tensor(domain),  torch.tensor(vad))
         
         if "attention_mask" in batch:
             batch["attention_mask"] = batch["attention_mask"].to(torch.long)
