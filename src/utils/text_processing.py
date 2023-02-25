@@ -28,7 +28,15 @@ def clean_text(text):
 
 
 def strip_task_tags(s):
-    return s[s.rfind('>')+1:]
+    if s.endswith('>'):
+        return s[:s.find('<')]
+    elif s.startswith('<'):
+        return s[s.rfind('>')+1:]
+    return s
 
 def get_task_tags(s):
-    return s[:s.rfind('>')]
+    if s.endswith('>'):
+        return s[s.find('<'):]
+    elif s.startswith('<'):
+        return s[:s.rfind('>')+1]
+    return s

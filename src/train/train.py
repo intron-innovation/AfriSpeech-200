@@ -104,11 +104,12 @@ def compute_metric(pred):
     
     pred_str_list = [strip_task_tags(text) for text in pred_str_list]
     label_str_list = [strip_task_tags(text) for text in label_str_list]
+
+    # label_str_list = ["abcxyz" if text == "" else text for text in label_str_list]
     
     wer = wer_metric.compute(predictions=pred_str_list,
                              references=label_str_list)
-        
-    # wer, _, _ = compute_wer(pred.predictions, pred.label_ids)
+
     return {"wer": wer}
 
 
