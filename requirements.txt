@@ -14,4 +14,4 @@ protobuf==4.22.0
 tqdm==4.64.1
 transformers==4.26.0
 #whisper==1.0
-
+audiomentations==0.28.0
