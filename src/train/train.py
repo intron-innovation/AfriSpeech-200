@@ -250,8 +250,9 @@ if __name__ == "__main__":
     start = time.time()
     # Detecting last checkpoint.
     last_checkpoint, checkpoint_ = get_checkpoint(checkpoints_path, config['models']['model_path'])
-    if config['experiments']['no_heads']==4:
+    if config['experiment']['no_heads']==4:
         CTC_model_class = Wav2Vec2ForCTCnCLS
+        print("the model to be used is Wav2Vec2ForCTCnCLS")
     elif 'hubert' not in config['models']['model_path']:
         CTC_model_class= Wav2Vec2ForCTC 
     else:
