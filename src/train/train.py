@@ -118,29 +118,10 @@ def compute_metric(pred):
     pred_str_list = [strip_task_tags(text) for text in pred_str_list]
     label_str_list = [strip_task_tags(text) for text in label_str_list]
 
-    # label_str_list = ["abcxyz" if text == "" else text for text in label_str_list]
-    
     wer = wer_metric.compute(predictions=pred_str_list,
                              references=label_str_list)
 
     return {"wer": wer}
-
-
-def compute_wer(logits, label_ids):
-    label_ids[label_ids == -100] = PROCESSOR.tokenizer.pad_token_id
-
-    pred_ids = torch.argmax(torch.tensor(logits), axis=-1)
-    predicted_transcript = PROCESSOR.batch_decode(pred_ids)[0]
-
-    text = PROCESSOR.batch_decode(label_ids, group_tokens=False)[0]
-    target_transcript = text.lower()
-    
-    predicted_transcript = strip_task_tags(predicted_transcript)
-    target_transcript = strip_task_tags(target_transcript)
-
-    wer = wer_metric.compute(predictions=[predicted_transcript],
-                             references=[target_transcript])
-    return {"wer": wer}, target_transcript, predicted_transcript
 
 
 def get_checkpoint(checkpoint_path, model_path):
@@ -220,6 +201,7 @@ def run_inference(trained_model, dataloader, mode='most', mc_dropout_rounds=10):
             # we select the least uncertain samples
             return dict(sorted(audio_wers.items(), key=lambda item: item[1]), reverse=False)
         raise NotImplementedError
+
 
 if __name__ == "__main__":
 

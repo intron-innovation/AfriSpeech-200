@@ -19,7 +19,7 @@ from transformers import (
     Wav2Vec2Tokenizer,
     Wav2Vec2CTCTokenizer,
     Wav2Vec2FeatureExtractor,
-    Wav2Vec2Processor,
+    Wav2Vec2Processor, BatchEncoding,
 )
 
 from src.utils.audio_processing import AudioConfig, load_audio_file
@@ -38,17 +38,19 @@ PROCESSOR = None
 CONFIG = None
 MAX_MODEL_AUDIO_LEN_SECS = 87
 LABEL_MAP = {}
+DISCRIMINATORY = 'discriminatory'
+
 
 class DataConfig:
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-            
+
 def load_afri_speech_data(
-    data_path, max_audio_len_secs=17, audio_dir=f"./data/", 
-    return_dataset=True, split="dev", gpu=-1, domain='all',
-    max_transcript_len=-1, min_transcript_len=-1
+        data_path, max_audio_len_secs=17, audio_dir=f"./data/",
+        return_dataset=True, split="dev", gpu=-1, domain='all',
+        max_transcript_len=-1, min_transcript_len=-1
 ):
     """
     load train/dev/test data from csv path.
@@ -72,7 +74,7 @@ def load_afri_speech_data(
         data["audio_paths"] = data["audio_paths"].apply(
             lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
         )
-    
+
     if max_audio_len_secs > -1 and gpu != -1:
         # when gpu is available, it cannot fit long samples
         data = data[data.duration < max_audio_len_secs]
@@ -91,14 +93,14 @@ def load_afri_speech_data(
                 f"Detected speech longer than {MAX_MODEL_AUDIO_LEN_SECS} secs"
                 "-- set `max_audio_len_secs` to filter longer speech!"
             )
-    
+
     if domain != 'all':
         data = data[data.domain == domain]
     if min_transcript_len != -1:
         data = data[data.transcript.str.len() >= min_transcript_len]
     if max_transcript_len != -1:
         data = data[data.transcript.str.len() < max_transcript_len]
-    
+
     data["text"] = data["transcript"]
     print("before dedup", data.shape)
     data.drop_duplicates(subset=["audio_paths"], inplace=True)
@@ -107,7 +109,27 @@ def load_afri_speech_data(
         return Dataset.from_pandas(data)
     else:
         return data
-            
+
+
+def create_label_maps(train_path, val_path, tasks_dict, checkpoint_path):
+    data = pd.concat([pd.read_csv(train_path), pd.read_csv(val_path)])
+    if tasks_dict['accent']:
+        accent_list = list(data.accent.unique()) + ['unk']
+        LABEL_MAP['accent'] = {accent: i for i, accent in enumerate(accent_list)}
+
+    if tasks_dict['domain']:
+        domain_list = list(data.domain.unique()) + ['unk']
+        LABEL_MAP['domain'] = {accent: i for i, accent in enumerate(domain_list)}
+
+    if tasks_dict['vad']:
+        vad_list = ['speech', 'no_speech']
+        LABEL_MAP['vad'] = {accent: i for i, accent in enumerate(vad_list)}
+
+    print("LABEL_MAP: ", len(LABEL_MAP), LABEL_MAP)
+    with open(os.path.join(checkpoint_path, 'label_map.json'), 'w') as f:
+        json.dump(LABEL_MAP, f)
+
+
 def expand_vocab(vocab_dict, train_path, val_path, vocab_file_name, tasks_dict):
     data = pd.concat([pd.read_csv(train_path), pd.read_csv(val_path)])
     n = len(vocab_dict)
@@ -131,18 +153,18 @@ def expand_vocab(vocab_dict, train_path, val_path, vocab_file_name, tasks_dict):
             n += 1
         else:
             LABEL_MAP[tag] = vocab_dict[f"<|{tag}|>"]
-    
+
     vocab_dict[f"<|unk|>"] = len(vocab_dict)
     LABEL_MAP["unk"] = len(vocab_dict)
-    
+
     print("vocab_dict", len(vocab_dict))
     print("LABEL_MAP", len(LABEL_MAP))
     with open(vocab_file_name, 'w') as vocab_file:
         json.dump(vocab_dict, vocab_file)
-    
+
     return vocab_dict, vocab_file_name
-    
-        
+
+
 def data_prep(config):
     # Prepare data for the model
     global CONFIG, PROCESSOR
@@ -152,19 +174,19 @@ def data_prep(config):
 
     raw_dataset = load_data(config.train_path, config.val_path, config.aug_path)
     logger.debug(f"...Data Read Complete in {time.time() - start:.4f}. Starting Tokenizer...")
-    
-    vocab_file_name = load_vocab(config.model_path, config.ckpt_path, 
+
+    vocab_file_name = load_vocab(config.model_path, config.ckpt_path,
                                  config.exp_dir, raw_dataset, config.multi_task,
                                  config.train_path, config.val_path)
     PROCESSOR = load_processor(vocab_file_name)
     logger.debug(f"...Load vocab and processor complete in {time.time() - start:.4f}.\n"
                  f"Loading dataset...")
 
-    val_dataset = load_custom_dataset(config, config.val_path, 'dev', 
+    val_dataset = load_custom_dataset(config, config.val_path, 'dev',
                                       transform_audio, transform_labels,
                                       multi_task=config.multi_task)
     if config.aug_percent and config.aug_percent > 1:
-        train_df = load_custom_dataset(config, config.train_path, 'train', 
+        train_df = load_custom_dataset(config, config.train_path, 'train',
                                        transform_audio, transform_labels, return_dataset=False,
                                        multi_task=config.multi_task)
         aug_df = train_df.sample(frac=config.aug_percent, random_state=config.seed)
@@ -172,14 +194,14 @@ def data_prep(config):
         aug_dataset = Dataset.from_pandas(aug_df)
         train_dataset = Dataset.from_pandas(train_df)
     elif config.aug_path:
-        train_dataset = load_custom_dataset(config, config.train_path, 'train', 
+        train_dataset = load_custom_dataset(config, config.train_path, 'train',
                                             transform_audio, transform_labels,
                                             multi_task=config.multi_task)
-        aug_dataset = load_custom_dataset(config, config.aug_path, 'aug', 
+        aug_dataset = load_custom_dataset(config, config.aug_path, 'aug',
                                           transform_audio, transform_labels,
                                           multi_task=config.multi_task)
     else:
-        train_dataset = load_custom_dataset(config, config.train_path, 'train', 
+        train_dataset = load_custom_dataset(config, config.train_path, 'train',
                                             transform_audio, transform_labels,
                                             multi_task=config.multi_task)
 
@@ -187,8 +209,8 @@ def data_prep(config):
     return train_dataset, val_dataset, aug_dataset, PROCESSOR
 
 
-def load_custom_dataset(config, data_path, split, 
-                        transform_audio_, transform_labels_=None, 
+def load_custom_dataset(config, data_path, split,
+                        transform_audio_, transform_labels_=None,
                         prepare=None, return_dataset=True, multi_task=None):
     return CustomASRDataset(data_path, transform_audio_, transform_labels_,
                             config.audio_path, split=split, domain=config.domain,
@@ -198,7 +220,7 @@ def load_custom_dataset(config, data_path, split,
                             multi_task=multi_task)
 
 
-def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets, 
+def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets,
                multi_task=None, train_path=None, val_path=None):
     create_new_vocab = False
     vocab_file_name = None
@@ -235,9 +257,11 @@ def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets,
             vocab_dict = json.load(vocab_file)
     else:
         vocab_dict = {}
-    
-    if multi_task:
+
+    if multi_task and multi_task['expand_vocab']:
         vocab_dict, vocab_file_name = expand_vocab(vocab_dict, train_path, val_path, vocab_file_name, multi_task)
+    if multi_task and multi_task['design'] == DISCRIMINATORY:
+        create_label_maps(train_path, val_path, multi_task, checkpoints_path)
     logger.info(f"---vocab dict: {len(vocab_dict)}\n{vocab_dict}")
     return vocab_file_name
 
@@ -302,7 +326,7 @@ def transform_audio(audio_path):
 
 
 def concat_labels(text_list, domain, accent, vad, mode="prepend"):
-    if mode=="prepend":
+    if mode == "prepend":
         if vad:
             text_list.insert(0, vad)
         if accent:
@@ -310,7 +334,7 @@ def concat_labels(text_list, domain, accent, vad, mode="prepend"):
         if domain:
             text_list.insert(0, domain)
         return text_list
-    elif mode=="append":
+    elif mode == "append":
         if domain:
             text_list.append(domain)
         if accent:
@@ -320,36 +344,68 @@ def concat_labels(text_list, domain, accent, vad, mode="prepend"):
         return text_list
     raise NotImplementedError
 
-    
+
 def transform_labels(text, accent, domain, vad, tasks_dict):
     text = clean_text(text)
     with PROCESSOR.as_target_processor():
         labels = PROCESSOR(text.lower()).input_ids
-    
+
     label_accent = label_domain = label_vad = None
     if tasks_dict:
         if tasks_dict['accent']:
-            label_accent = LABEL_MAP.get(accent, LABEL_MAP["unk"])
+            if tasks_dict['design'] == DISCRIMINATORY:
+                label_accent = LABEL_MAP['accent'].get(accent, LABEL_MAP['accent']["unk"])
+            else:
+                label_accent = LABEL_MAP.get(accent, LABEL_MAP["unk"])
+
         if tasks_dict['domain']:
-            label_domain = LABEL_MAP.get(domain, LABEL_MAP["unk"])
+            if tasks_dict['design'] == DISCRIMINATORY:
+                label_domain = LABEL_MAP['domain'].get(domain, LABEL_MAP['domain']["unk"])
+            else:
+                label_domain = LABEL_MAP.get(domain, LABEL_MAP["unk"])
+
         if tasks_dict['vad']:
-            label_vad = LABEL_MAP.get(vad, LABEL_MAP["unk"])
-        labels = concat_labels(labels, label_domain, label_accent, label_vad, mode=tasks_dict['expand_vocab_mode'])
+            if tasks_dict['design'] == DISCRIMINATORY:
+                label_vad = LABEL_MAP['vad'].get(vad)
+            else:
+                label_vad = LABEL_MAP.get(vad)
+
+        if tasks_dict['design'] == DISCRIMINATORY:
+            labels = concat_cls_head_labels(labels, label_domain, label_accent, label_vad, tasks_dict)
+        else:
+            labels = concat_labels(labels, label_domain, label_accent, label_vad, mode=tasks_dict['expand_vocab_mode'])
+    return labels
+
+
+def concat_cls_head_labels(asr_labels, label_domain, label_accent, label_vad, tasks_dict):
+    labels = [asr_labels]
+    if tasks_dict['accent']:
+        accent_list = [0] * len(LABEL_MAP['accent'])
+        accent_list[label_accent] = 1
+        labels.append(accent_list)
+    if tasks_dict['domain']:
+        domain_list = [0] * len(LABEL_MAP['domain'])
+        domain_list[label_domain] = 1
+        labels.append(domain_list)
+    if tasks_dict['vad']:
+        vad_list = [0] * len(LABEL_MAP['vad'])
+        vad_list[label_vad] = 1
+        labels.append(vad_list)
     return labels
 
 
 class CustomASRDataset(torch.utils.data.Dataset):
     def __init__(self, data_file, transform=None, transform_target=None, audio_dir=None,
                  split=None, domain="all", max_audio_len_secs=-1, min_transcript_len=10,
-                 prepare=False, max_transcript_len=-1, gpu=1, 
+                 prepare=False, max_transcript_len=-1, gpu=1,
                  length_column_name='duration', return_dataset=True,
                  multi_task=None):
-        
+
         self.prepare = prepare
         self.split = split
         self.asr_data = load_afri_speech_data(data_file, min_transcript_len=min_transcript_len,
-                                              max_audio_len_secs=max_audio_len_secs, 
-                                              split=split, gpu=gpu, 
+                                              max_audio_len_secs=max_audio_len_secs,
+                                              split=split, gpu=gpu,
                                               audio_dir=audio_dir,
                                               max_transcript_len=max_transcript_len,
                                               domain=domain, return_dataset=return_dataset)
@@ -373,7 +429,7 @@ class CustomASRDataset(torch.utils.data.Dataset):
         audio_idx = self.asr_data[idx]['audio_ids']
         domain = self.asr_data[idx]['domain']
         vad = self.asr_data[idx].get('vad', 'speech')
-        
+
         if self.prepare:
             input_audio, label = self.transform(audio_path, text)
             result = {'input_features': input_audio, 'input_lengths': len(input_audio)}
@@ -383,6 +439,21 @@ class CustomASRDataset(torch.utils.data.Dataset):
             result = {'input_values': input_audio[0], 'input_lengths': len(input_audio[0])}
 
         result.update({'labels': label, 'accent': accent, 'audio_idx': audio_idx})
+
+        if self.multi_task and self.multi_task['design'] == DISCRIMINATORY:
+            num_tasks = 1
+            if self.multi_task['accent']:
+                result.update({'accent': label[num_tasks]})
+                num_tasks += 1
+            if self.multi_task['domain']:
+                result.update({'domain': label[num_tasks]})
+                num_tasks += 1
+            if self.multi_task['vad']:
+                result.update({'domain': label[num_tasks]})
+                num_tasks += 1
+            result.update({'tasks': num_tasks})
+            result.update({'labels': label[0]})
+
         return result
 
 
@@ -394,6 +465,7 @@ class DataCollatorCTCWithPaddingGroupLen:
     max_length_labels: Optional[int] = None
     pad_to_multiple_of: Optional[int] = None
     pad_to_multiple_of_labels: Optional[int] = None
+    multi_task = {}
 
     def __call__(self, features: List[Dict[str, Union[List[int], torch.Tensor]]]) -> Dict[str, torch.Tensor]:
         # split inputs and labels since they have to be of different lenghts and need
@@ -401,6 +473,10 @@ class DataCollatorCTCWithPaddingGroupLen:
 
         input_features = [{"input_values": feature["input_values"]} for feature in features]
         label_features = [{"input_ids": feature["labels"]} for feature in features]
+        if self.multi_task:
+            accent_features = [{"input_ids": feature["accent"]} for feature in features]
+            domain_features = [{"input_ids": feature["domain"]} for feature in features]
+            vad_features = [{"input_ids": feature["vad"]} for feature in features]
 
         batch = self.processor.pad(
             input_features,
@@ -421,7 +497,17 @@ class DataCollatorCTCWithPaddingGroupLen:
         # replace padding with -100 to ignore loss correctly
         labels = labels_batch["input_ids"].masked_fill(labels_batch.attention_mask.ne(1), -100)
         batch["labels"] = labels
-        
+
+        if self.multi_task:
+            if self.multi_task['accent']:
+                accent_features = {key: [example[key] for example in accent_features]
+                                   for key in accent_features[0].keys()}
+                batch["accent"] = BatchEncoding(accent_features, tensor_type='pt')
+            # if self.multi_task['domain']:
+            #     batch["domain"] = []
+            # if self.multi_task['vad']:
+            #     batch["vad"] = []
+
         if "attention_mask" in batch:
             batch["attention_mask"] = batch["attention_mask"].to(torch.long)
 

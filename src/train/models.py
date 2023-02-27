@@ -101,6 +101,10 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
 
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
+        print("input_values", input_values)
+        print("labels", input_values)
+        print(accent, domain, vad)
+
         outputs = self.wav2vec2(
             input_values,
             attention_mask=attention_mask,
