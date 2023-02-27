@@ -1,3 +1,7 @@
+#https://github.com/huggingface/transformers/blob/ae54e3c3b18bac0832ad62ea9b896dfd52a09850/src/transformers/models/wav2vec2/modeling_wav2vec2.py#L1612
+#https://github.com/padmalcom/wav2vec2-nonverbalvocalization/blob/main/Wav2Vec2ClassificationHead.py#L4
+
+
 import warnings
 from typing import Optional, Tuple
 
@@ -13,20 +17,30 @@ _HIDDEN_STATES_START_POSITION = 2
 
 class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
 
-    def __init__(self, config, accent_len=72, domain_len=3, vad_len=2, alpha=0.01):
+    def __init__(self, config, accent=None, domain=None, vad=None,
+                 accent_len=72, domain_len=3, vad_len=2, alpha=0.01):
         super().__init__(config)
         self.wav2vec2 = Wav2Vec2Model(config)
         self.dropout = nn.Dropout(config.final_dropout)
-        self.dense = nn.Linear(config.hidden_size, config.hidden_size)
         self.lm_head = nn.Linear(config.hidden_size, config.vocab_size)
-        self.accent_head = nn.Linear(config.hidden_size, accent_len)
-        self.domain_head = nn.Linear(config.hidden_size, domain_len)
-        self.vad_head = nn.Linear(config.hidden_size, vad_len)
+        self.accent = accent
+        self.domain = domain
+        self.vad = vad
+        if self.accent:
+            self.dense = nn.Linear(config.hidden_size, config.hidden_size)
+            self.accent_head = nn.Linear(config.hidden_size, accent_len)
+        if self.domain:
+            self.domain_head = nn.Linear(config.hidden_size, domain_len)
+        if self.vad:
+            self.vad_head = nn.Linear(config.hidden_size, vad_len)
         self.init_weights()
         self.alpha = alpha
 
     def freeze_feature_extractor(self):
         self.wav2vec2.feature_extractor._freeze_parameters()
+       
+    def freeze_feature_encoder(self):
+        self.freeze_feature_extractor()
 
     def _ctc_loss(self, logits, labels, input_values, attention_mask=None):
         loss = None
@@ -101,8 +115,8 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
 
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
-        print("input_values", input_values)
-        print("labels", input_values)
+        print("input_values", input_values.shape, input_values)
+        print("labels", labels.shape, labels)
         print(accent, domain, vad)
 
         outputs = self.wav2vec2(
@@ -120,29 +134,29 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
         # head 1
         logits_ctc = self.lm_head(hidden_states)
 
-        if accent:
+        if self.accent:
             x = self.dense(hidden_states)
             x = torch.tanh(x)
             x = self.dropout(x)
             logits_accent = self.accent_head(x)
 
-        if domain:
+        if self.domain:
             logits_domain = self.domain_head(hidden_states)
 
-        if vad:
+        if self.vad:
             logits_vad = self.vad_head(hidden_states)
 
         loss = None
         if labels is not None:
             loss_ctc = self._ctc_loss(logits_ctc, labels[0], input_values, attention_mask)
             loss += loss_ctc
-            if accent:
+            if self.accent:
                 loss_accent = self._accent_loss(logits_accent, labels[1])
                 loss += loss_accent
-            if domain:
+            if self.domain:
                 loss_domain = self._domain_loss(logits_domain, labels[2])
                 loss += loss_domain
-            if vad:
+            if self.vad:
                 loss_vad = self._vad_loss(logits_vad, labels[3])
                 loss += loss_vad
 

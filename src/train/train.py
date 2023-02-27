@@ -77,6 +77,7 @@ def train_setup(config, args):
 def data_setup(config):
     multi_task = {}
     if 'tasks' in config:
+        multi_task['architecture'] = config['tasks']['architecture'] if 'architecture' in config['tasks'] else None
         multi_task['expand_vocab'] = True if config['tasks']['expand_vocab'] == "True" else False
         multi_task['expand_vocab_mode'] = config['tasks']['expand_mode']
         multi_task['accent'] = True if config['tasks']['accent'] == "True" else False
@@ -218,8 +219,8 @@ if __name__ == "__main__":
     CTC_model_class = None
     if 'hubert' in config['models']['model_path']:
         CTC_model_class = HubertForCTC
-    elif 'tasks' in config and config['tasks']['design'] == "discriminatory":
-        CTC_model = Wav2Vec2ForCTCnCLS
+    elif 'tasks' in config and config['tasks']['architecture'] == "discriminatory":
+        CTC_model_class = Wav2Vec2ForCTCnCLS
     else:
         CTC_model_class = Wav2Vec2ForCTC
 
@@ -229,7 +230,24 @@ if __name__ == "__main__":
                                    ]
 
     print(f"model starting...from last checkpoint:{last_checkpoint}")
-    if config['models']['model_path'] in models_with_different_vocab:
+    
+    if 'tasks' in config and config['tasks']['architecture'] == "discriminatory":
+        model = CTC_model_class.from_pretrained(
+            last_checkpoint if last_checkpoint else config['models']['model_path'],
+            attention_dropout=float(config['hyperparameters']['attention_dropout']),
+            hidden_dropout=float(config['hyperparameters']['hidden_dropout']),
+            feat_proj_dropout=float(config['hyperparameters']['feat_proj_dropout']),
+            mask_time_prob=float(config['hyperparameters']['mask_time_prob']),
+            layerdrop=float(config['hyperparameters']['layerdrop']),
+            ctc_loss_reduction=config['hyperparameters']['ctc_loss_reduction'],
+            ctc_zero_infinity=True,
+            pad_token_id=PROCESSOR.tokenizer.pad_token_id,
+            vocab_size=len(PROCESSOR.tokenizer),
+            accent=data_config.multi_task['accent'], 
+            domain=data_config.multi_task['domain'], 
+            vad=data_config.multi_task['vad']
+        )
+    elif config['models']['model_path'] in models_with_different_vocab:
         from transformers.file_utils import hf_bucket_url, cached_path
 
         archive_file = hf_bucket_url(
@@ -267,7 +285,7 @@ if __name__ == "__main__":
             ctc_loss_reduction=config['hyperparameters']['ctc_loss_reduction'],
             ctc_zero_infinity=True,
             pad_token_id=PROCESSOR.tokenizer.pad_token_id,
-            vocab_size=len(PROCESSOR.tokenizer)
+            vocab_size=len(PROCESSOR.tokenizer),
         )
     if config['hyperparameters']['gradient_checkpointing'] == "True":
         model.gradient_checkpointing_enable()

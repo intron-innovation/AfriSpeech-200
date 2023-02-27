@@ -201,7 +201,8 @@ def data_prep(config):
                                           transform_audio, transform_labels,
                                           multi_task=config.multi_task)
     else:
-        train_dataset = load_custom_dataset(config, config.train_path, 'train',
+        split = 'train' if 'train' in config.train_path else 'dev'
+        train_dataset = load_custom_dataset(config, config.train_path, split,
                                             transform_audio, transform_labels,
                                             multi_task=config.multi_task)
 
@@ -260,7 +261,7 @@ def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets,
 
     if multi_task and multi_task['expand_vocab']:
         vocab_dict, vocab_file_name = expand_vocab(vocab_dict, train_path, val_path, vocab_file_name, multi_task)
-    if multi_task and multi_task['design'] == DISCRIMINATORY:
+    if multi_task and multi_task['architecture'] == DISCRIMINATORY:
         create_label_maps(train_path, val_path, multi_task, checkpoints_path)
     logger.info(f"---vocab dict: {len(vocab_dict)}\n{vocab_dict}")
     return vocab_file_name
@@ -353,24 +354,24 @@ def transform_labels(text, accent, domain, vad, tasks_dict):
     label_accent = label_domain = label_vad = None
     if tasks_dict:
         if tasks_dict['accent']:
-            if tasks_dict['design'] == DISCRIMINATORY:
+            if tasks_dict['architecture'] == DISCRIMINATORY:
                 label_accent = LABEL_MAP['accent'].get(accent, LABEL_MAP['accent']["unk"])
             else:
                 label_accent = LABEL_MAP.get(accent, LABEL_MAP["unk"])
 
         if tasks_dict['domain']:
-            if tasks_dict['design'] == DISCRIMINATORY:
+            if tasks_dict['architecture'] == DISCRIMINATORY:
                 label_domain = LABEL_MAP['domain'].get(domain, LABEL_MAP['domain']["unk"])
             else:
                 label_domain = LABEL_MAP.get(domain, LABEL_MAP["unk"])
 
         if tasks_dict['vad']:
-            if tasks_dict['design'] == DISCRIMINATORY:
+            if tasks_dict['architecture'] == DISCRIMINATORY:
                 label_vad = LABEL_MAP['vad'].get(vad)
             else:
                 label_vad = LABEL_MAP.get(vad)
 
-        if tasks_dict['design'] == DISCRIMINATORY:
+        if tasks_dict['architecture'] == DISCRIMINATORY:
             labels = concat_cls_head_labels(labels, label_domain, label_accent, label_vad, tasks_dict)
         else:
             labels = concat_labels(labels, label_domain, label_accent, label_vad, mode=tasks_dict['expand_vocab_mode'])
@@ -440,7 +441,7 @@ class CustomASRDataset(torch.utils.data.Dataset):
 
         result.update({'labels': label, 'accent': accent, 'audio_idx': audio_idx})
 
-        if self.multi_task and self.multi_task['design'] == DISCRIMINATORY:
+        if self.multi_task and self.multi_task['architecture'] == DISCRIMINATORY:
             num_tasks = 1
             if self.multi_task['accent']:
                 result.update({'accent': label[num_tasks]})
