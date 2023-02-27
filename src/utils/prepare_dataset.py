@@ -39,6 +39,10 @@ PROCESSOR = None
 CONFIG = None
 MAX_MODEL_AUDIO_LEN_SECS = 87
 LABEL_MAP = {}
+accent_label_map = {}
+domain_label_map = {}
+vad_label_map = {}
+
 
 class DataConfig:
     def __init__(self, **kwargs):
@@ -110,26 +114,30 @@ def load_afri_speech_data(
         return data
             
 def expand_vocab(vocab_dict, train_path, val_path, vocab_file_name):
-    return vocab_dict, vocab_file_name
     data = pd.concat([pd.read_csv(train_path), pd.read_csv(val_path)])
     n = len(vocab_dict)
-    accent_list = list(data.accent.unique())
-    domain_list = list(data.domain.unique())
-    vad_list = ['speech', 'no_speech']
+    accent_list = list(data.accent.unique()) + ["<UNK>"]
+    domain_list = list(data.domain.unique()) + ["<UNK>"]
+    vad_list = ['speech', "<UNK>"]
+
+
+    accent_label_map.update({v:k for k,v in zip(range(len(accent_list)), sorted(accent_list))})
+    domain_label_map.update({v:k for k,v in zip(range(len(domain_list)), sorted(domain_list))})
+    vad_label_map.update({v:k for k,v in zip(range(2), sorted(vad_list))})
     # age_group_list = list(data.age_group.unique())
     # ner_tag_list
     # clinical_tag_list
-    new_tags = accent_list + domain_list + vad_list
-    for tag in new_tags:
-        if f"<|{tag}|>" not in vocab_dict:
-            vocab_dict[f"<|{tag}|>"] = n
-            LABEL_MAP[tag] = n
-            n += 1
-        else:
-            LABEL_MAP[tag] = vocab_dict[f"<|{tag}|>"]
+    # new_tags = accent_list + domain_list + vad_list
+    # for tag in new_tags:
+    #     if tag not in LABEL_MAP:
+    #         #vocab_dict[f"<|{tag}|>"] = n
+    #         LABEL_MAP[tag] = n
+    #         n += 1
+    #     else:
+    #         LABEL_MAP[tag] = vocab_dict[f"<|{tag}|>"]
     
-    vocab_dict[f"<|unk|>"] = len(vocab_dict)
-    LABEL_MAP["unk"] = len(vocab_dict)
+    # vocab_dict[f"<|unk|>"] = len(vocab_dict)
+    # LABEL_MAP["unk"] = len(vocab_dict)
     
     print("vocab_dict", len(vocab_dict))
     print("LABEL_MAP", len(LABEL_MAP))
@@ -195,7 +203,7 @@ def load_custom_dataset(config, data_path, split,
 
 
 def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets, 
-               expand_vocab_arg=None, train_path=None, val_path=None):
+               expand_vocab_arg=True, train_path=None, val_path=None):
     create_new_vocab = False
     vocab_file_name = None
 
@@ -246,6 +254,7 @@ def load_data(train_path, val_path, aug_path=None):
 
 
 def remove_special_characters(batch):
+
     batch['transcript'] = clean_text(batch['transcript']) + " "
     return batch
 
@@ -316,11 +325,12 @@ def transform_labels(text, accent, domain, vad, expand_vocab_mode):
     text = clean_text(text)
     with PROCESSOR.as_target_processor():
         labels_text = PROCESSOR(text.lower()).input_ids
-        label_accent = LABEL_MAP.get(accent, LABEL_MAP["unk"])
-        label_domain = LABEL_MAP.get(domain, LABEL_MAP["unk"])
-        label_vad = LABEL_MAP.get(vad, LABEL_MAP["unk"])
+        
+        label_accent = accent_label_map.get(accent, accent_label_map["<UNK>"])
+        label_domain = domain_label_map.get(domain, domain_label_map["<UNK>"])
+        label_vad = vad_label_map.get(vad, vad_label_map["<UNK>"])
     # labels = concat_labels(labels_text, label_domain, label_accent, label_vad, mode=expand_vocab_mode)
-    labels = [labels_text, label_domain, label_accent, label_vad]
+    labels = [labels_text, label_accent, label_domain, label_vad]
     return labels
 
 
@@ -369,7 +379,7 @@ class CustomASRDataset(torch.utils.data.Dataset):
             result = {'input_values': input_audio[0], 'input_lengths': len(input_audio[0])}
 
         #result.update({'labels': label, 'accent': accent, 'audio_idx': audio_idx})
-        result.update({'labels': label[0], 'accent': accent[1], 'domain': label[2], 'vad':label[3], 'audio_idx': audio_idx})
+        result.update({'labels': label})
         return result
 
 
@@ -387,10 +397,10 @@ class DataCollatorCTCWithPaddingGroupLen:
         # different padding methods
 
         input_features = [{"input_values": feature["input_values"]} for feature in features]
-        label_features = [{"input_ids": feature["labels"]} for feature in features]
-        accent =[feature["accent"] for feature in features]
-        domain = [feature["domain"] for feature in features]
-        vad = [feature["vad"] for feature in features]
+        label_features = [{"input_ids": feature["labels"][0]} for feature in features]
+        accent =[feature["labels"][1] for feature in features]
+        domain =[feature["labels"][2] for feature in features]
+        vad = [feature["labels"][3] for feature in features]
         
 
         batch = self.processor.pad(
@@ -411,8 +421,9 @@ class DataCollatorCTCWithPaddingGroupLen:
 
         # replace padding with -100 to ignore loss correctly
         labels = labels_batch["input_ids"].masked_fill(labels_batch.attention_mask.ne(1), -100)
-        batch["labels"] = (labels,  torch.tensor(accent),  torch.tensor(domain),  torch.tensor(vad))
-        
+        batch["labels"] = [labels,  torch.tensor(accent),  torch.tensor(domain),  torch.tensor(vad)]
+        print(batch["labels"])
+            #print(len(labels))
         if "attention_mask" in batch:
             batch["attention_mask"] = batch["attention_mask"].to(torch.long)
 
