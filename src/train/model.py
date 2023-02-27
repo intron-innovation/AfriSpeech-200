@@ -10,7 +10,7 @@ from torch import nn
 
 class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
 
-    def __init__(self, config, accent_len=71, domain_len=2, vad_len=2, alpha=0.01):
+    def __init__(self, config, accent_len=72, domain_len=3, vad_len=2, alpha=0.01):
         super().__init__(config)
         self.wav2vec2 = Wav2Vec2Model(config)
         self.dropout = nn.Dropout(config.final_dropout)
