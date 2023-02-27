@@ -31,6 +31,7 @@ from transformers.trainer_utils import get_last_checkpoint
 from src.utils.text_processing import clean_text, strip_task_tags
 from src.utils.prepare_dataset import DataConfig, data_prep, DataCollatorCTCWithPaddingGroupLen
 from src.utils.sampler import IntronTrainer
+from src.train.models import Wav2Vec2ForCTCnCLS
 
 warnings.filterwarnings('ignore')
 wer_metric = load_metric("wer")
@@ -232,7 +233,13 @@ if __name__ == "__main__":
     # Detecting last checkpoint.
     last_checkpoint, checkpoint_ = get_checkpoint(checkpoints_path, config['models']['model_path'])
 
-    CTC_model_class = Wav2Vec2ForCTC if 'hubert' not in config['models']['model_path'] else HubertForCTC
+    CTC_model_class = None
+    if 'hubert' in config['models']['model_path']:
+        CTC_model_class = HubertForCTC
+    elif 'tasks' in config and config['tasks']['design'] == "discriminatory":
+        CTC_model = Wav2Vec2ForCTCnCLS
+    else:
+        CTC_model_class = Wav2Vec2ForCTC
 
     models_with_different_vocab = ['jonatasgrosman/wav2vec2-large-xlsr-53-english',
                                    'facebook/wav2vec2-large-960h-lv60-self',
