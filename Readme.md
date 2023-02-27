@@ -227,13 +227,13 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 
 5. Install requirements `pip3 install -r requirements.txt`
 
-6. For Inference Run `python3 bin/run_benchmarks.py --audio_dir /data/data/intron/ --model_id_or_path facebook/wav2vec2-large-960h`
+6. For Inference Run `python3 src/inference/afrispeech-inference.py --audio_dir /data/data/intron/ --model_id_or_path facebook/wav2vec2-large-960h`
 
 7. To train wav2vec2 models, create config in format like `src/config/config_xlsr.ini` and run `python3 src/train/train.py -c src/config/config_xlsr.ini`
 
 8. To run whisper, install transformers using `pip install git+https://github.com/huggingface/transformers` and whisper using `pip install git+https://github.com/openai/whisper.git`
 
-9. To run whisper benchmarks, run `python3 src/inference/whisper-inference.py --model_id_or_path whisper_medium.en --gpu 1 --batchsize 8 --audio_dir /data/data/intron/`
+9. To run whisper benchmarks, run `python3 src/inference/afrispeech-inference.py --model_id_or_path whisper_medium.en --gpu 1 --batchsize 8 --audio_dir /data/data/intron/`
 
 10. To fine-tune whisper, create a config file similar to `src/config/whisper_clinical-test.ini`, and run `python3 src/train/whisper-finetuning.py -c src/config/whisper_clinical-test.ini`
 
@@ -245,7 +245,7 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 
 - Checkout the `wav2vec2_multitask` branch or pull the latest changes
 
-- Update the huggingface/transformers cache directory at the top of `src/train/train.py`  and `src/utils/prepare_dataset.py`
+- Update the huggingface/transformers cache directory at the top of `src/train/train.py`, `src/utils/prepare_dataset.py`, and `src/inference/afrispeech-inference.py`
 
 - Navigate to the config directory `cd src/config/`
 
@@ -257,6 +257,10 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 3. Under the `tasks` section, choose the tasks for your ablation. For example,  if you want to run ASR + domain prediction, set `domain=True` and set accent and vad to False.
 
 - to start training, navigate to the repo root `cd ../..` and run `python3 src/train/train.py -c src/config/xlsr_multi_task_asr_domain.ini`
+
+- After training, to run inference on dev set, run `python3 src/inference/afrispeech-inference.py --model_id_or_path <PATH/TO/MODEL/CHECKPOINT> --gpu 1 --batchsize 8 --audio_dir /data/data/intron/`
+
+- Upload your best model to a google drive folder and share with the team. To upload your model, create a new directory inside your experiment directory and copy the following files into this directory: best checkpoint (`pytorch_model.bin`) along with its `config.json`, `preprocessor_config.json`, `tokenizer_config.json`, `vocab.json`, `special_tokens_map.json`, and your experiment config file e.g. `xlsr_multi_task_asr_domain.ini`. Zip the folder using `tar czf name_of_archive_file.tar.gz name_of_directory_to_tar` and upload the tar.gz file to google drive, update the permissions, and share the link
 
 
 ### Dataset Paper Benchmark Results
