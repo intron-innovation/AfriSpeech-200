@@ -117,7 +117,9 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
 
         print("input_values", input_values.shape, input_values)
         print("labels", labels.shape, labels)
-        print(accent, domain, vad)
+        print("accent", accent['input_ids'].shape, accent['input_ids'])
+        print("domain", domain, self.domain)
+        print("vad", vad, self.vad)
 
         outputs = self.wav2vec2(
             input_values,
@@ -147,19 +149,26 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
             logits_vad = self.vad_head(hidden_states)
 
         loss = None
+        task_losses = []
         if labels is not None:
-            loss_ctc = self._ctc_loss(logits_ctc, labels[0], input_values, attention_mask)
-            loss += loss_ctc
+            loss_ctc = self._ctc_loss(logits_ctc, labels, input_values, attention_mask)
+            print(loss_ctc)
+            task_losses.append(loss_ctc)
             if self.accent:
-                loss_accent = self._accent_loss(logits_accent, labels[1])
-                loss += loss_accent
+                accent = accent['input_ids']
+                loss_accent = self._accent_loss(logits_accent, accent)
+                task_losses.append(loss_accent)
             if self.domain:
-                loss_domain = self._domain_loss(logits_domain, labels[2])
-                loss += loss_domain
+                domain = domain['input_ids']
+                loss_domain = self._domain_loss(logits_domain, domain)
+                task_losses.append(loss_domain)
             if self.vad:
-                loss_vad = self._vad_loss(logits_vad, labels[3])
-                loss += loss_vad
-
+                vad = vad['input_ids']
+                loss_vad = self._vad_loss(logits_vad, vad)
+                task_losses.append(loss_vad)
+        
+        loss = self.loss_aggregation(task_losses)
+        
         # logits = (logits_ctc, logits_accent, logits_domain, logits_vad)
         if not return_dict:
             output = (logits_ctc, ) + outputs[_HIDDEN_STATES_START_POSITION:]
@@ -169,3 +178,8 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
             loss=loss, logits=logits_ctc,
             hidden_states=outputs.hidden_states, attentions=outputs.attentions
         )
+    
+    def loss_aggregation(task_losses, mode="sum"):
+        if mode == "sum":
+        
+        

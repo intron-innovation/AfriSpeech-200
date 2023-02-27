@@ -475,9 +475,12 @@ class DataCollatorCTCWithPaddingGroupLen:
         input_features = [{"input_values": feature["input_values"]} for feature in features]
         label_features = [{"input_ids": feature["labels"]} for feature in features]
         if self.multi_task:
-            accent_features = [{"input_ids": feature["accent"]} for feature in features]
-            domain_features = [{"input_ids": feature["domain"]} for feature in features]
-            vad_features = [{"input_ids": feature["vad"]} for feature in features]
+            if self.multi_task['accent']:
+                accent_features = [{"input_ids": feature["accent"]} for feature in features]
+            if self.multi_task['domain']:
+                domain_features = [{"input_ids": feature["domain"]} for feature in features]
+            if self.multi_task['vad']:
+                vad_features = [{"input_ids": feature["vad"]} for feature in features]
 
         batch = self.processor.pad(
             input_features,
@@ -504,12 +507,12 @@ class DataCollatorCTCWithPaddingGroupLen:
                 accent_features = {key: [example[key] for example in accent_features]
                                    for key in accent_features[0].keys()}
                 batch["accent"] = BatchEncoding(accent_features, tensor_type='pt')
-            # if self.multi_task['domain']:
-            #     batch["domain"] = []
-            # if self.multi_task['vad']:
-            #     batch["vad"] = []
+            if self.multi_task['domain']:
+                batch["domain"] = []
+            if self.multi_task['vad']:
+                batch["vad"] = []
 
         if "attention_mask" in batch:
             batch["attention_mask"] = batch["attention_mask"].to(torch.long)
-
+        print("batch.keys: ", batch.keys())
         return batch

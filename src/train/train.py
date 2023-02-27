@@ -102,8 +102,10 @@ def data_setup(config):
     return data_config
 
 
-def get_data_collator():
-    return DataCollatorCTCWithPaddingGroupLen(processor=PROCESSOR, padding=True)
+def get_data_collator(multi_task):
+    data_collator_ = DataCollatorCTCWithPaddingGroupLen(processor=PROCESSOR, padding=True)
+    data_collator_.multi_task=multi_task
+    return data_collator_
 
 
 def compute_metric(pred):
@@ -210,7 +212,7 @@ if __name__ == "__main__":
     checkpoints_path = train_setup(config, args)
     data_config = data_setup(config)
     train_dataset, val_dataset, aug_dataset, PROCESSOR = data_prep(data_config)
-    data_collator = get_data_collator()
+    data_collator = get_data_collator(data_config.multi_task)
 
     start = time.time()
     # Detecting last checkpoint.
