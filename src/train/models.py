@@ -1,9 +1,6 @@
 #https://github.com/huggingface/transformers/blob/ae54e3c3b18bac0832ad62ea9b896dfd52a09850/src/transformers/models/wav2vec2/modeling_wav2vec2.py#L1612
 #https://github.com/padmalcom/wav2vec2-nonverbalvocalization/blob/main/Wav2Vec2ClassificationHead.py#L4
-
-
-import warnings
-from typing import Optional, Tuple
+# https://www.v7labs.com/blog/multi-task-learning-guide
 
 import torch
 import torch.nn.functional as F
@@ -150,7 +147,6 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
         if self.vad:
             logits_vad = self.vad_head(hidden_states)
 
-        loss = None
         task_losses = []
         if labels is not None:
             loss_ctc = self._ctc_loss(logits_ctc, labels, input_values, attention_mask)
