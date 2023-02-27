@@ -7,9 +7,8 @@ from datetime import datetime
 import pandas as pd
 import subprocess
 
-data_home = "data2"
-os.environ['TRANSFORMERS_CACHE'] = f'/{data_home}/.cache/'
-os.environ['XDG_CACHE_HOME'] = f'/{data_home}/.cache/'
+os.environ['TRANSFORMERS_CACHE'] = '/data2/.cache/'
+os.environ['XDG_CACHE_HOME'] = '/data2/.cache/'
 
 from datasets import load_dataset, load_metric, Dataset
 from dataclasses import dataclass
@@ -47,7 +46,7 @@ class DataConfig:
 
             
 def load_afri_speech_data(
-    data_path, max_audio_len_secs=17, audio_dir=f"./{data_home}/", 
+    data_path, max_audio_len_secs=17, audio_dir=f"./data/", 
     return_dataset=True, split="dev", gpu=-1, domain='all',
     max_transcript_len=-1, min_transcript_len=-1
 ):
@@ -298,14 +297,7 @@ def load_processor(vocab_file_name):
 
 
 def transform_audio(audio_path):
-    try:
-        speech = load_audio_file(audio_path)
-    except Exception as e:
-        print(f"{audio_path} not found {str(e)}")
-        speech, fs = librosa.load(
-            f'/{data_home}/data/intron/e809b58c-4f05-4754-b98c-fbf236a88fbc/544bbfe5e1c6f8afb80c4840b681908d.wav',
-            sr=AudioConfig.sr)
-
+    speech = load_audio_file(audio_path)
     return PROCESSOR(speech, sampling_rate=AudioConfig.sr).input_values
 
 

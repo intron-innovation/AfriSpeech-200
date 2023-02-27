@@ -1,20 +1,15 @@
-# AfriSpeech-100
+# AfriSpeech-200
 
 #### Pan-African accented speech dataset for clinical and general domain ASR
 
-> 100+ African accents totalling  196+ hrs of audio
+> 100+ African accents totalling  200+ hrs of audio
 
 [By Intron Innovation](https://www.intron.io)
 
 Contributor List: []
 
-#### Progress
-- [x] Select & Publish and splits
-- [x] Upload audio
-- [x] Start experiments
 
-
-#### Abstract [draft]
+#### Abstract
 
 Africa has a very low doctor:patient ratio. At very buys clinics, doctors could  see 30+ patients per day
  (a very heavy patient burden compared with developed countries), but productivity tools are lacking for these
@@ -24,7 +19,7 @@ However, clinical ASR is mature in developed nations, even ubiquitous in the US,
  performance of general domain ASR is approaching human accuracy. However, several gaps exist. Several papers have
   highlighted racial bias with speech-to-text algorithms and performance on minority accents lags significantly. 
 To our knowledge there is no publicly available research or benchmark on accented African clinical ASR.
-We release AfriSpeech, 196 hrs of Pan-African speech across 120 indigenous accents for clinical and general domain ASR
+We release AfriSpeech, 200 hrs of Pan-African speech across 120 indigenous accents for clinical and general domain ASR
 , a benchmark test set and publicly available pretrained models.
 
 
@@ -246,7 +241,25 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
  `python3 src/train/train.py -c src/config/config_al_xlsr_general.ini`
 
 
-### Benchmark Results
+#### How to run multi-task experiments
+
+- Checkout the `wav2vec2_multitask` branch or pull the latest changes
+
+- Update the huggingface/transformers cache directory at the top of `src/train/train.py`  and `src/utils/prepare_dataset.py`
+
+- Navigate to the config directory `cd src/config/`
+
+- Make a copy of `config_xlsr_group_lengths_multi_task.ini` and rename it to match the ablation you want to run. For example, if you want to run ASR + domain prediction, you can name it `xlsr_multi_task_asr_domain.ini`
+
+- In the new config file, update 3 sections: 
+1. Under the `experiment` section, set a unique experiment name `name` . Also set the `repo_root`, this is the location of the cloned repo. Optionally, set `dir` which is the path to your experiment directory. This is where your training artefacts will be stored, e.g. processor, vocab, checkpoints, etc. 
+2. Under the `audio` section Set the `audio_path` which is the directory where you downloaded the audio files. See directions for downloading the audio files in the readme section above.
+3. Under the `tasks` section, choose the tasks for your ablation. For example,  if you want to run ASR + domain prediction, set `domain=True` and set accent and vad to False.
+
+- to start training, navigate to the repo root `cd ../..` and run `python3 src/train/train.py -c src/config/xlsr_multi_task_asr_domain.ini`
+
+
+### Dataset Paper Benchmark Results
 
 | Model | Dev WER |
 | ----------- | ----------- |

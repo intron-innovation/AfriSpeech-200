@@ -1,4 +1,10 @@
 import os
+
+data_home = "data2"
+os.environ['TRANSFORMERS_CACHE'] = f'/{data_home}/.cache/'
+os.environ['XDG_CACHE_HOME'] = f'/{data_home}/.cache/'
+os.environ["WANDB_DISABLED"] = "true"
+
 import argparse
 import configparser
 import random
@@ -9,11 +15,6 @@ import pandas as pd
 from pathlib import Path
 import numpy as np
 from tqdm import tqdm
-
-data_home = "data2"
-os.environ['TRANSFORMERS_CACHE'] = f'/{data_home}/.cache/'
-os.environ['XDG_CACHE_HOME'] = f'/{data_home}/.cache/'
-os.environ["WANDB_DISABLED"] = "true"
 
 import torch
 from torch.utils.data import DataLoader
@@ -33,7 +34,6 @@ from src.utils.sampler import IntronTrainer
 
 warnings.filterwarnings('ignore')
 wer_metric = load_metric("wer")
-# wer_metric = evaluate.load("wer")
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 SAMPLING_RATE = 16000
 PROCESSOR = None
@@ -52,8 +52,8 @@ def parse_argument():
 
 
 def train_setup(config, args):
-    exp_dir = config['experiment']['dir']
-    exp_dir = os.path.join(exp_dir, config['experiment']['name'])
+    repo_root = config['experiment']['repo_root']
+    exp_dir = os.path.join(repo_root, config['experiment']['dir'], config['experiment']['name'])
     config['experiment']['dir'] = exp_dir
     checkpoints_path = os.path.join(exp_dir, 'checkpoints')
     config['checkpoints']['checkpoints_path'] = checkpoints_path
