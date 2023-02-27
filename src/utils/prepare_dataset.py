@@ -109,7 +109,7 @@ def load_afri_speech_data(
     else:
         return data
             
-def expand_vocab(vocab_dict, train_path, val_path, vocab_file_name):
+def expand_vocab(vocab_dict, train_path, val_path, vocab_file_name, tasks_dict):
     data = pd.concat([pd.read_csv(train_path), pd.read_csv(val_path)])
     n = len(vocab_dict)
     accent_list = list(data.accent.unique())
@@ -118,7 +118,13 @@ def expand_vocab(vocab_dict, train_path, val_path, vocab_file_name):
     # age_group_list = list(data.age_group.unique())
     # ner_tag_list
     # clinical_tag_list
-    new_tags = accent_list + domain_list + vad_list
+    new_tags = []
+    if tasks_dict['accent']:
+        new_tags.extend(accent_list)
+    if tasks_dict['domain']:
+        new_tags.extend(domain_list)
+    if tasks_dict['vad']:
+        new_tags.extend(vad_list)
     for tag in new_tags:
         if f"<|{tag}|>" not in vocab_dict:
             vocab_dict[f"<|{tag}|>"] = n
@@ -147,9 +153,9 @@ def data_prep(config):
 
     raw_dataset = load_data(config.train_path, config.val_path, config.aug_path)
     logger.debug(f"...Data Read Complete in {time.time() - start:.4f}. Starting Tokenizer...")
-
+    
     vocab_file_name = load_vocab(config.model_path, config.ckpt_path, 
-                                 config.exp_dir, raw_dataset, config.expand_vocab,
+                                 config.exp_dir, raw_dataset, config.multi_task,
                                  config.train_path, config.val_path)
     PROCESSOR = load_processor(vocab_file_name)
     logger.debug(f"...Load vocab and processor complete in {time.time() - start:.4f}.\n"
@@ -157,11 +163,11 @@ def data_prep(config):
 
     val_dataset = load_custom_dataset(config, config.val_path, 'dev', 
                                       transform_audio, transform_labels,
-                                      expand_vocab_mode=config.expand_mode)
+                                      multi_task=config.multi_task)
     if config.aug_percent and config.aug_percent > 1:
         train_df = load_custom_dataset(config, config.train_path, 'train', 
                                        transform_audio, transform_labels, return_dataset=False,
-                                       expand_vocab_mode=config.expand_mode)
+                                       multi_task=config.multi_task)
         aug_df = train_df.sample(frac=config.aug_percent, random_state=config.seed)
         train_df = train_df[~train_df.audio_ids.isin(aug_df.audio_ids.to_list())]
         aug_dataset = Dataset.from_pandas(aug_df)
@@ -169,14 +175,14 @@ def data_prep(config):
     elif config.aug_path:
         train_dataset = load_custom_dataset(config, config.train_path, 'train', 
                                             transform_audio, transform_labels,
-                                            expand_vocab_mode=config.expand_mode)
+                                            multi_task=config.multi_task)
         aug_dataset = load_custom_dataset(config, config.aug_path, 'aug', 
                                           transform_audio, transform_labels,
-                                          expand_vocab_mode=config.expand_mode)
+                                          multi_task=config.multi_task)
     else:
         train_dataset = load_custom_dataset(config, config.train_path, 'train', 
                                             transform_audio, transform_labels,
-                                            expand_vocab_mode=config.expand_mode)
+                                            multi_task=config.multi_task)
 
     logger.debug(f"Load train and val dataset done in {time.time() - start:.4f}.")
     return train_dataset, val_dataset, aug_dataset, PROCESSOR
@@ -184,17 +190,17 @@ def data_prep(config):
 
 def load_custom_dataset(config, data_path, split, 
                         transform_audio_, transform_labels_=None, 
-                        prepare=None, return_dataset=True, expand_vocab_mode=None):
+                        prepare=None, return_dataset=True, multi_task=None):
     return CustomASRDataset(data_path, transform_audio_, transform_labels_,
                             config.audio_path, split=split, domain=config.domain,
                             max_audio_len_secs=config.max_audio_len_secs,
                             min_transcript_len=config.min_transcript_len,
                             prepare=prepare, return_dataset=return_dataset,
-                            expand_vocab_mode=expand_vocab_mode)
+                            multi_task=multi_task)
 
 
 def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets, 
-               expand_vocab_arg=None, train_path=None, val_path=None):
+               multi_task=None, train_path=None, val_path=None):
     create_new_vocab = False
     vocab_file_name = None
 
@@ -231,8 +237,8 @@ def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets,
     else:
         vocab_dict = {}
     
-    if expand_vocab_arg:
-        vocab_dict, vocab_file_name = expand_vocab(vocab_dict, train_path, val_path, vocab_file_name)
+    if multi_task:
+        vocab_dict, vocab_file_name = expand_vocab(vocab_dict, train_path, val_path, vocab_file_name, multi_task)
     logger.info(f"---vocab dict: {len(vocab_dict)}\n{vocab_dict}")
     return vocab_file_name
 
@@ -303,22 +309,40 @@ def transform_audio(audio_path):
     return PROCESSOR(speech, sampling_rate=AudioConfig.sr).input_values
 
 
-def concat_labels(text, domain, accent, vad, mode="prepend"):
+def concat_labels(text_list, domain, accent, vad, mode="prepend"):
     if mode=="prepend":
-        return [domain] + [accent] + [vad] + text
+        if vad:
+            text_list.insert(0, vad)
+        if accent:
+            text_list.insert(0, accent)
+        if domain:
+            text_list.insert(0, domain)
+        return text_list
     elif mode=="append":
-        return text + [domain] + [accent] + [vad]
+        if domain:
+            text_list.append(domain)
+        if accent:
+            text_list.append(accent)
+        if vad:
+            text_list.append(domain)
+        return text_list
     raise NotImplementedError
 
     
-def transform_labels(text, accent, domain, vad, expand_vocab_mode):
+def transform_labels(text, accent, domain, vad, tasks_dict):
     text = clean_text(text)
     with PROCESSOR.as_target_processor():
-        labels_text = PROCESSOR(text.lower()).input_ids
-        label_accent = LABEL_MAP.get(accent, LABEL_MAP["unk"])
-        label_domain = LABEL_MAP.get(domain, LABEL_MAP["unk"])
-        label_vad = LABEL_MAP.get(vad, LABEL_MAP["unk"])
-    labels = concat_labels(labels_text, label_domain, label_accent, label_vad, mode=expand_vocab_mode)
+        labels = PROCESSOR(text.lower()).input_ids
+    
+    label_accent = label_domain = label_vad = None
+    if tasks_dict:
+        if tasks_dict['accent']:
+            label_accent = LABEL_MAP.get(accent, LABEL_MAP["unk"])
+        if tasks_dict['domain']:
+            label_domain = LABEL_MAP.get(domain, LABEL_MAP["unk"])
+        if tasks_dict['vad']:
+            label_vad = LABEL_MAP.get(vad, LABEL_MAP["unk"])
+        labels = concat_labels(labels, label_domain, label_accent, label_vad, mode=tasks_dict['expand_vocab_mode'])
     return labels
 
 
@@ -327,7 +351,7 @@ class CustomASRDataset(torch.utils.data.Dataset):
                  split=None, domain="all", max_audio_len_secs=-1, min_transcript_len=10,
                  prepare=False, max_transcript_len=-1, gpu=1, 
                  length_column_name='duration', return_dataset=True,
-                 expand_vocab_mode=None):
+                 multi_task=None):
         
         self.prepare = prepare
         self.split = split
@@ -339,7 +363,7 @@ class CustomASRDataset(torch.utils.data.Dataset):
                                               domain=domain, return_dataset=return_dataset)
         self.transform = transform
         self.target_transform = transform_target
-        self.expand_vocab_mode = expand_vocab_mode
+        self.multi_task = multi_task
 
     def set_dataset(self, new_data):
         self.asr_data = Dataset.from_pandas(new_data, preserve_index=False)
@@ -363,7 +387,7 @@ class CustomASRDataset(torch.utils.data.Dataset):
             result = {'input_features': input_audio, 'input_lengths': len(input_audio)}
         else:
             input_audio = self.transform(audio_path)
-            label = self.target_transform(text, accent, domain, vad, self.expand_vocab_mode)
+            label = self.target_transform(text, accent, domain, vad, self.multi_task)
             result = {'input_values': input_audio[0], 'input_lengths': len(input_audio[0])}
 
         result.update({'labels': label, 'accent': accent, 'audio_idx': audio_idx})

@@ -53,9 +53,14 @@ def parse_argument():
 
 def train_setup(config, args):
     exp_dir = config['experiment']['dir']
-    checkpoints_path = config['checkpoints']['checkpoints_path']
-    figure_path = config['logs']['figure_path']
-    predictions_path = config['logs']['predictions_path']
+    exp_dir = os.path.join(exp_dir, config['experiment']['name'])
+    config['experiment']['dir'] = exp_dir
+    checkpoints_path = os.path.join(exp_dir, 'checkpoints')
+    config['checkpoints']['checkpoints_path'] = checkpoints_path
+    figure_path = os.path.join(exp_dir, 'figures')
+    config['logs']['figure_path'] = figure_path
+    predictions_path = os.path.join(exp_dir, 'predictions')
+    config['logs']['predictions_path'] = predictions_path
 
     Path(exp_dir).mkdir(parents=True, exist_ok=True)
     subprocess.call(['cp', args.config_file, f"{exp_dir}/{args.config_file.split('/')[-1]}"])
@@ -69,6 +74,14 @@ def train_setup(config, args):
 
 
 def data_setup(config):
+    multi_task = {}
+    if 'tasks' in config:
+        multi_task['expand_vocab'] = True if config['tasks']['expand_vocab'] == "True" else False
+        multi_task['expand_vocab_mode'] = config['tasks']['expand_mode']
+        multi_task['accent'] = True if config['tasks']['accent'] == "True" else False
+        multi_task['domain'] = True if config['tasks']['domain'] == "True" else False
+        multi_task['vad'] = True if config['tasks']['vad'] == "True" else False
+    
     data_config = DataConfig(
         train_path=config['data']['train'],
         val_path=config['data']['val'],
@@ -82,8 +95,7 @@ def data_setup(config):
         min_transcript_len=int(config['hyperparameters']['min_transcript_len']),
         domain=config['data']['domain'],
         seed=int(config['hyperparameters']['data_seed']),
-        expand_vocab=True if ('expand_mode' in config['hyperparameters']) and (config['hyperparameters']['expand_vocab'] == "True") else False,
-        expand_mode=config['hyperparameters']['expand_mode'] if 'expand_mode' in config['hyperparameters'] else None
+        multi_task=multi_task,
     )
     return data_config
 
