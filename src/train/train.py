@@ -245,9 +245,11 @@ if __name__ == "__main__":
             ctc_zero_infinity=True,
             pad_token_id=PROCESSOR.tokenizer.pad_token_id,
             vocab_size=len(PROCESSOR.tokenizer),
-            accent=data_config.multi_task['accent'], 
-            domain=data_config.multi_task['domain'], 
-            vad=data_config.multi_task['vad']
+            accent=True if config['tasks']['accent'] == "True" else False,
+            domain=True if config['tasks']['domain'] == "True" else False,
+            vad=True if config['tasks']['vad'] == "True" else False,
+            loss_reduction=config['tasks']['loss_reduction'],
+            alphas=config['tasks']['alphas'],
         )
     elif config['models']['model_path'] in models_with_different_vocab:
         from transformers.file_utils import hf_bucket_url, cached_path

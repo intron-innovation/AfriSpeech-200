@@ -18,7 +18,8 @@ _HIDDEN_STATES_START_POSITION = 2
 class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
 
     def __init__(self, config, accent=None, domain=None, vad=None,
-                 accent_len=72, domain_len=3, vad_len=2, alpha=0.01):
+                 accent_len=72, domain_len=3, vad_len=2, alphas="0.1|0.3|0.6",
+                 loss_reduction="sum"):
         super().__init__(config)
         self.wav2vec2 = Wav2Vec2Model(config)
         self.dropout = nn.Dropout(config.final_dropout)
@@ -26,6 +27,7 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
         self.accent = accent
         self.domain = domain
         self.vad = vad
+        self.loss_reduction = loss_reduction
         if self.accent:
             self.dense = nn.Linear(config.hidden_size, config.hidden_size)
             self.accent_head = nn.Linear(config.hidden_size, accent_len)
@@ -34,7 +36,7 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
         if self.vad:
             self.vad_head = nn.Linear(config.hidden_size, vad_len)
         self.init_weights()
-        self.alpha = alpha
+        self.alphas = [float(alpha) for alpha in alphas.split("|")]
 
     def freeze_feature_extractor(self):
         self.wav2vec2.feature_extractor._freeze_parameters()
@@ -152,11 +154,12 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
         task_losses = []
         if labels is not None:
             loss_ctc = self._ctc_loss(logits_ctc, labels, input_values, attention_mask)
-            print(loss_ctc)
+            print("loss_ctc: ", loss_ctc)
             task_losses.append(loss_ctc)
             if self.accent:
                 accent = accent['input_ids']
                 loss_accent = self._accent_loss(logits_accent, accent)
+                print("loss_accent: ", loss_accent)
                 task_losses.append(loss_accent)
             if self.domain:
                 domain = domain['input_ids']
@@ -167,9 +170,9 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
                 loss_vad = self._vad_loss(logits_vad, vad)
                 task_losses.append(loss_vad)
         
-        loss = self.loss_aggregation(task_losses)
-        
-        # logits = (logits_ctc, logits_accent, logits_domain, logits_vad)
+        loss = self.compute_loss_reduction(task_losses, mode=self.loss_reduction)
+        print("loss_reduced: ", type(loss), loss)
+
         if not return_dict:
             output = (logits_ctc, ) + outputs[_HIDDEN_STATES_START_POSITION:]
             return ((loss,) + output) if loss is not None else output
@@ -179,7 +182,12 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
             hidden_states=outputs.hidden_states, attentions=outputs.attentions
         )
     
-    def loss_aggregation(task_losses, mode="sum"):
+    def compute_loss_reduction(self, task_losses, mode="sum"):
         if mode == "sum":
-        
-        
+            return torch.sum(task_losses)
+        if mode == "mean":
+            return torch.mean(task_losses)
+        if mode == "weighted":
+            assert len(task_losses) == len(self.alphas)
+            return torch.sum(torch.tensor([loss * self.alphas[i] for i, loss in enumerate(task_losses)]))
+        raise NotImplementedError

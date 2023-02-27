@@ -508,11 +508,15 @@ class DataCollatorCTCWithPaddingGroupLen:
                                    for key in accent_features[0].keys()}
                 batch["accent"] = BatchEncoding(accent_features, tensor_type='pt')
             if self.multi_task['domain']:
-                batch["domain"] = []
+                domain_features = {key: [example[key] for example in domain_features]
+                                   for key in domain_features[0].keys()}
+                batch["domain"] = BatchEncoding(domain_features, tensor_type='pt')
             if self.multi_task['vad']:
-                batch["vad"] = []
+                vad_features = {key: [example[key] for example in vad_features]
+                                   for key in vad_features[0].keys()}
+                batch["vad"] = BatchEncoding(vad_features, tensor_type='pt')
 
         if "attention_mask" in batch:
             batch["attention_mask"] = batch["attention_mask"].to(torch.long)
-        print("batch.keys: ", batch.keys())
+
         return batch
