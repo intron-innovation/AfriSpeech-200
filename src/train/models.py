@@ -16,7 +16,8 @@ _HIDDEN_STATES_START_POSITION = 2
 class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
 
     def __init__(self, config, accent=None, domain=None, vad=None,
-                 accent_len=72, domain_len=3, vad_len=2, alphas="0.1|0.3|0.6",
+                 accent_len=72, domain_len=3, vad_len=2, 
+                 alphas="asr-1|accent-1|domain-1|vad-1",
                  loss_reduction="sum"):
         super().__init__(config)
         self.wav2vec2 = Wav2Vec2Model(config)
@@ -34,8 +35,12 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
         if self.vad:
             self.vad_head = nn.Linear(config.hidden_size, vad_len)
         self.init_weights()
-        self.alphas = [float(alpha) for alpha in alphas.split("|")]
+        self.alphas = {alpha.split('-')[0]: float(alpha.split('-')[1]) for alpha in alphas.split("|")}
         print("loss config", self.loss_reduction, self.alphas)
+        self.num_tasks = (accent + domain + vad + 1)
+        if self.loss_reduction == "weighted":
+            assert len(self.alphas) == self.num_tasks
+            assert sum(list(self.alphas.values())) == 1
 
     def freeze_feature_extractor(self):
         self.wav2vec2.feature_extractor._freeze_parameters()
@@ -64,7 +69,6 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
 
             # ctc_loss doesn't support fp16
             log_probs = F.log_softmax(logits, dim=-1, dtype=torch.float32).transpose(0, 1)
-            # log_probs = F.log_softmax(logits, dim=-1).transpose(0, 1)
 
             with torch.backends.cudnn.flags(enabled=False):
                 loss = F.ctc_loss(
@@ -149,17 +153,17 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
             if self.accent:
                 accent = accent['input_ids']
                 loss_accent = self._accent_loss(logits_accent, accent)
-                loss = loss_ctc + loss_accent
+                loss = (loss_ctc * self.alphas['asr']) + (loss_accent * self.alphas['accent'])
                 num_losses += 1
             if self.domain:
                 domain = domain['input_ids']
                 loss_domain = self._domain_loss(logits_domain, domain)
-                loss += loss_domain
+                loss += (loss_domain * self.alphas['domain'])
                 num_losses += 1
             if self.vad:
                 vad = vad['input_ids']
                 loss_vad = self._vad_loss(logits_vad, vad)
-                loss += loss_vad
+                loss += (loss_vad * self.alphas['vad'])
                 num_losses += 1
          
             loss = self.compute_loss_reduction(loss, num_losses, mode=self.loss_reduction)
@@ -175,11 +179,8 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
         )
     
     def compute_loss_reduction(self, task_loss, num_losses, mode="sum"):
-        if mode == "sum":
-            return task_loss # torch.sum(task_loss)
+        if mode == "sum" or mode == "weighted":
+            return task_loss
         if mode == "mean":
-            return task_loss / num_losses # torch.mean(task_loss)
-        if mode == "weighted":
-            assert len(task_losses) == len(self.alphas)
-            return torch.sum(torch.tensor([loss * self.alphas[i] for i, loss in enumerate(task_losses)]))
+            return task_loss / num_losses
         raise NotImplementedError
