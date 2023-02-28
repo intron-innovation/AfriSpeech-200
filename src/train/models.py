@@ -1,6 +1,7 @@
 #https://github.com/huggingface/transformers/blob/ae54e3c3b18bac0832ad62ea9b896dfd52a09850/src/transformers/models/wav2vec2/modeling_wav2vec2.py#L1612
 #https://github.com/padmalcom/wav2vec2-nonverbalvocalization/blob/main/Wav2Vec2ClassificationHead.py#L4
 # https://www.v7labs.com/blog/multi-task-learning-guide
+# https://medium.com/@mrityu.jha/understanding-the-grad-of-autograd-fc8d266fd6cf
 
 import torch
 import torch.nn.functional as F
@@ -34,6 +35,7 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
             self.vad_head = nn.Linear(config.hidden_size, vad_len)
         self.init_weights()
         self.alphas = [float(alpha) for alpha in alphas.split("|")]
+        print("loss config", self.loss_reduction, self.alphas)
 
     def freeze_feature_extractor(self):
         self.wav2vec2.feature_extractor._freeze_parameters()
@@ -81,7 +83,6 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
         # sum hidden_states over dim 1 (the sequence length), then feed into self.accent
         loss = None
         if accent_labels is not None:
-            # nn.BCEWithLogitsLoss()
             loss = F.cross_entropy(logits, accent_labels.to(logits.device))
         return loss
 
@@ -96,7 +97,7 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
         # sum hidden_states over dim 1 (the sequence length), then feed into self.domain_head
         loss = None
         if vad_labels is not None:
-            loss = F.cross_entropy(logits, vad_labels.to(logits.device))
+            loss = F.binary_cross_entropy(logits, vad_labels.to(logits.device))
         return loss
 
     def forward(
@@ -113,12 +114,6 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
     ):
 
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-
-        print("input_values", input_values.shape, input_values)
-        print("labels", labels.shape, labels)
-        print("accent", accent['input_ids'].shape, accent['input_ids'])
-        print("domain", domain, self.domain)
-        print("vad", vad, self.vad)
 
         outputs = self.wav2vec2(
             input_values,
@@ -146,28 +141,29 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
 
         if self.vad:
             logits_vad = self.vad_head(hidden_states)
-
-        task_losses = []
+  
+        loss = None
         if labels is not None:
             loss_ctc = self._ctc_loss(logits_ctc, labels, input_values, attention_mask)
-            print("loss_ctc: ", loss_ctc)
-            task_losses.append(loss_ctc)
+            num_losses = torch.tensor(1)
             if self.accent:
                 accent = accent['input_ids']
                 loss_accent = self._accent_loss(logits_accent, accent)
-                print("loss_accent: ", loss_accent)
-                task_losses.append(loss_accent)
+                loss = loss_ctc + loss_accent
+                num_losses += 1
             if self.domain:
                 domain = domain['input_ids']
                 loss_domain = self._domain_loss(logits_domain, domain)
-                task_losses.append(loss_domain)
+                loss += loss_domain
+                num_losses += 1
             if self.vad:
                 vad = vad['input_ids']
                 loss_vad = self._vad_loss(logits_vad, vad)
-                task_losses.append(loss_vad)
-        
-        loss = self.compute_loss_reduction(task_losses, mode=self.loss_reduction)
-        print("loss_reduced: ", type(loss), loss)
+                loss += loss_vad
+                num_losses += 1
+         
+            loss = self.compute_loss_reduction(loss, num_losses, mode=self.loss_reduction)
+            # print("loss_reduced: ", type(loss), loss)
 
         if not return_dict:
             output = (logits_ctc, ) + outputs[_HIDDEN_STATES_START_POSITION:]
@@ -178,11 +174,11 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
             hidden_states=outputs.hidden_states, attentions=outputs.attentions
         )
     
-    def compute_loss_reduction(self, task_losses, mode="sum"):
+    def compute_loss_reduction(self, task_loss, num_losses, mode="sum"):
         if mode == "sum":
-            return torch.sum(task_losses)
+            return task_loss # torch.sum(task_loss)
         if mode == "mean":
-            return torch.mean(task_losses)
+            return task_loss / num_losses # torch.mean(task_loss)
         if mode == "weighted":
             assert len(task_losses) == len(self.alphas)
             return torch.sum(torch.tensor([loss * self.alphas[i] for i, loss in enumerate(task_losses)]))

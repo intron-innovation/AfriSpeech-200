@@ -116,16 +116,18 @@ def create_label_maps(train_path, val_path, tasks_dict, checkpoint_path):
     if tasks_dict['accent']:
         accent_list = list(data.accent.unique()) + ['unk']
         LABEL_MAP['accent'] = {accent: i for i, accent in enumerate(accent_list)}
+        print("LABEL_MAP: ", len(LABEL_MAP['accent']), LABEL_MAP['accent'])
 
     if tasks_dict['domain']:
         domain_list = list(data.domain.unique()) + ['unk']
         LABEL_MAP['domain'] = {accent: i for i, accent in enumerate(domain_list)}
+        print("LABEL_MAP domain: ", len(LABEL_MAP['domain']), LABEL_MAP['domain'])
 
     if tasks_dict['vad']:
         vad_list = ['speech', 'no_speech']
         LABEL_MAP['vad'] = {accent: i for i, accent in enumerate(vad_list)}
+        print("LABEL_MAP vad: ", len(LABEL_MAP['vad']), LABEL_MAP['vad'])
 
-    print("LABEL_MAP: ", len(LABEL_MAP), LABEL_MAP)
     with open(os.path.join(checkpoint_path, 'label_map.json'), 'w') as f:
         json.dump(LABEL_MAP, f)
 

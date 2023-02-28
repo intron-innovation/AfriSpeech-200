@@ -250,6 +250,9 @@ if __name__ == "__main__":
             vad=True if config['tasks']['vad'] == "True" else False,
             loss_reduction=config['tasks']['loss_reduction'],
             alphas=config['tasks']['alphas'],
+            accent_len=int(config['tasks']['num_accents']), 
+            domain_len=int(config['tasks']['num_domains']), 
+            vad_len=int(config['tasks']['num_vad'])
         )
     elif config['models']['model_path'] in models_with_different_vocab:
         from transformers.file_utils import hf_bucket_url, cached_path
