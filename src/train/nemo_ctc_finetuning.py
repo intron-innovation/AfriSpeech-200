@@ -228,6 +228,11 @@ elif 'conformer' in config["models"]["finetune"]:
   model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(config["models"]["finetune"], map_location=config["experiment"]["map_location"])
   # "nvidia/stt_en_conformer_ctc_large"
 
+model.save_to(f"/home/mila/c/chris.emezue/scratch/AfriSpeech-100/output/nemo_experiments/nemo_untrained/Model-{LANGUAGE}.nemo")
+#print(f"Model saved at path : {os.getcwd() + os.path.sep + save_path}")
+print('MODEL SAVED')
+import pdb;pdb.set_trace()
+
 
 model.change_vocabulary(new_tokenizer_dir=TOKENIZER_DIR, new_tokenizer_type="bpe")
 
@@ -425,7 +430,7 @@ exp_config = OmegaConf.structured(exp_config)
 
 logdir = exp_manager.exp_manager(trainer, exp_config)
 
-trainer.fit(model)
+#trainer.fit(model)
 
 # Save the final model
 

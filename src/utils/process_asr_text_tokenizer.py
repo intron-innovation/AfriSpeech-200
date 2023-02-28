@@ -85,7 +85,7 @@ import argparse
 import json
 import logging
 import os
-
+import numpy
 import tokenizers
 
 from nemo.collections.common.tokenizers.sentencepiece_tokenizer import create_spt_model

@@ -11,7 +11,7 @@ import nemo
 import nemo.collections.asr as nemo_asr
 from nemo.collections.asr.metrics.wer import word_error_rate
 from nemo.utils import logging, exp_manager
-
+import pickle
 import re
 import unicodedata
 
@@ -24,7 +24,7 @@ import configparser
 import torch
 import torch.nn as nn
 import argparse
-from train_al import get_checkpoint,set_dropout,train_setup,
+from train_al import get_checkpoint,set_dropout,train_setup
 
 
 VERSION = "cv-corpus-6.1-2020-12-11"
@@ -54,7 +54,7 @@ args, config = parse_argument()
 
 #-----------------------Get the last checkpoint---------------------
 checkpoints_path = train_setup(config, args)
-last_checkpoint, checkpoint_ = get_checkpoint(checkpoints_path, config['models']['model_path'])
+last_checkpoint, checkpoint_ = get_checkpoint(checkpoints_path, config['models']['finetune'])
 
 def read_manifest(path):
     manifest = []
@@ -205,6 +205,10 @@ INTRON_VOCAB_SIZE = len(intron_train_set) + 2
 TOKENIZER_DATA_ROOT = f"{config['experiment']['dir']}{tokenizer_dir}"
 
 if not os.path.exists(TOKENIZER_DATA_ROOT):
+  print('-'*50)
+  print(f'Working on tokenizers for {TOKENIZER_DATA_ROOT}')
+  print('-'*50)
+
   os.system("python3 src/utils/process_asr_text_tokenizer.py \
     --manifest=" + intron_train_manifest_cleaned + "\
     --vocab_size=" + str(INTRON_VOCAB_SIZE) + " \
@@ -237,10 +241,14 @@ if num_tokens < INTRON_VOCAB_SIZE:
 def get_nemo_pretrained_model(checkpoint_pretrained, config_):
 
   if 'transducer' in config["models"]["finetune"]:
-    model = nemo_asr.models.EncDecRNNTBPEModel.from_pretrained(checkpoint_pretrained if checkpoint_pretrained else config_["models"]["finetune"], map_location=config["experiment"]["map_location"])
+    model = nemo_asr.models.EncDecRNNTBPEModel.from_pretrained(config_["models"]["finetune"], map_location=config["experiment"]["map_location"])
+    #model = nemo_asr.models.EncDecRNNTBPEModel.from_pretrained(checkpoint_pretrained if checkpoint_pretrained else config_["models"]["finetune"], map_location=config["experiment"]["map_location"])
+
     # "nvidia/stt_en_conformer_transducer_large"
   elif 'conformer' in config["models"]["finetune"]:
-    model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(checkpoint_pretrained if checkpoint_pretrained else config_["models"]["finetune"], map_location=config["experiment"]["map_location"])
+    model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(config_["models"]["finetune"], map_location=config["experiment"]["map_location"])
+    #model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(checkpoint_pretrained if checkpoint_pretrained else config_["models"]["finetune"], map_location=config["experiment"]["map_location"])
+
     # "nvidia/stt_en_conformer_ctc_large"
   return model
 
@@ -300,28 +308,6 @@ with open_dict(cfg):
   cfg.validation_ds.use_start_end_token = True
   cfg.validation_ds.trim_silence = True
 
-  '''
-  # Details for aug dataset
-  cfg.aug_ds.manifest_filepath = intron_aug_manifest_cleaned
-  cfg.aug_ds.batch_size = int(config["hyperparameters"]["train_batch_size"])
-  cfg.aug_ds.num_workers = int(config["hyperparameters"]["dataloader_num_workers"])
-  cfg.aug_ds.is_tarred: False # If set to true, uses the tarred version of the Dataset
-  cfg.aug_ds.normalize_transcripts = False  # Added by Chris | 13.01
-  cfg.aug_ds.pin_memory = True
-  cfg.aug_ds.use_start_end_token = True
-  cfg.aug_ds.trim_silence = True
-  '''
-
-
-  '''
-  # Test dataset
-  cfg.test_ds.manifest_filepath = intron_dev_manifest_cleaned
-  cfg.test_ds.batch_size = int(config["hyperparameters"]["val_batch_size"])
-  cfg.test_ds.num_workers = int(config["hyperparameters"]["dataloader_num_workers"])
-  cfg.test_ds.pin_memory = True
-  cfg.test_ds.use_start_end_token = True
-  cfg.test_ds.trim_silence = True
-  '''  
 
 
 
@@ -439,7 +425,6 @@ if torch.cuda.is_available():
 else:
   accelerator = 'cpu'
 
-EPOCHS = int(config["hyperparameters"]["num_epochs"])  
 
 trainer = ptl.Trainer(devices=1, 
                       accelerator=accelerator, 
@@ -448,7 +433,7 @@ trainer = ptl.Trainer(devices=1,
                       enable_checkpointing=False,
                       logger=False,
                       log_every_n_steps=int(config["hyperparameters"]["logging_steps"]),
-                      check_val_every_n_epoch=10)
+                      check_val_every_n_epoch=2)
 
 # Setup model with the trainer
 model.set_trainer(trainer)
@@ -475,7 +460,7 @@ exp_config = OmegaConf.structured(exp_config)
 
 logdir = exp_manager.exp_manager(trainer, exp_config)
 
-#trainer.fit(model)
+trainer.fit(model)
 
 # Save the final model
 
@@ -491,6 +476,7 @@ def get_wer_with_model(model,log_probs,transcript,transcript_len,encoded_len):
   targets=transcript,
   target_lengths=transcript_len,
   predictions_lengths=encoded_len,
+  using_al = True
   )
   wer, _, _ = model._wer.compute()
   model._wer.reset()
@@ -540,6 +526,8 @@ def run_nemo_inference(model,dataloader,mode='most', mc_dropout_rounds=10):
         #audio_wers[batch['audio_idx'][0]] = uncertainty_score
         audio_wers.update({a:u for a,u in zip(audio_files,uncertainty_score)})
 
+      #break
+
     if 'most' in mode.lower():
         # we select most uncertain samples
         return dict(sorted(audio_wers.items(), key=lambda item: item[1], reverse=True))
@@ -551,6 +539,7 @@ def run_nemo_inference(model,dataloader,mode='most', mc_dropout_rounds=10):
   return 0
 
 
+new_al_round_checkpoint_path = os.path.join(config["experiment"]["dir"])
 
 if 'aug' in config['data']:
   # after baseline is completed
@@ -573,7 +562,7 @@ if 'aug' in config['data']:
     # evaluation step and uncertain samples selection
     # get_aug_manifest
     #train_intron_manifest = read_intron(config["data"]["train"])
-    intron_aug_manifest_cleaned = write_processed_manifest(intron_aug_data_processed, config["data"]["aug"][:-4] + ".json",config["data"]["domain"],f'_processed_aug_{config["data"]["domain"]}_al_{active_learning_round}')
+    intron_aug_manifest_cleaned = write_processed_manifest(intron_aug_data_processed, config["data"]["aug"][:-4] + ".json",config["data"]["domain"],f'_processed_aug_{config["data"]["domain"]}_al_{active_learning_round}.json')
     #Transform `intron_aug_manifest_cleaned` to dataloader
     aug_ds_config = create_aug_data_cfg(copy.deepcopy(model.cfg),intron_aug_manifest_cleaned)
 
@@ -582,6 +571,8 @@ if 'aug' in config['data']:
 
     samples_uncertainty = run_nemo_inference(model, augmentation_dataloader,
                                       mode=sampling_mode, mc_dropout_rounds=mc_dropout_round)
+    
+    
     uncertainties = np.array(list(samples_uncertainty.values()))
     min_uncertainty = uncertainties.min()
     max_uncertainty = uncertainties.max()
@@ -590,36 +581,36 @@ if 'aug' in config['data']:
                                                                                       sampling_mode,
                                                                                       max_uncertainty,
                                                                                       min_uncertainty, mean_uncertainty))
+    #Transform the audio files to audio ids
+    samples_uncertainty = {[d['audio_ids'] for d in intron_aug_data_processed if d['audio_filepath'] ==k][0]:v for k,v in samples_uncertainty.items()}
+    [d['audio_ids'] for d in intron_aug_data_processed if d['audio_filepath'] =='/home/mila/c/chris.emezue/scratch/AfriSpeech-100/train/9689f4ca-b3d5-42d6-aa6b-c596b995be39/7868f2950d28ec27d7f4cbf936fe3ac5.wav']
+    
     # top-k samples
     most_uncertain_samples_idx = list(samples_uncertainty.keys())[:k]
+
 
     # writing the top=k to disk
     filename = 'Top-{}_AL_Round_{}_Mode_{}'.format(k, active_learning_round, sampling_mode)
     # write the top-k to the disk
-    filepath = os.path.join(checkpoints_path, filename)
+    filepath = os.path.join(new_al_round_checkpoint_path, filename)
     np.save(filepath, np.array(most_uncertain_samples_idx + [max_uncertainty, min_uncertainty, mean_uncertainty])) # appending uncertainties stats to keep track
-    print(f"saved audio ids for round {active_learning_round} to {filepath}")
-
-
-
-    
+    print(f"saved audio ids for round {active_learning_round} to {filepath}")    
 
     print('Old training set size: {} - Old Augmenting Size: {}'.format(len(intron_train_data), len(intron_aug_data)))
     # get top-k samples of the augmentation set
-    selected_samples_data = [d for d in intron_aug_data if d['audio_filepath'] in most_uncertain_samples_idx]
+    selected_samples_data = [d for d in intron_aug_data_processed if d['audio_ids'] in most_uncertain_samples_idx]
     # remove those samples from the augmenting set and set the new augmentation set
-    new_aug_data = [d for d in intron_aug_data if d['audio_filepath'] not in most_uncertain_samples_idx]
-
-    intron_aug_data = [d for d in new_aug_data]
-    intron_aug_data_processed = apply_preprocessors(intron_aug_data, PREPROCESSORS)
+    new_aug_data = [d for d in intron_aug_data_processed if d['audio_ids'] not in most_uncertain_samples_idx]
+    intron_aug_data_processed = [d for d in new_aug_data]
+    #intron_aug_data_processed = apply_preprocessors(intron_aug_data, PREPROCESSORS)
 
 
     # add the new dataset to the training set
     # train_intron_manifest = read_intron(config["data"]["train"])
 
-    new_train_data = intron_train_data.extend(intron_aug_data)
+    intron_train_data.extend(selected_samples_data)
     # create manifest, add to cfg, setup training data with it.
-    intron_train_manifest_cleaned_ = write_processed_manifest(intron_train_data_processed, config["data"]["train"][:-4] + ".json",config["data"]["domain"],f'_processed_al_train_{config["data"]["domain"]}_al_{active_learning_round}')
+    intron_train_manifest_cleaned_ = write_processed_manifest(intron_train_data, config["data"]["train"][:-4] + ".json",config["data"]["domain"],f'_processed_al_train_{config["data"]["domain"]}_al_{active_learning_round}.json')
 
     cfg = copy.deepcopy(model.cfg)
 
@@ -627,11 +618,8 @@ if 'aug' in config['data']:
       # Train dataset
       cfg.train_ds.manifest_filepath = intron_train_manifest_cleaned_
 
-    # setup model with new configs
-    model.setup_training_data(cfg.train_ds)
 
-
-    print('New training set size: {} - New Augmenting Size: {}'.format(len(new_train_data), len(intron_aug_data)))
+    print('New training set size: {} - New Augmenting Size: {}'.format(len(intron_train_data), len(intron_aug_data_processed)))
 
     # delete current model from memory and empty cache
     del model
@@ -644,28 +632,63 @@ if 'aug' in config['data']:
     else:
       model = get_nemo_pretrained_model(last_checkpoint,config)
 
+      # setup model with new configs
+      model.setup_training_data(cfg.train_ds)
+      model.setup_multiple_validation_data(cfg.validation_ds)
       # reset the trainer with the updated training and augmenting dataset
-      new_al_round_checkpoint_path = os.path.join(checkpoints_path, f"AL_Round_{active_learning_round+1}")
+      new_al_round_checkpoint_path = os.path.join(config["experiment"]["dir"], f"AL_Round_{active_learning_round+1}/")
       Path(new_al_round_checkpoint_path).mkdir(parents=True, exist_ok=True)
+
+      # Saving the uncertain samples for this AL round | Chris - 14.01.2023
+      # samples_uncertainty => a dict
+      # selected_samples_df => a dataframe
+      with open(os.path.join(new_al_round_checkpoint_path,'uncertainty_samples.pkl'),'wb') as f:
+          pickle.dump(samples_uncertainty,f)
+      with open(os.path.join(new_al_round_checkpoint_path,'selected_samples_data.pkl'),'wb') as f:
+          pickle.dump(selected_samples_data,f)
+
 
       # Detecting last checkpoint.
       last_checkpoint, checkpoint_ = get_checkpoint(new_al_round_checkpoint_path,
-                                                    config['models']['model_path'])
-      # update training arg with new output path
-      training_args.output_dir = new_al_round_checkpoint_path
+                                                    config['models']['finetune'])
+      
+      trainer = ptl.Trainer(devices=1, 
+                      accelerator=accelerator, 
+                      max_epochs=int(config["hyperparameters"]["num_epochs"]), 
+                      accumulate_grad_batches=int(config["hyperparameters"]["gradient_accumulation_steps"]),
+                      enable_checkpointing=False,
+                      logger=False,
+                      log_every_n_steps=int(config["hyperparameters"]["logging_steps"]),
+                      check_val_every_n_epoch=2)
 
-      trainer = Seq2SeqTrainer(
-          args=training_args,
-          model=model,
-          train_dataset=train_dataset,
-          eval_dataset=dev_dataset,
-          data_collator=data_collator,
-          compute_metrics=compute_metrics,
-          tokenizer=processor.feature_extractor,
+      # Setup model with the trainer
+      model.set_trainer(trainer)
+
+      # finally, update the model's internal config
+      model.cfg = model._cfg
+
+      # Environment variable generally used for multi-node multi-gpu training.
+      # In notebook environments, this flag is unnecessary and can cause logs of multiple training runs to overwrite each other.
+      os.environ.pop('NEMO_EXPM_VERSION', None)
+
+      exp_config = exp_manager.ExpManagerConfig(
+          exp_dir=f'{new_al_round_checkpoint_path}experiments/lang-{LANGUAGE}/',
+          name=f"ASR-Model-Language-{LANGUAGE}",
+          checkpoint_callback_params=exp_manager.CallbackParams(
+              monitor="val_wer",
+              mode="min",
+              always_save_nemo=True,
+              save_best_model=True,
+          ),
       )
 
-      processor.save_pretrained(new_al_round_checkpoint_path)
+      exp_config = OmegaConf.structured(exp_config)
+
+      logdir = exp_manager.exp_manager(trainer, exp_config)
       print('Active Learning Round: {}\n'.format(active_learning_round+1))
-      trainer.train(resume_from_checkpoint=checkpoint_)
+      trainer.fit(model)
+            
       # define path for checkpoints for new AL round
-      model.module.save_pretrained(new_al_round_checkpoint_path)
+      save_path = f"{new_al_round_checkpoint_path}Model-{LANGUAGE}.nemo"
+      model.save_to(f"{save_path}")
+      print(f"Model saved at path : {save_path}")
