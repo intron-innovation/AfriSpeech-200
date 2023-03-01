@@ -38,7 +38,7 @@ PROCESSOR = None
 CONFIG = None
 MAX_MODEL_AUDIO_LEN_SECS = 87
 LABEL_MAP = {}
-DISCRIMINATORY = 'discriminatory'
+DISCRIMINATIVE = 'discriminative'
 
 
 class DataConfig:
@@ -263,7 +263,7 @@ def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets,
 
     if multi_task and multi_task['expand_vocab']:
         vocab_dict, vocab_file_name = expand_vocab(vocab_dict, train_path, val_path, vocab_file_name, multi_task)
-    if multi_task and multi_task['architecture'] == DISCRIMINATORY:
+    if multi_task and multi_task['architecture'] == DISCRIMINATIVE:
         create_label_maps(train_path, val_path, multi_task, checkpoints_path)
     logger.info(f"---vocab dict: {len(vocab_dict)}\n{vocab_dict}")
     return vocab_file_name
@@ -356,24 +356,24 @@ def transform_labels(text, accent, domain, vad, tasks_dict):
     label_accent = label_domain = label_vad = None
     if tasks_dict:
         if tasks_dict['accent']:
-            if tasks_dict['architecture'] == DISCRIMINATORY:
+            if tasks_dict['architecture'] == DISCRIMINATIVE:
                 label_accent = LABEL_MAP['accent'].get(accent, LABEL_MAP['accent']["unk"])
             else:
                 label_accent = LABEL_MAP.get(accent, LABEL_MAP["unk"])
 
         if tasks_dict['domain']:
-            if tasks_dict['architecture'] == DISCRIMINATORY:
+            if tasks_dict['architecture'] == DISCRIMINATIVE:
                 label_domain = LABEL_MAP['domain'].get(domain, LABEL_MAP['domain']["unk"])
             else:
                 label_domain = LABEL_MAP.get(domain, LABEL_MAP["unk"])
 
         if tasks_dict['vad']:
-            if tasks_dict['architecture'] == DISCRIMINATORY:
+            if tasks_dict['architecture'] == DISCRIMINATIVE:
                 label_vad = LABEL_MAP['vad'].get(vad)
             else:
                 label_vad = LABEL_MAP.get(vad)
 
-        if tasks_dict['architecture'] == DISCRIMINATORY:
+        if tasks_dict['architecture'] == DISCRIMINATIVE:
             labels = concat_cls_head_labels(labels, label_domain, label_accent, label_vad, tasks_dict)
         else:
             labels = concat_labels(labels, label_domain, label_accent, label_vad, mode=tasks_dict['expand_vocab_mode'])
@@ -383,17 +383,20 @@ def transform_labels(text, accent, domain, vad, tasks_dict):
 def concat_cls_head_labels(asr_labels, label_domain, label_accent, label_vad, tasks_dict):
     labels = [asr_labels]
     if tasks_dict['accent']:
-        accent_list = [0] * len(LABEL_MAP['accent'])
-        accent_list[label_accent] = 1
-        labels.append(accent_list)
+        #accent_list = [0] * len(LABEL_MAP['accent'])
+        #accent_list[label_accent] = 1
+        #labels.append(accent_list)
+        labels.append(label_accent)
     if tasks_dict['domain']:
-        domain_list = [0] * len(LABEL_MAP['domain'])
-        domain_list[label_domain] = 1
-        labels.append(domain_list)
+        #domain_list = [0] * len(LABEL_MAP['domain'])
+        #domain_list[label_domain] = 1
+        #labels.append(domain_list)
+        labels.append(label_domain)
     if tasks_dict['vad']:
-        vad_list = [0] * len(LABEL_MAP['vad'])
-        vad_list[label_vad] = 1
-        labels.append(vad_list)
+        #vad_list = [0] * len(LABEL_MAP['vad'])
+        #vad_list[label_vad] = 1
+        #labels.append(vad_list)
+        labels.append(label_vad)
     return labels
 
 
@@ -443,7 +446,7 @@ class CustomASRDataset(torch.utils.data.Dataset):
 
         result.update({'labels': label, 'accent': accent, 'audio_idx': audio_idx})
 
-        if self.multi_task and self.multi_task['architecture'] == DISCRIMINATORY:
+        if self.multi_task and self.multi_task['architecture'] == DISCRIMINATIVE:
             num_tasks = 1
             if self.multi_task['accent']:
                 result.update({'accent': label[num_tasks]})
@@ -452,11 +455,10 @@ class CustomASRDataset(torch.utils.data.Dataset):
                 result.update({'domain': label[num_tasks]})
                 num_tasks += 1
             if self.multi_task['vad']:
-                result.update({'domain': label[num_tasks]})
+                result.update({'vad': label[num_tasks]})
                 num_tasks += 1
             result.update({'tasks': num_tasks})
             result.update({'labels': label[0]})
-
         return result
 
 
@@ -476,6 +478,7 @@ class DataCollatorCTCWithPaddingGroupLen:
 
         input_features = [{"input_values": feature["input_values"]} for feature in features]
         label_features = [{"input_ids": feature["labels"]} for feature in features]
+        # print("features:", features[0])
         if self.multi_task:
             if self.multi_task['accent']:
                 accent_features = [{"input_ids": feature["accent"]} for feature in features]

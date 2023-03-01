@@ -1,7 +1,9 @@
-#https://github.com/huggingface/transformers/blob/ae54e3c3b18bac0832ad62ea9b896dfd52a09850/src/transformers/models/wav2vec2/modeling_wav2vec2.py#L1612
-#https://github.com/padmalcom/wav2vec2-nonverbalvocalization/blob/main/Wav2Vec2ClassificationHead.py#L4
+# https://github.com/huggingface/transformers/blob/ae54e3c3b18bac0832ad62ea9b896dfd52a09850/src/transformers/models/wav2vec2/modeling_wav2vec2.py#L1612
+# https://github.com/padmalcom/wav2vec2-nonverbalvocalization/blob/main/Wav2Vec2ClassificationHead.py#L4
+# https://github.com/padmalcom/wav2vec2-nonverbalvocalization/blob/main/Wav2Vec2ForSpeechClassification.py
 # https://www.v7labs.com/blog/multi-task-learning-guide
 # https://medium.com/@mrityu.jha/understanding-the-grad-of-autograd-fc8d266fd6cf
+# class weights https://datascience.stackexchange.com/questions/13490/how-to-set-class-weights-for-imbalanced-classes-in-keras
 
 import torch
 import torch.nn.functional as F
@@ -40,7 +42,7 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
         self.num_tasks = (accent + domain + vad + 1)
         if self.loss_reduction == "weighted":
             assert len(self.alphas) == self.num_tasks
-            assert sum(list(self.alphas.values())) == 1
+            assert round(sum(list(self.alphas.values())), 4) == 1.0
 
     def freeze_feature_extractor(self):
         self.wav2vec2.feature_extractor._freeze_parameters()
@@ -68,7 +70,9 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
             flattened_targets = labels.masked_select(labels_mask)
 
             # ctc_loss doesn't support fp16
+            # print("ctc logits", logits.shape, labels.shape)
             log_probs = F.log_softmax(logits, dim=-1, dtype=torch.float32).transpose(0, 1)
+            # print("ctc log_probs", log_probs.shape)
 
             with torch.backends.cudnn.flags(enabled=False):
                 loss = F.ctc_loss(
@@ -87,6 +91,7 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
         # sum hidden_states over dim 1 (the sequence length), then feed into self.accent
         loss = None
         if accent_labels is not None:
+            # print("accent logits", logits.shape, accent_labels.shape)
             loss = F.cross_entropy(logits, accent_labels.to(logits.device))
         return loss
 
@@ -94,6 +99,7 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
         # sum hidden_states over dim 1 (the sequence length), then feed into self.domain_head
         loss = None
         if domain_labels is not None:
+            # print("domain logits", logits.shape, domain_labels.shape)
             loss = F.cross_entropy(logits, domain_labels.to(logits.device))
         return loss
 
@@ -128,12 +134,13 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
         )
 
         hidden_states = outputs[0]  # this is the last layer's hidden states
+        # print("hidden_states", hidden_states.shape)
         hidden_states = self.dropout(hidden_states)
         logits_accent = logits_domain = logits_vad = None
 
         # head 1
         logits_ctc = self.lm_head(hidden_states)
-
+        hidden_states = torch.mean(hidden_states, dim=1)
         if self.accent:
             x = self.dense(hidden_states)
             x = torch.tanh(x)
@@ -149,15 +156,18 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
         loss = None
         if labels is not None:
             loss_ctc = self._ctc_loss(logits_ctc, labels, input_values, attention_mask)
+            # print("loss_ctc", loss_ctc)
             num_losses = torch.tensor(1)
             if self.accent:
                 accent = accent['input_ids']
                 loss_accent = self._accent_loss(logits_accent, accent)
+                # print("loss_accent", loss_accent)
                 loss = (loss_ctc * self.alphas['asr']) + (loss_accent * self.alphas['accent'])
                 num_losses += 1
             if self.domain:
                 domain = domain['input_ids']
                 loss_domain = self._domain_loss(logits_domain, domain)
+                # print("loss_domain", loss_domain)
                 loss += (loss_domain * self.alphas['domain'])
                 num_losses += 1
             if self.vad:

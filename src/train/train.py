@@ -29,7 +29,7 @@ from transformers import (
 from transformers.trainer_utils import get_last_checkpoint
 
 from src.utils.text_processing import clean_text, strip_task_tags
-from src.utils.prepare_dataset import DataConfig, data_prep, DataCollatorCTCWithPaddingGroupLen
+from src.utils.prepare_dataset import DataConfig, data_prep, DataCollatorCTCWithPaddingGroupLen, DISCRIMINATIVE
 from src.utils.sampler import IntronTrainer
 from src.train.models import Wav2Vec2ForCTCnCLS
 
@@ -83,7 +83,7 @@ def data_setup(config):
         multi_task['accent'] = True if config['tasks']['accent'] == "True" else False
         multi_task['domain'] = True if config['tasks']['domain'] == "True" else False
         multi_task['vad'] = True if config['tasks']['vad'] == "True" else False
-    
+
     data_config = DataConfig(
         train_path=config['data']['train'],
         val_path=config['data']['val'],
@@ -221,7 +221,7 @@ if __name__ == "__main__":
     CTC_model_class = None
     if 'hubert' in config['models']['model_path']:
         CTC_model_class = HubertForCTC
-    elif 'tasks' in config and config['tasks']['architecture'] == "discriminatory":
+    elif 'tasks' in config and config['tasks']['architecture'] == DISCRIMINATIVE:
         CTC_model_class = Wav2Vec2ForCTCnCLS
     else:
         CTC_model_class = Wav2Vec2ForCTC
@@ -233,7 +233,7 @@ if __name__ == "__main__":
 
     print(f"model starting...from last checkpoint:{last_checkpoint}")
     
-    if 'tasks' in config and config['tasks']['architecture'] == "discriminatory":
+    if 'tasks' in config and config['tasks']['architecture'] == DISCRIMINATIVE:
         model = CTC_model_class.from_pretrained(
             last_checkpoint if last_checkpoint else config['models']['model_path'],
             attention_dropout=float(config['hyperparameters']['attention_dropout']),
