@@ -37,12 +37,14 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
         if self.vad:
             self.vad_head = nn.Linear(config.hidden_size, vad_len)
         self.init_weights()
+        if self.loss_reduction != "weighted":
+            alphas="asr-1|accent-1|domain-1|vad-1"
         self.alphas = {alpha.split('-')[0]: float(alpha.split('-')[1]) for alpha in alphas.split("|")}
-        print("loss config", self.loss_reduction, self.alphas)
         self.num_tasks = (accent + domain + vad + 1)
         if self.loss_reduction == "weighted":
             assert len(self.alphas) == self.num_tasks
             assert round(sum(list(self.alphas.values())), 4) == 1.0
+        print("loss config", self.loss_reduction, self.alphas)
 
     def freeze_feature_extractor(self):
         self.wav2vec2.feature_extractor._freeze_parameters()
