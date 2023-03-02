@@ -159,12 +159,13 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
         if labels is not None:
             loss_ctc = self._ctc_loss(logits_ctc, labels, input_values, attention_mask)
             # print("loss_ctc", loss_ctc)
+            loss = loss_ctc * self.alphas['asr']
             num_losses = torch.tensor(1)
             if self.accent:
                 accent = accent['input_ids']
                 loss_accent = self._accent_loss(logits_accent, accent)
                 # print("loss_accent", loss_accent)
-                loss = (loss_ctc * self.alphas['asr']) + (loss_accent * self.alphas['accent'])
+                loss += (loss_accent * self.alphas['accent'])
                 num_losses += 1
             if self.domain:
                 domain = domain['input_ids']
