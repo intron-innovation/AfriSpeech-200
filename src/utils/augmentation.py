@@ -11,7 +11,7 @@ what does this script do?
 augments two kinds of audio files and csv files.
 1. adds gaussian noise to the audio
 2. non speech data
-how to use: python3 augmentation.py --csv /AfricanNLP/intron-dev-public-3232.csv --output_csv augmented_dev.csv --output_audio augmented_audio
+how to use: python3 augmentation.py --csv /Users/adiyadaval/AfricanNLP/intron-dev-public-3232.csv --output_csv augmented_dev.csv --output_audio augmented_audio
 """
 
 def augment_sample(min_amp=0.001, max_amp=0.015, prob=0.5, duration=5, sample=None):
@@ -39,8 +39,8 @@ if __name__ == "__main__":
     parser.add_argument("--output_audio", type=str, help="output audio folder")
     args = parser.parse_args()
     original_df = pd.read_csv(args.csv)
-    random.seed(10)
     # original_df = original_df[:20]
+    original_df = original_df.drop(columns=["idx", "user_ids", "age_group", "country", "nchars", "audio_ids", "duration", "origin", "split"])
     dout = original_df
     samples = []
     transcripts = ["<UNK>"]*len(original_df)
@@ -55,7 +55,7 @@ if __name__ == "__main__":
         wavfile.write(args.output_audio+"/"+inp_sample.split("/")[-1].split(".")[0] + "_augmented.wav", 16000, data)
         samples.append(args.output_audio+"/"+inp_sample.split("/")[-1].split(".")[0] + "_augmented.wav")
     dout["audio_paths"] = samples
-    dout.to_csv("augmented_"+args.output_csv, index=False)
+    # dout.to_csv("augmented_"+args.output_csv, index=False)
     samples = []
     for i in range(len(original_df)):
         dur = random.randint(3, 17)
@@ -70,6 +70,8 @@ if __name__ == "__main__":
     'audio_paths': samples,
     'domain': domain,
     'accent': accents,
-    'transcripts': transcripts,
+    'transcript': transcripts,
     })
-    ns_df.to_csv("ns_"+args.output_csv, index=False)
+    newdf = dout.append(original_df)
+    findf = newdf.append(ns_df)
+    findf.to_csv(args.output_csv, index=False)
