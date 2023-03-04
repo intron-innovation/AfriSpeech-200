@@ -1,6 +1,6 @@
 import os
 
-data_home = "data2"
+data_home = "data"
 os.environ['TRANSFORMERS_CACHE'] = f'/{data_home}/.cache/'
 os.environ['XDG_CACHE_HOME'] = f'/{data_home}/.cache/'
 os.environ["WANDB_DISABLED"] = "true"
@@ -35,9 +35,15 @@ from src.train.models import Wav2Vec2ForCTCnCLS
 
 warnings.filterwarnings('ignore')
 wer_metric = load_metric("wer")
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 SAMPLING_RATE = 16000
 PROCESSOR = None
+
+num_of_gpus = torch.cuda.device_count()
+print("num_of_gpus:", num_of_gpus)
+print("torch.cuda.is_available()", torch.cuda.is_available())
+#device = torch.device(f"cuda:1" if torch.cuda.is_available() else "cpu")
+print("cuda.current_device:", torch.cuda.current_device())
+device = torch.device(f"cuda" if torch.cuda.is_available() else "cpu")
 
 
 def parse_argument():
@@ -46,6 +52,8 @@ def parse_argument():
     parser.add_argument("-c", "--config", dest="config_file",
                         help="Pass a training config file", metavar="FILE")
     parser.add_argument("--local_rank", type=int,
+                        default=0)
+    parser.add_argument("-g", "-gpu", "--gpu", type=int,
                         default=0)
     args = parser.parse_args()
     config.read(args.config_file)
@@ -209,6 +217,11 @@ def run_inference(trained_model, dataloader, mode='most', mc_dropout_rounds=10):
 if __name__ == "__main__":
 
     args, config = parse_argument()
+    # print("args.gpu:", args.gpu)
+    # device = torch.device(f"cuda:{args.gpu}" if torch.cuda.is_available() else "cpu")
+    # torch.cuda.set_device(args.gpu)
+    # print("cuda.current_device:", torch.cuda.current_device())
+    
     checkpoints_path = train_setup(config, args)
     data_config = data_setup(config)
     train_dataset, val_dataset, aug_dataset, PROCESSOR = data_prep(data_config)
@@ -333,6 +346,8 @@ if __name__ == "__main__":
         ignore_data_skip=True if config['hyperparameters']['ignore_data_skip'] == 'True' else False,
         report_to=None
     )
+    
+    print("device: ", training_args.device, device)
     
     print(f"\n...Model Args loaded in {time.time() - start:.4f}. Start training...\n")
 
