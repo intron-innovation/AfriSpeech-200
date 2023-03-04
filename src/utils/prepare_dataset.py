@@ -74,6 +74,8 @@ def load_afri_speech_data(
         data["audio_paths"] = data["audio_paths"].apply(
             lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
         )
+        # TODO: replace line 75 with this
+        # lambda x: x.replace(f"/AfriSpeech-100/{split}/", f"/{audio_dir}/{split}/")
 
     if max_audio_len_secs > -1 and gpu != -1:
         # when gpu is available, it cannot fit long samples

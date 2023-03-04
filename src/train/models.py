@@ -33,7 +33,7 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
             self.dense = nn.Linear(config.hidden_size, config.hidden_size)
             self.accent_head = nn.Linear(config.hidden_size, accent_len)
         if self.domain:
-            self.domain_head = nn.Linear(config.hidden_size, domain_len)
+            self.domain_head = nn.Linear(config.hidden_size, domain_len) 
         if self.vad:
             self.vad_head = nn.Linear(config.hidden_size, vad_len)
         self.init_weights()
@@ -137,12 +137,16 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
 
         hidden_states = outputs[0]  # this is the last layer's hidden states
         # print("hidden_states", hidden_states.shape)
+        
         hidden_states = self.dropout(hidden_states)
         logits_accent = logits_domain = logits_vad = None
 
         # head 1
         logits_ctc = self.lm_head(hidden_states)
+
+        # mean, max, sum pooling
         hidden_states = torch.mean(hidden_states, dim=1)
+        
         if self.accent:
             x = self.dense(hidden_states)
             x = torch.tanh(x)
