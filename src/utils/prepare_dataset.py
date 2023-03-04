@@ -107,7 +107,7 @@ def load_afri_speech_data(
     print(f"inaudible: {len(data[data['is_inaudible'] > 0])}")
     data = data[data.is_inaudible != 1]
     print(f"drop inaudible: {data.shape}")
-    
+
     data['nchars'] = data['text'].str.len()
     
     if domain != 'all':

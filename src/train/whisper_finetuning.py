@@ -39,6 +39,9 @@ from src.utils.prepare_dataset import load_custom_dataset
 from src.utils.text_processing import clean_text
 from src.utils.sampler import IntronSeq2SeqTrainer
 
+import logging
+logging.disable(logging.WARN)
+
 gc.collect()
 torch.cuda.empty_cache()
 
@@ -46,7 +49,6 @@ set_seed(1778)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 temp_audio = '/data/data/intron/e809b58c-4f05-4754-b98c-fbf236a88fbc/544bbfe5e1c6f8afb80c4840b681908d.wav'
 wer_metric = load_metric("wer")
-
 
 
 @dataclass
@@ -80,9 +82,12 @@ class DataCollatorSpeechSeq2SeqWithPadding:
 
         # If bos token is appended in previous tokenization step,
         # cut bos token here as it is appended later anyways
+        # print("labels before:", labels.shape, labels)
+        # print("decode labels:", self.processor.tokenizer.batch_decode(labels))
         if (labels[:, 0] == self.processor.tokenizer.bos_token_id).all().cpu().item():
             labels = labels[:, 1:]
-
+            # print("labels after:", labels)
+            
         batch["labels"] = labels
 
         return batch
@@ -137,7 +142,9 @@ if __name__ == "__main__":
 
         # Encode target text to label ids
         text = clean_text(text)
+        # print("text:", text)
         labels = tokenizer(text.lower()).input_ids
+        # print("labels:", labels)
 
         return audio, labels
 
@@ -155,13 +162,15 @@ if __name__ == "__main__":
         last_checkpoint if last_checkpoint else config['models']['model_path'],
     ).to(device)
     
+    logging.disable(logging.WARN)
+    
     if config['hyperparameters']['do_train'] == "True":
 
         # Override generation arguments
         model.config.forced_decoder_ids = None
         model.config.suppress_tokens = []
         # to use gradient checkpointing
-        # model.config.use_cache = False
+        model.config.use_cache = True if config['hyperparameters']['use_cache'] == "True" else False
 
         # Instantiate data collator
         data_collator = DataCollatorSpeechSeq2SeqWithPadding(processor=processor)
@@ -187,7 +196,7 @@ if __name__ == "__main__":
             save_steps=int(config['hyperparameters']['save_steps']),
             eval_steps=int(config['hyperparameters']['eval_steps']),
             logging_steps=int(config['hyperparameters']['logging_steps']),
-            report_to=config['hyperparameters']['report_to'],
+            #report_to=config['hyperparameters']['report_to'],
             load_best_model_at_end=True if config['hyperparameters']['load_best_model_at_end'] == 'True' else False,
             metric_for_best_model='eval_wer',
             greater_is_better=False,

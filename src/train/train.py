@@ -15,6 +15,7 @@ import pandas as pd
 from pathlib import Path
 import numpy as np
 from tqdm import tqdm
+import json
 
 import torch
 from torch.utils.data import DataLoader
@@ -30,6 +31,7 @@ from transformers.trainer_utils import get_last_checkpoint
 from src.utils.text_processing import clean_text
 from src.utils.prepare_dataset import DataConfig, data_prep, DataCollatorCTCWithPaddingGroupLen
 from src.utils.sampler import IntronTrainer
+import logging
 
 gc.collect()
 torch.cuda.empty_cache()
@@ -54,10 +56,15 @@ def parse_argument():
 
 
 def train_setup(config, args):
-    exp_dir = config['experiment']['dir']
-    checkpoints_path = config['checkpoints']['checkpoints_path']
-    figure_path = config['logs']['figure_path']
-    predictions_path = config['logs']['predictions_path']
+    repo_root = config['experiment']['repo_root']
+    exp_dir = os.path.join(repo_root, config['experiment']['dir'], config['experiment']['name'])
+    config['experiment']['dir'] = exp_dir
+    checkpoints_path = os.path.join(exp_dir, 'checkpoints')
+    config['checkpoints']['checkpoints_path'] = checkpoints_path
+    figure_path = os.path.join(exp_dir, 'figures')
+    config['logs']['figure_path'] = figure_path
+    predictions_path = os.path.join(exp_dir, 'predictions')
+    config['logs']['predictions_path'] = predictions_path
 
     Path(exp_dir).mkdir(parents=True, exist_ok=True)
     subprocess.call(['cp', args.config_file, f"{exp_dir}/{args.config_file.split('/')[-1]}"])
@@ -94,22 +101,19 @@ def get_data_collator():
 
 
 def compute_metric(pred):
-    wer, _, _ = compute_wer(pred.predictions, pred.label_ids)
-    return wer
+    pred_logits = pred.predictions
+    pred_ids = np.argmax(pred_logits, axis=-1)
 
+    pred.label_ids[pred.label_ids == -100] = PROCESSOR.tokenizer.pad_token_id
 
-def compute_wer(logits, label_ids):
-    label_ids[label_ids == -100] = PROCESSOR.tokenizer.pad_token_id
-
-    pred_ids = torch.argmax(torch.tensor(logits), axis=-1)
-    predicted_transcription = PROCESSOR.batch_decode(pred_ids)[0]
-
-    text = PROCESSOR.batch_decode(label_ids, group_tokens=False)[0]
-    target_transcription = text.lower()
-
-    wer = wer_metric.compute(predictions=[predicted_transcription],
-                             references=[target_transcription])
-    return {"wer": wer}, target_transcription, predicted_transcription
+    pred_str_list = PROCESSOR.batch_decode(pred_ids)
+    # we do not want to group tokens when computing the metrics
+    label_str_list = PROCESSOR.batch_decode(pred.label_ids, group_tokens=False)
+    
+    wer = wer_metric.compute(predictions=pred_str_list,
+                             references=label_str_list)
+        
+    return {"wer": wer}
 
 
 def get_checkpoint(checkpoint_path, model_path):
@@ -117,12 +121,12 @@ def get_checkpoint(checkpoint_path, model_path):
     if os.path.isdir(checkpoint_path):
         last_checkpoint_ = get_last_checkpoint(checkpoint_path)
         if last_checkpoint_ is None and len(os.listdir(checkpoint_path)) > 0:
-            print(
+            logging.warn(
                 f"Output directory ({checkpoint_path}) already exists and is not empty. "
                 "Use --overwrite_output_dir to overcome."
             )
         elif last_checkpoint_ is not None:
-            print(
+            logging.warn(
                 f"Checkpoint detected, resuming training at {last_checkpoint_}. To avoid this behavior, change "
                 "the `--output_dir` or add `--overwrite_output_dir` to train from scratch."
             )
@@ -144,24 +148,59 @@ def set_dropout(trained_model):
         if 'dropout' in name:
             module.train()
 
+def write_top_k(wer_dict, hard_example_mining_round, checkpoints_path):
+    # writing the top=k to disk
+    filename = 'hard-example-mining-round-{}.json'.format(hard_example_mining_round)
+    filename = os.path.join(checkpoint_path, filename)
+    with open(filename, 'w') as f:
+        json.dump(wer_dict, f)
+    print(f"saved audio ids for round {hard_example_mining_round} to {filename}")
+            
+def hard_example_mining(dataloader, k, hard_example_mining_round, checkpoints_path):
+    audio_wers = {}
+    model.eval()
+    for batch in tqdm(dataloader, desc="AL inference", total=len(dataloader)):
+        input_val = batch['input_values'].to(device)
+        batch["reference"] = clean_text(PROCESSOR.batch_decode(batch["labels"])[0])
+        
+        with torch.no_grad():
+            logits = model(input_val).logits
+            batch["logits"] = logits
+        
+        pred_ids = torch.argmax(torch.tensor(batch["logits"]), dim=-1)
+        pred = PROCESSOR.batch_decode(pred_ids)[0]
+        batch["predictions"] = clean_text(pred)
+        batch["wer"] = wer_metric.compute(
+            predictions=[batch["predictions"]], references=[batch["reference"]]
+        )
+        audio_wers.update({batch['audio_idx'][i]:wer for i, wer in enumerate(batch['wer']) })
+    sorted_examples = sorted(audio_wers.items(), key=lambda item: item[1], reverse=True)
+    top_k_high_wer_examples = sorted_examples[:k]
+    write_top_k(audio_wers, hard_example_mining_round, checkpoints_path)
+    return list(dict(top_k_high_wer_examples).keys())
+    
 
+            
 def run_inference(trained_model, dataloader, mode='most', mc_dropout_rounds=10):
-    if mode == 'random':
+    # print('In inference:', type(mode))
+    if 'random' in mode.lower():
+        # print('Gets in random')
         # we do not need to compute the WER here
         # we shuffle randomly the dictionary (this will display a random order) - the selecting the strict first top-k
         audios_ids = [batch['audio_idx'] for batch in dataloader]
         random.shuffle(audios_ids)
-        return {key: 1.0 for key in
+        return {key[0]: 1.0 for key in
                 audios_ids}  # these values are just dummy ones, to have a format similar to the two other cases
     else:
         audio_wers = {}
-        for batch in tqdm(dataloader, desc="AL inference"):
+        final_dict = {}
+        for batch in tqdm(dataloader, desc="Uncertainty Inference"):
             input_val = batch['input_values'].to(device)
 
             # run 10 steps of mc dropout
             wer_list = []
             batch["reference"] = clean_text(PROCESSOR.batch_decode(batch["labels"])[0])
-            
+
             for mc_dropout_round in range(mc_dropout_rounds):
                 with torch.no_grad():
                     logits = trained_model(input_val).logits
@@ -170,20 +209,26 @@ def run_inference(trained_model, dataloader, mode='most', mc_dropout_rounds=10):
                 pred_ids = torch.argmax(torch.tensor(batch["logits"]), dim=-1)
                 pred = PROCESSOR.batch_decode(pred_ids)[0]
                 batch["predictions"] = clean_text(pred)
-                batch["wer"] = wer_metric.compute(
-                    predictions=[batch["predictions"]], references=[batch["reference"]]
-                )
-                wer_list.append(batch['wer'])
-            uncertainty_score = np.array(wer_list).std()
-            audio_wers[batch['audio_idx'][0]] = uncertainty_score
-        
-        if mode == 'most':
+                # the following block is against cases where we have empty reference
+                # leading to the error: "ValueError: one or more groundtruths are empty strings"
+                try:
+                    batch["wer"] = wer_metric.compute(
+                        predictions=[batch["predictions"]], references=[batch["reference"]]
+                    )
+                    wer_list.append(batch['wer'])
+                except:
+                    pass
+
+            if len(wer_list) > 0:
+                uncertainty_score = np.array(wer_list).std()
+                audio_wers[batch['audio_idx'][0]] = uncertainty_score
+
+        if 'most' in mode.lower():
             # we select most uncertain samples
-            return dict(sorted(audio_wers.items(), key=lambda item: item[1]), reverse=True)
-        if mode == 'least':
+            return dict(sorted(audio_wers.items(), key=lambda item: item[1], reverse=True))
+        if 'least' in mode.lower():
             # we select the least uncertain samples
-            return dict(sorted(audio_wers.items(), key=lambda item: item[1]), reverse=False)
-        raise NotImplementedError
+            return dict(sorted(audio_wers.items(), key=lambda item: item[1], reverse=False))
 
 if __name__ == "__main__":
 
@@ -305,6 +350,81 @@ if __name__ == "__main__":
     model.save_pretrained(checkpoints_path)
     PROCESSOR.save_pretrained(checkpoints_path)
 
+    if 'strategy' in config and "hard-example-mining" in config['strategy']:
+        print(f"\n...Baseline model trained in {time.time() - start:.4f}")
+        print("Start Hard Example Mining...\n")
+        
+        hard_example_mining_rounds = int(config['hyperparameters']['hard_example_mining_rounds'])
+        num_hard_example_train_epochs = int(config['hyperparameters']['num_hard_example_train_epochs'])
+        num_hard_examples = int(config['hyperparameters']['num_hard_examples'])
+        
+        for mining_round in range(hard_example_mining_rounds): 
+            # get no-aug rows
+            training_data = train_dataset.get_dataset()
+            train_dataloader = {}
+            # inference on rows
+            # select top k
+            top_k_audio_ids = hard_example_mining(train_dataloader, num_hard_examples, 
+                                                  mining_round, checkpoints_path)
+            # create top k dataset
+            hard_example_dataset = {}
+            
+            # update training args
+            # reset the trainer with the updated training and augmenting dataset
+            new_al_round_checkpoint_path = os.path.join(checkpoints_path, f"AL_Round_{active_learning_round}")
+            Path(new_al_round_checkpoint_path).mkdir(parents=True, exist_ok=True)
+
+            # Detecting last checkpoint.
+            last_checkpoint, checkpoint_ = get_checkpoint(new_al_round_checkpoint_path,
+                                                          config['models']['model_path'])
+            # update training arg with new output path
+            training_args.output_dir = new_al_round_checkpoint_path
+            
+            # update trainer
+            # model.train()
+            trainer = IntronTrainer(
+                model=model,
+                data_collator=data_collator,
+                args=training_args,
+                compute_metrics=compute_metric,
+                train_dataset=hard_example_dataset,
+                eval_dataset=val_dataset,
+                tokenizer=PROCESSOR.feature_extractor,
+            )
+            # train on hard examples for 3 epochs
+            trainer.train(resume_from_checkpoint=checkpoint_)
+            # define path for checkpoints for new AL round
+            model.save_pretrained(new_al_round_checkpoint_path)
+            
+            
+            
+            # resume trainer for full dataset
+            # reset the trainer with the updated training and augmenting dataset
+            new_al_round_checkpoint_path = os.path.join(checkpoints_path, f"AL_Round_{active_learning_round}")
+            Path(new_al_round_checkpoint_path).mkdir(parents=True, exist_ok=True)
+
+            # Detecting last checkpoint.
+            last_checkpoint, checkpoint_ = get_checkpoint(new_al_round_checkpoint_path,
+                                                          config['models']['model_path'])
+            # update training arg with new output path
+            training_args.output_dir = new_al_round_checkpoint_path
+            # set full training set
+            trainer = IntronTrainer(
+                model=model,
+                data_collator=data_collator,
+                args=training_args,
+                compute_metrics=compute_metric,
+                train_dataset=train_dataset,
+                eval_dataset=val_dataset,
+                tokenizer=PROCESSOR.feature_extractor,
+            )
+            # train on full training set for n epochs
+            trainer.train(resume_from_checkpoint=checkpoint_)
+            # define path for checkpoints for new AL round
+            model.save_pretrained(new_al_round_checkpoint_path)
+            
+            # repeat
+        
     if 'aug' in config['data']:
         # after baseline is completed
         

@@ -106,7 +106,7 @@ class LibriSpeechDataset(torch.utils.data.Dataset):
                 sampling_rate=AudioConfig.sr, 
                 return_tensors="pt",
             )
-            audio = input_features.input_features.squeeze()
+            audio = input_features.input_features#.squeeze()
         elif 'whisper' in self.model_id:
             audio = np.asarray(audio, dtype=np.float32)
             audio = whisper.pad_or_trim(torch.tensor(audio.flatten())).to(self.device)
@@ -127,8 +127,8 @@ def transcribe_whisper(args, model, loader, split):
     references = []
     paths = []
     accents = []
-    if "whisper" in args.model_id_or_path and os.path.isdir(args.model_id_or_path):
-        model.config.forced_decoder_ids = processor.get_decoder_prompt_ids(language = "en", task = "transcribe")
+    #if "whisper" in args.model_id_or_path and os.path.isdir(args.model_id_or_path):
+    #    model.config.forced_decoder_ids = processor.get_decoder_prompt_ids(language = "en", task = "transcribe")
     options = whisper.DecodingOptions(language="en", fp16=args.gpu > -1,
                                       without_timestamps=True)
 
@@ -205,6 +205,7 @@ if __name__ == "__main__":
     os.makedirs(args.output_dir, exist_ok=True)
 
     device = torch.device("cuda" if (torch.cuda.is_available() and args.gpu > -1) else "cpu")
+    print(device)
     
     if "librispeech" in args.data_csv_path:
         dataset = LibriSpeechDataset(data_path="librispeech_asr", split='test',
