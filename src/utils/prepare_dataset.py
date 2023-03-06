@@ -481,7 +481,7 @@ class DataCollatorCTCWithPaddingGroupLen:
         input_features = [{"input_values": feature["input_values"]} for feature in features]
         label_features = [{"input_ids": feature["labels"]} for feature in features]
         # print("features:", features[0])
-        if self.multi_task:
+        if self.multi_task and self.multi_task['architecture'] == DISCRIMINATIVE:
             if self.multi_task['accent']:
                 accent_features = [{"input_ids": feature["accent"]} for feature in features]
             if self.multi_task['domain']:
@@ -509,7 +509,7 @@ class DataCollatorCTCWithPaddingGroupLen:
         labels = labels_batch["input_ids"].masked_fill(labels_batch.attention_mask.ne(1), -100)
         batch["labels"] = labels
 
-        if self.multi_task:
+        if self.multi_task and self.multi_task['architecture'] == DISCRIMINATIVE:
             if self.multi_task['accent']:
                 accent_features = {key: [example[key] for example in accent_features]
                                    for key in accent_features[0].keys()}
