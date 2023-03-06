@@ -239,6 +239,10 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 
 11. To run Active Learning code, create a config file similar to `src/config/config_al_xlsr_general.ini`, and run
  `python3 src/train/train.py -c src/config/config_al_xlsr_general.ini`
+ 
+12. To train single GPU on multiGPU machine `CUDA_VISIBLE_DEVICES=“1” python3 src/train/train.py --config src/config/config_xlsr_generative_single_task_baseline.ini`
+
+13. To train multi GPU `python3 -m torch.distributed.launch --nproc_per_node 4 src/train/train.py --config src/config/config_xlsr_generative_single_task_baseline.ini`
 
 
 #### How to run multi-task experiments
