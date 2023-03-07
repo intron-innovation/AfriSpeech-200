@@ -84,8 +84,31 @@ domains=("general" "clinical" "all" )
 
 # python3 src/train/train.py -c src/config/config_xlsr_all_unfreeze_encoder.ini
 
-python3 src/train/train.py -c src/config/config_xlsr_group_lengths_multi_task-prepend.ini
-python3 src/train/train.py -c src/config/config_xlsr_group_lengths_multi_task-append.ini
+# python3 src/train/train.py -c src/config/config_xlsr_group_lengths_multi_task-prepend.ini
+# python3 src/train/train.py -c src/config/config_xlsr_group_lengths_multi_task-append.ini
+
+
+model_list=(
+    "wav2vec2-large-xlsr-53-generative-multitask-asr-domain-append" \
+    "wav2vec2-large-xlsr-53-generative-multitask-asr-domain-prepend" \
+    "wav2vec2-large-xlsr-53-generative_single_task_baseline" \
+    "wav2vec2-large-xlsr-53-generative-multitask-asr-accent-append" \
+    "wav2vec2-large-xlsr-53-generative-multitask-asr-accent-prepend" \
+    "wav2vec2-large-xlsr-53-generative-multitask-asr-accent-prepend-repeat" \
+    "wav2vec2-large-xlsr-53-discriminative-asr-accent-weighted-9-1" \
+    "wav2vec2-large-xlsr-53-discriminative-single-task-baseline"
+)
+test_dataset=./data/intron-test-public-6346-clean.csv
+audio_dir=/data/data/intron/
+
+for model in ${model_list[@]}; 
+do
+    echo $model
+    python3 src/inference/afrispeech-inference.py --audio_dir $audio_dir --gpu 1 \
+        --model_id_or_path ./src/experiments/$model/checkpoints/ \
+        --data_csv_path $test_dataset --batchsize 8
+done
+
 
 # Generative vs Multiple losses
 # rerun baseline

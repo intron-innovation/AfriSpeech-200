@@ -262,7 +262,7 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
 
 - to start training, navigate to the repo root `cd ../..` and run `python3 src/train/train.py -c src/config/xlsr_multi_task_asr_domain.ini`
 
-- After training, to run inference on dev set, run `python3 src/inference/afrispeech-inference.py --model_id_or_path <PATH/TO/MODEL/CHECKPOINT> --gpu 1 --batchsize 8 --audio_dir /data/data/intron/`
+- After training, to run inference on dev set, run `python3 src/inference/afrispeech-inference.py --model_id_or_path <PATH/TO/MODEL/CHECKPOINT> --gpu 1 --batchsize 8 --audio_dir /data/data/intron/ --data_csv data/intron-test-public-6346-clean.csv`
 
 - Upload your best model to a google drive folder and share with the team. To upload your model, create a new directory inside your experiment directory and copy the following files into this directory: best checkpoint (`pytorch_model.bin`) along with its `config.json`, `preprocessor_config.json`, `tokenizer_config.json`, `vocab.json`, `special_tokens_map.json`, and your experiment config file e.g. `xlsr_multi_task_asr_domain.ini`. Zip the folder using `tar czf name_of_archive_file.tar.gz name_of_directory_to_tar` and upload the tar.gz file to google drive, update the permissions, and share the link
 

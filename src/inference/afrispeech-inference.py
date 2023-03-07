@@ -167,7 +167,7 @@ def transcribe_whisper(args, model, loader, split):
 
     data["pred_clean"] = [clean_text(text) for text in data["hypothesis"]]
     data["ref_clean"] = [clean_text(text) for text in data["reference"]]
-    data["pred_task_tags"] = task_tags
+    data["pred_task_tags"] = task_tags if len(task_tags) > 0 else [''] * len(data)
 
     all_wer = jiwer.wer(list(data["ref_clean"]), list(data["pred_clean"]))
     print(f"Cleanup WER: {all_wer * 100:.2f} %")
