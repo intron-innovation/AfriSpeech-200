@@ -70,7 +70,7 @@ def load_afri_speech_data(
         )
     else:
         data["audio_paths"] = data["audio_paths"].apply(
-            lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
+            lambda x: x.replace(f"/AfriSpeech-100/", audio_dir)
         )
     
     if max_audio_len_secs > -1 and gpu != -1:
@@ -151,6 +151,8 @@ def data_prep(config):
     aug_dataset = None
 
     raw_dataset = load_data(config.train_path, config.val_path, config.aug_path)
+
+    #raw_dataset['train'] = [r for r in raw_dataset['train']][:20]
     logger.debug(f"...Data Read Complete in {time.time() - start:.4f}. Starting Tokenizer...")
     
     vocab_file_name = load_vocab(config.model_path, config.ckpt_path, 

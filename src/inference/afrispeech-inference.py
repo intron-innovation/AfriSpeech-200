@@ -4,7 +4,7 @@
 ################################
 
 import os
-data_home = "data2"
+data_home = "/home/mila/c/chris.emezue/scratch"
 os.environ['TRANSFORMERS_CACHE'] = f'/{data_home}/.cache/'
 os.environ['XDG_CACHE_HOME'] = f'/{data_home}/.cache/'
 
