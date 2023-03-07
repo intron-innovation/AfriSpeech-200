@@ -99,7 +99,7 @@ model_list=(
     "wav2vec2-large-xlsr-53-discriminative-single-task-baseline"
 )
 test_dataset=./data/intron-test-public-6346-clean.csv
-audio_dir=/data/data/intron/
+audio_dir=/data/git sdata/intron/
 
 for model in ${model_list[@]}; 
 do
