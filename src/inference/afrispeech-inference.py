@@ -4,7 +4,7 @@
 ################################
 
 import os
-data_home = "data2"
+data_home = "data"
 os.environ['TRANSFORMERS_CACHE'] = f'/{data_home}/.cache/'
 os.environ['XDG_CACHE_HOME'] = f'/{data_home}/.cache/'
 
@@ -21,9 +21,10 @@ from transformers import Wav2Vec2Processor, AutoModelForCTC
 from transformers import WhisperProcessor, WhisperForConditionalGeneration
 
 from src.utils.audio_processing import load_audio_file, AudioConfig
-from src.utils.prepare_dataset import load_afri_speech_data
+from src.utils.prepare_dataset import load_afri_speech_data, DISCRIMINATIVE
 from src.utils.text_processing import clean_text, strip_task_tags, get_task_tags
 from src.utils.utils import parse_argument, write_pred_inference_df
+from src.train.models import Wav2Vec2ForCTCnCLS
 
 processor = None
 device = None
@@ -235,6 +236,9 @@ if __name__ == "__main__":
             f"Model {whisper_model} is {'multilingual' if model.is_multilingual else 'English-only'} "
             f"and has {sum(np.prod(p.shape) for p in model.parameters()):,} parameters."
         )
+#     elif DISCRIMINATIVE in args.model_id_or_path:
+#         processor = Wav2Vec2Processor.from_pretrained(args.model_id_or_path)
+#         model = Wav2Vec2ForCTCnCLS.from_pretrained(args.model_id_or_path).to(device)
     else:
         processor = Wav2Vec2Processor.from_pretrained(args.model_id_or_path)
         model = AutoModelForCTC.from_pretrained(args.model_id_or_path).to(device)

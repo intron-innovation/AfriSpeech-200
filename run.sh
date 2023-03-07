@@ -98,8 +98,9 @@ model_list=(
     "wav2vec2-large-xlsr-53-discriminative-asr-accent-weighted-9-1" \
     "wav2vec2-large-xlsr-53-discriminative-single-task-baseline"
 )
-test_dataset=./data/intron-test-public-6346-clean.csv
-audio_dir=/data/git sdata/intron/
+# test_dataset=./data/intron-test-public-6346-clean.csv
+test_dataset=./data/intron-dev-public-3231-clean.csv
+audio_dir=/data/data/intron/
 
 for model in ${model_list[@]}; 
 do
