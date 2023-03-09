@@ -1,9 +1,9 @@
 #!/bin/usr/env bash
 
-# datasets=("./data/intron-test-public-6346-clean.csv" "./data/intron-dev-public-3231-clean.csv") 
+datasets=("./data/intron-test-public-6346-clean.csv" "./data/intron-dev-public-3231-clean.csv") 
 # datasets=("./data/intron-dev-tiny-25-clean.csv" ) 
 # datasets=("./data/intron-dev-public-3231-clean.csv") 
-datasets=("librispeech") 
+# datasets=("librispeech") 
 audio_dir=/data/data/intron/
 models_list=( "facebook/wav2vec2-large-robust-ft-libri-960h" \
     'jonatasgrosman/wav2vec2-large-xlsr-53-english' "facebook/wav2vec2-large-960h" \
@@ -89,27 +89,33 @@ domains=("general" "clinical" "all" )
 
 
 model_list=(
-    "wav2vec2-large-xlsr-53-generative-multitask-asr-domain-append" \
-    "wav2vec2-large-xlsr-53-generative-multitask-asr-domain-prepend" \
-    "wav2vec2-large-xlsr-53-generative_single_task_baseline" \
-    "wav2vec2-large-xlsr-53-generative-multitask-asr-accent-append" \
-    "wav2vec2-large-xlsr-53-generative-multitask-asr-accent-prepend" \
-    "wav2vec2-large-xlsr-53-generative-multitask-asr-accent-prepend-repeat" \
-    "wav2vec2-large-xlsr-53-discriminative-asr-accent-weighted-9-1" \
-    "wav2vec2-large-xlsr-53-discriminative-single-task-baseline"
+#     "wav2vec2-large-xlsr-53-generative-multitask-asr-domain-append" \
+#     "wav2vec2-large-xlsr-53-generative-multitask-asr-domain-prepend" \
+#     "wav2vec2-large-xlsr-53-generative_single_task_baseline" \
+#     "wav2vec2-large-xlsr-53-generative-multitask-asr-accent-append" \
+#     "wav2vec2-large-xlsr-53-generative-multitask-asr-accent-prepend" \
+#     "wav2vec2-large-xlsr-53-generative-multitask-asr-accent-prepend-repeat" \
+#     "wav2vec2-large-xlsr-53-discriminative-asr-accent-weighted-9-1" \
+#     "wav2vec2-large-xlsr-53-discriminative-single-task-baseline" \
+    "wav2vec2-large-xlsr-53-multi-task-3-heads-mean" \
+    "wav2vec2-large-xlsr-53-multi-task-3-heads-weighted-8-1-1" \
+    "wav2vec2-large-xlsr-53-multi-task-3-heads-weighted-6-2-2" \
+    "wav2vec2-large-xlsr-53-discriminative-asr-accent-5-5"
 )
 # test_dataset=./data/intron-test-public-6346-clean.csv
 test_dataset=./data/intron-dev-public-3231-clean.csv
 audio_dir=/data/data/intron/
 
-for model in ${model_list[@]}; 
-do
-    echo $model
-    python3 src/inference/afrispeech-inference.py --audio_dir $audio_dir --gpu 1 \
-        --model_id_or_path ./src/experiments/$model/checkpoints/ \
-        --data_csv_path $test_dataset --batchsize 8
+for dataset in ${datasets[@]}; 
+    do
+    for model in ${model_list[@]}; 
+    do
+        echo $model
+        python3 src/inference/afrispeech-inference.py --audio_dir $audio_dir --gpu 1 \
+            --model_id_or_path ./src/experiments/$model/checkpoints/ \
+            --data_csv_path $dataset --batchsize 8
+    done
 done
-
 
 # Generative vs Multiple losses
 # rerun baseline
