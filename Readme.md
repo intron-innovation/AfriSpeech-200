@@ -1,20 +1,15 @@
-# AfriSpeech-100
+# AfriSpeech-200
 
 #### Pan-African accented speech dataset for clinical and general domain ASR
 
-> 100+ African accents totalling  196+ hrs of audio
+> 100+ African accents totalling  200+ hrs of audio
 
 [By Intron Innovation](https://www.intron.io)
 
 Contributor List: []
 
-#### Progress
-- [x] Select & Publish and splits
-- [x] Upload audio
-- [x] Start experiments
 
-
-#### Abstract [draft]
+#### Abstract
 
 Africa has a very low doctor:patient ratio. At very buys clinics, doctors could  see 30+ patients per day
  (a very heavy patient burden compared with developed countries), but productivity tools are lacking for these
@@ -24,7 +19,7 @@ However, clinical ASR is mature in developed nations, even ubiquitous in the US,
  performance of general domain ASR is approaching human accuracy. However, several gaps exist. Several papers have
   highlighted racial bias with speech-to-text algorithms and performance on minority accents lags significantly. 
 To our knowledge there is no publicly available research or benchmark on accented African clinical ASR.
-We release AfriSpeech, 196 hrs of Pan-African speech across 120 indigenous accents for clinical and general domain ASR
+We release AfriSpeech, 200 hrs of Pan-African speech across 120 indigenous accents for clinical and general domain ASR
 , a benchmark test set and publicly available pretrained models.
 
 
@@ -239,23 +234,50 @@ sudo apt -y install sox
 
 5. Install requirements `pip3 install -r requirements.txt`
 
-6. For Inference Run `python3 bin/run_benchmarks.py --audio_dir /data/data/intron/ --model_id_or_path facebook/wav2vec2-large-960h`
+6. For Inference Run `python3 src/inference/afrispeech-inference.py --audio_dir /data/data/intron/ --model_id_or_path facebook/wav2vec2-large-960h`
 
 7. To train wav2vec2 models, create config in format like `src/config/config_xlsr.ini` and run `python3 src/train/train.py -c src/config/config_xlsr.ini`
 
 8. To run whisper, install transformers using `pip install git+https://github.com/huggingface/transformers` and whisper using `pip install git+https://github.com/openai/whisper.git`
 
-9. To run whisper benchmarks, run `python3 src/inference/whisper-inference.py --model_id_or_path whisper_medium.en --gpu 1 --batchsize 8 --audio_dir /data/data/intron/`
+9. To run whisper benchmarks, run `python3 src/inference/afrispeech-inference.py --model_id_or_path whisper_medium.en --gpu 1 --batchsize 8 --audio_dir /data/data/intron/`
 
 10. To fine-tune whisper, create a config file similar to `src/config/whisper_clinical-test.ini`, and run `python3 src/train/whisper-finetuning.py -c src/config/whisper_clinical-test.ini`
 
 11. To run Active Learning code, create a config file similar to `src/config/config_al_xlsr_general.ini`, and run
  `python3 src/train/train.py -c src/config/config_al_xlsr_general.ini`
  
- 12. Multi-GPU training: `python3  -m torch.distributed.launch --nproc_per_node 1 src/train/whisper_finetuning.py -c src/config/whisper-all-2m-4gpu.ini`
+12. To train single GPU on multiGPU machine `CUDA_VISIBLE_DEVICES=“1” python3 src/train/train.py --config src/config/config_xlsr_generative_single_task_baseline.ini`
+
+13. To train multi GPU `python3 -m torch.distributed.launch --nproc_per_node 4 src/train/train.py --config src/config/config_xlsr_generative_single_task_baseline.ini`
+
+ 14. Multi-GPU training: `python3  -m torch.distributed.launch --nproc_per_node 1 src/train/whisper_finetuning.py -c
+  src/config/whisper-all-2m-4gpu.ini`
 
 
-### Benchmark Results
+#### How to run multi-task experiments
+
+- Checkout the `wav2vec2_multitask` branch or pull the latest changes
+
+- Update the huggingface/transformers cache directory at the top of `src/train/train.py`, `src/utils/prepare_dataset.py`, and `src/inference/afrispeech-inference.py`
+
+- Navigate to the config directory `cd src/config/`
+
+- Make a copy of `config_xlsr_group_lengths_multi_task.ini` and rename it to match the ablation you want to run. For example, if you want to run ASR + domain prediction, you can name it `xlsr_multi_task_asr_domain.ini`
+
+- In the new config file, update 3 sections: 
+1. Under the `experiment` section, set a unique experiment name `name` . Also set the `repo_root`, this is the location of the cloned repo. Optionally, set `dir` which is the path to your experiment directory. This is where your training artefacts will be stored, e.g. processor, vocab, checkpoints, etc. 
+2. Under the `audio` section Set the `audio_path` which is the directory where you downloaded the audio files. See directions for downloading the audio files in the readme section above.
+3. Under the `tasks` section, choose the tasks for your ablation. For example,  if you want to run ASR + domain prediction, set `domain=True` and set accent and vad to False.
+
+- to start training, navigate to the repo root `cd ../..` and run `python3 src/train/train.py -c src/config/xlsr_multi_task_asr_domain.ini`
+
+- After training, to run inference on dev set, run `python3 src/inference/afrispeech-inference.py --model_id_or_path <PATH/TO/MODEL/CHECKPOINT> --gpu 1 --batchsize 8 --audio_dir /data/data/intron/ --data_csv data/intron-test-public-6346-clean.csv`
+
+- Upload your best model to a google drive folder and share with the team. To upload your model, create a new directory inside your experiment directory and copy the following files into this directory: best checkpoint (`pytorch_model.bin`) along with its `config.json`, `preprocessor_config.json`, `tokenizer_config.json`, `vocab.json`, `special_tokens_map.json`, and your experiment config file e.g. `xlsr_multi_task_asr_domain.ini`. Zip the folder using `tar czf name_of_archive_file.tar.gz name_of_directory_to_tar` and upload the tar.gz file to google drive, update the permissions, and share the link
+
+
+### Dataset Paper Benchmark Results
 
 | Model | Dev WER |
 | ----------- | ----------- |

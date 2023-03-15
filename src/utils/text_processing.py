@@ -124,6 +124,23 @@ text_to_digit = {
     "billionth": '000000000th',
 }
 
+
 def text_to_numbers(text):
     text = text.split()
     return " ".join([str(text_to_digit[digit.lower()]) if digit.lower() in text_to_digit else digit for digit in text])
+
+
+def strip_task_tags(s):
+    if s.endswith('>'):
+        return s[:s.find('<')]
+    elif s.startswith('<'):
+        return s[s.rfind('>')+1:]
+    return s
+
+
+def get_task_tags(s):
+    if s.endswith('>'):
+        return s[s.find('<'):]
+    elif s.startswith('<'):
+        return s[:s.rfind('>')+1]
+    return s

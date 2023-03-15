@@ -1,10 +1,11 @@
 import os
+import gc
 
-os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
-os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
+data_home = "data"
+os.environ['TRANSFORMERS_CACHE'] = f'/{data_home}/.cache/'
+os.environ['XDG_CACHE_HOME'] = f'/{data_home}/.cache/'
 os.environ["WANDB_DISABLED"] = "true"
 
-import gc
 import argparse
 import configparser
 import random
@@ -20,17 +21,19 @@ import json
 import torch
 from torch.utils.data import DataLoader
 from datasets import load_metric
+import evaluate
 from transformers import (
     Wav2Vec2ForCTC,
     HubertForCTC,
     TrainingArguments,
     Trainer,
-    )
+)
 from transformers.trainer_utils import get_last_checkpoint
 
-from src.utils.text_processing import clean_text
-from src.utils.prepare_dataset import DataConfig, data_prep, DataCollatorCTCWithPaddingGroupLen
+from src.utils.text_processing import clean_text, strip_task_tags
+from src.utils.prepare_dataset import DataConfig, data_prep, DataCollatorCTCWithPaddingGroupLen, DISCRIMINATIVE
 from src.utils.sampler import IntronTrainer
+from src.train.models import Wav2Vec2ForCTCnCLS
 import logging
 
 gc.collect()
@@ -38,9 +41,15 @@ torch.cuda.empty_cache()
 
 warnings.filterwarnings('ignore')
 wer_metric = load_metric("wer")
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 SAMPLING_RATE = 16000
 PROCESSOR = None
+
+num_of_gpus = torch.cuda.device_count()
+print("num_of_gpus:", num_of_gpus)
+print("torch.cuda.is_available()", torch.cuda.is_available())
+# device = torch.device(f"cuda:1" if torch.cuda.is_available() else "cpu")
+print("cuda.current_device:", torch.cuda.current_device())
+device = torch.device(f"cuda" if torch.cuda.is_available() else "cpu")
 
 
 def parse_argument():
@@ -49,6 +58,8 @@ def parse_argument():
     parser.add_argument("-c", "--config", dest="config_file",
                         help="Pass a training config file", metavar="FILE")
     parser.add_argument("--local_rank", type=int,
+                        default=0)
+    parser.add_argument("-g", "-gpu", "--gpu", type=int,
                         default=0)
     args = parser.parse_args()
     config.read(args.config_file)
@@ -78,6 +89,15 @@ def train_setup(config, args):
 
 
 def data_setup(config):
+    multi_task = {}
+    if 'tasks' in config:
+        multi_task['architecture'] = config['tasks']['architecture'] if 'architecture' in config['tasks'] else None
+        multi_task['expand_vocab'] = True if config['tasks']['expand_vocab'] == "True" else False
+        multi_task['expand_vocab_mode'] = config['tasks']['expand_mode']
+        multi_task['accent'] = True if config['tasks']['accent'] == "True" else False
+        multi_task['domain'] = True if config['tasks']['domain'] == "True" else False
+        multi_task['vad'] = True if config['tasks']['vad'] == "True" else False
+
     data_config = DataConfig(
         train_path=config['data']['train'],
         val_path=config['data']['val'],
@@ -92,12 +112,15 @@ def data_setup(config):
         max_transcript_len=int(config['hyperparameters']['max_label_len']),
         domain=config['data']['domain'],
         seed=int(config['hyperparameters']['data_seed']),
+        multi_task=multi_task,
     )
     return data_config
 
 
-def get_data_collator():
-    return DataCollatorCTCWithPaddingGroupLen(processor=PROCESSOR, padding=True)
+def get_data_collator(multi_task):
+    data_collator_ = DataCollatorCTCWithPaddingGroupLen(processor=PROCESSOR, padding=True)
+    data_collator_.multi_task = multi_task
+    return data_collator_
 
 
 def compute_metric(pred):
@@ -109,15 +132,23 @@ def compute_metric(pred):
     pred_str_list = PROCESSOR.batch_decode(pred_ids)
     # we do not want to group tokens when computing the metrics
     label_str_list = PROCESSOR.batch_decode(pred.label_ids, group_tokens=False)
-    
+
+    pred_str_list = [strip_task_tags(text) for text in pred_str_list]
+    label_str_list = [strip_task_tags(text) for text in label_str_list]
+
     wer = wer_metric.compute(predictions=pred_str_list,
                              references=label_str_list)
-        
+
     return {"wer": wer}
 
 
 def get_checkpoint(checkpoint_path, model_path):
     last_checkpoint_ = None
+
+    ckpt_files = os.listdir(checkpoint_path)
+    if "pytorch_model.bin" in ckpt_files:
+        return checkpoint_path, checkpoint_path
+
     if os.path.isdir(checkpoint_path):
         last_checkpoint_ = get_last_checkpoint(checkpoint_path)
         if last_checkpoint_ is None and len(os.listdir(checkpoint_path)) > 0:
@@ -131,7 +162,7 @@ def get_checkpoint(checkpoint_path, model_path):
                 "the `--output_dir` or add `--overwrite_output_dir` to train from scratch."
             )
 
-    # use last checkpoint if exist
+    # use last checkpoint if exist 
     if last_checkpoint_:
         checkpoint = last_checkpoint_
     elif os.path.isdir(model_path):
@@ -148,39 +179,40 @@ def set_dropout(trained_model):
         if 'dropout' in name:
             module.train()
 
+
 def write_top_k(wer_dict, hard_example_mining_round, checkpoints_path):
     # writing the top=k to disk
     filename = 'hard-example-mining-round-{}.json'.format(hard_example_mining_round)
-    filename = os.path.join(checkpoint_path, filename)
+    filename = os.path.join(checkpoints_path, filename)
     with open(filename, 'w') as f:
         json.dump(wer_dict, f)
     print(f"saved audio ids for round {hard_example_mining_round} to {filename}")
-            
+
+
 def hard_example_mining(dataloader, k, hard_example_mining_round, checkpoints_path):
     audio_wers = {}
     model.eval()
     for batch in tqdm(dataloader, desc="AL inference", total=len(dataloader)):
         input_val = batch['input_values'].to(device)
         batch["reference"] = clean_text(PROCESSOR.batch_decode(batch["labels"])[0])
-        
+
         with torch.no_grad():
             logits = model(input_val).logits
             batch["logits"] = logits
-        
+
         pred_ids = torch.argmax(torch.tensor(batch["logits"]), dim=-1)
         pred = PROCESSOR.batch_decode(pred_ids)[0]
         batch["predictions"] = clean_text(pred)
         batch["wer"] = wer_metric.compute(
             predictions=[batch["predictions"]], references=[batch["reference"]]
         )
-        audio_wers.update({batch['audio_idx'][i]:wer for i, wer in enumerate(batch['wer']) })
+        audio_wers.update({batch['audio_idx'][i]: wer for i, wer in enumerate(batch['wer'])})
     sorted_examples = sorted(audio_wers.items(), key=lambda item: item[1], reverse=True)
     top_k_high_wer_examples = sorted_examples[:k]
     write_top_k(audio_wers, hard_example_mining_round, checkpoints_path)
     return list(dict(top_k_high_wer_examples).keys())
-    
 
-            
+
 def run_inference(trained_model, dataloader, mode='most', mc_dropout_rounds=10):
     # print('In inference:', type(mode))
     if 'random' in mode.lower():
@@ -230,19 +262,31 @@ def run_inference(trained_model, dataloader, mode='most', mc_dropout_rounds=10):
             # we select the least uncertain samples
             return dict(sorted(audio_wers.items(), key=lambda item: item[1], reverse=False))
 
+
 if __name__ == "__main__":
 
     args, config = parse_argument()
+    # print("args.gpu:", args.gpu)
+    # device = torch.device(f"cuda:{args.gpu}" if torch.cuda.is_available() else "cpu")
+    # torch.cuda.set_device(args.gpu)
+    # print("cuda.current_device:", torch.cuda.current_device())
+
     checkpoints_path = train_setup(config, args)
     data_config = data_setup(config)
     train_dataset, val_dataset, aug_dataset, PROCESSOR = data_prep(data_config)
-    data_collator = get_data_collator()
+    data_collator = get_data_collator(data_config.multi_task)
 
     start = time.time()
     # Detecting last checkpoint.
     last_checkpoint, checkpoint_ = get_checkpoint(checkpoints_path, config['models']['model_path'])
 
-    CTC_model_class = Wav2Vec2ForCTC if 'hubert' not in config['models']['model_path'] else HubertForCTC
+    CTC_model_class = None
+    if 'hubert' in config['models']['model_path']:
+        CTC_model_class = HubertForCTC
+    elif 'tasks' in config and config['tasks']['architecture'] == DISCRIMINATIVE:
+        CTC_model_class = Wav2Vec2ForCTCnCLS
+    else:
+        CTC_model_class = Wav2Vec2ForCTC
 
     models_with_different_vocab = ['jonatasgrosman/wav2vec2-large-xlsr-53-english',
                                    'facebook/wav2vec2-large-960h-lv60-self',
@@ -250,7 +294,29 @@ if __name__ == "__main__":
                                    ]
 
     print(f"model starting...from last checkpoint:{last_checkpoint}")
-    if config['models']['model_path'] in models_with_different_vocab:
+
+    if 'tasks' in config and config['tasks']['architecture'] == DISCRIMINATIVE:
+        model = CTC_model_class.from_pretrained(
+            last_checkpoint if last_checkpoint else config['models']['model_path'],
+            attention_dropout=float(config['hyperparameters']['attention_dropout']),
+            hidden_dropout=float(config['hyperparameters']['hidden_dropout']),
+            feat_proj_dropout=float(config['hyperparameters']['feat_proj_dropout']),
+            mask_time_prob=float(config['hyperparameters']['mask_time_prob']),
+            layerdrop=float(config['hyperparameters']['layerdrop']),
+            ctc_loss_reduction=config['hyperparameters']['ctc_loss_reduction'],
+            ctc_zero_infinity=True,
+            pad_token_id=PROCESSOR.tokenizer.pad_token_id,
+            vocab_size=len(PROCESSOR.tokenizer),
+            accent=True if config['tasks']['accent'] == "True" else False,
+            domain=True if config['tasks']['domain'] == "True" else False,
+            vad=True if config['tasks']['vad'] == "True" else False,
+            loss_reduction=config['tasks']['loss_reduction'],
+            alphas=config['tasks']['alphas'],
+            accent_len=int(config['tasks']['num_accents']),
+            domain_len=int(config['tasks']['num_domains']),
+            vad_len=int(config['tasks']['num_vad'])
+        )
+    elif config['models']['model_path'] in models_with_different_vocab:
         from transformers.file_utils import hf_bucket_url, cached_path
 
         archive_file = hf_bucket_url(
@@ -288,7 +354,7 @@ if __name__ == "__main__":
             ctc_loss_reduction=config['hyperparameters']['ctc_loss_reduction'],
             ctc_zero_infinity=True,
             pad_token_id=PROCESSOR.tokenizer.pad_token_id,
-            vocab_size=len(PROCESSOR.tokenizer)
+            vocab_size=len(PROCESSOR.tokenizer),
         )
     if config['hyperparameters']['gradient_checkpointing'] == "True":
         model.gradient_checkpointing_enable()
@@ -329,7 +395,9 @@ if __name__ == "__main__":
         ignore_data_skip=True if config['hyperparameters']['ignore_data_skip'] == 'True' else False,
         report_to=None
     )
-    
+
+    print("device: ", training_args.device, device)
+
     print(f"\n...Model Args loaded in {time.time() - start:.4f}. Start training...\n")
 
     trainer = IntronTrainer(
@@ -343,35 +411,43 @@ if __name__ == "__main__":
         sampler=config['data']['sampler'] if 'sampler' in config['data'] else None
     )
 
-    PROCESSOR.save_pretrained(checkpoints_path)
+    if config['hyperparameters']['do_train'] == "True":
+        PROCESSOR.save_pretrained(checkpoints_path)
 
-    trainer.train(resume_from_checkpoint=checkpoint_)
+        trainer.train(resume_from_checkpoint=checkpoint_)
 
-    model.save_pretrained(checkpoints_path)
-    PROCESSOR.save_pretrained(checkpoints_path)
+        model.save_pretrained(checkpoints_path)
+        PROCESSOR.save_pretrained(checkpoints_path)
+
+    if config['hyperparameters']['do_eval'] == "True":
+        metrics = trainer.evaluate()
+        metrics["eval_samples"] = len(val_dataset)
+
+        trainer.log_metrics("eval", metrics)
+        trainer.save_metrics("eval", metrics)
 
     if 'strategy' in config and "hard-example-mining" in config['strategy']:
         print(f"\n...Baseline model trained in {time.time() - start:.4f}")
         print("Start Hard Example Mining...\n")
-        
+
         hard_example_mining_rounds = int(config['hyperparameters']['hard_example_mining_rounds'])
         num_hard_example_train_epochs = int(config['hyperparameters']['num_hard_example_train_epochs'])
         num_hard_examples = int(config['hyperparameters']['num_hard_examples'])
-        
-        for mining_round in range(hard_example_mining_rounds): 
+
+        for mining_round in range(hard_example_mining_rounds):
             # get no-aug rows
             training_data = train_dataset.get_dataset()
             train_dataloader = {}
             # inference on rows
             # select top k
-            top_k_audio_ids = hard_example_mining(train_dataloader, num_hard_examples, 
+            top_k_audio_ids = hard_example_mining(train_dataloader, num_hard_examples,
                                                   mining_round, checkpoints_path)
             # create top k dataset
             hard_example_dataset = {}
-            
+
             # update training args
             # reset the trainer with the updated training and augmenting dataset
-            new_al_round_checkpoint_path = os.path.join(checkpoints_path, f"AL_Round_{active_learning_round}")
+            new_al_round_checkpoint_path = os.path.join(checkpoints_path, f"AL_Round_{mining_round}")
             Path(new_al_round_checkpoint_path).mkdir(parents=True, exist_ok=True)
 
             # Detecting last checkpoint.
@@ -379,7 +455,7 @@ if __name__ == "__main__":
                                                           config['models']['model_path'])
             # update training arg with new output path
             training_args.output_dir = new_al_round_checkpoint_path
-            
+
             # update trainer
             # model.train()
             trainer = IntronTrainer(
@@ -395,12 +471,10 @@ if __name__ == "__main__":
             trainer.train(resume_from_checkpoint=checkpoint_)
             # define path for checkpoints for new AL round
             model.save_pretrained(new_al_round_checkpoint_path)
-            
-            
-            
+
             # resume trainer for full dataset
             # reset the trainer with the updated training and augmenting dataset
-            new_al_round_checkpoint_path = os.path.join(checkpoints_path, f"AL_Round_{active_learning_round}")
+            new_al_round_checkpoint_path = os.path.join(checkpoints_path, f"AL_Round_{mining_round}")
             Path(new_al_round_checkpoint_path).mkdir(parents=True, exist_ok=True)
 
             # Detecting last checkpoint.
@@ -422,12 +496,12 @@ if __name__ == "__main__":
             trainer.train(resume_from_checkpoint=checkpoint_)
             # define path for checkpoints for new AL round
             model.save_pretrained(new_al_round_checkpoint_path)
-            
+
             # repeat
-        
+
     if 'aug' in config['data']:
         # after baseline is completed
-        
+
         print(f"\n...Baseline model trained in {time.time() - start:.4f}. Start training with Active Learning...\n")
 
         active_learning_rounds = int(config['hyperparameters']['active_learning_rounds'])
@@ -435,7 +509,7 @@ if __name__ == "__main__":
         sampling_mode = config['hyperparameters']['sampling_mode']
         k = float(config['hyperparameters']['top_k'])
         if k < 1:
-            k = len(aug_dataset)/active_learning_rounds
+            k = len(aug_dataset) / active_learning_rounds
         k = int(k)
         mc_dropout_round = int(config['hyperparameters']['mc_dropout_round'])
 
@@ -502,3 +576,4 @@ if __name__ == "__main__":
             # define path for checkpoints for new AL round
             model.save_pretrained(new_al_round_checkpoint_path)
 
+            results = {}
