@@ -21,12 +21,10 @@ import json
 import torch
 from torch.utils.data import DataLoader
 from datasets import load_metric
-import evaluate
 from transformers import (
     Wav2Vec2ForCTC,
     HubertForCTC,
     TrainingArguments,
-    Trainer,
 )
 from transformers.trainer_utils import get_last_checkpoint
 
@@ -39,7 +37,7 @@ import logging
 gc.collect()
 torch.cuda.empty_cache()
 
-warnings.filterwarnings('ignore')
+# warnings.filterwarnings('ignore')
 wer_metric = load_metric("wer")
 SAMPLING_RATE = 16000
 PROCESSOR = None
@@ -47,7 +45,6 @@ PROCESSOR = None
 num_of_gpus = torch.cuda.device_count()
 print("num_of_gpus:", num_of_gpus)
 print("torch.cuda.is_available()", torch.cuda.is_available())
-# device = torch.device(f"cuda:1" if torch.cuda.is_available() else "cpu")
 print("cuda.current_device:", torch.cuda.current_device())
 device = torch.device(f"cuda" if torch.cuda.is_available() else "cpu")
 
@@ -266,10 +263,6 @@ def run_inference(trained_model, dataloader, mode='most', mc_dropout_rounds=10):
 if __name__ == "__main__":
 
     args, config = parse_argument()
-    # print("args.gpu:", args.gpu)
-    # device = torch.device(f"cuda:{args.gpu}" if torch.cuda.is_available() else "cpu")
-    # torch.cuda.set_device(args.gpu)
-    # print("cuda.current_device:", torch.cuda.current_device())
 
     checkpoints_path = train_setup(config, args)
     data_config = data_setup(config)
