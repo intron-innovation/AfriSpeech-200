@@ -5,6 +5,7 @@ src/__pycache__/
 src/experiments
 wandb/
 aws/*
+notebooks/.ipynb_checkpoints*
 
 #Chris
 awscliv2.zip
