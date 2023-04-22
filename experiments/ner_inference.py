@@ -16,8 +16,10 @@ nlp = pipeline("ner", model=model, tokenizer=tokenizer)
 def extract_entities(csv, threshhold=0.8):
     df = pd.read_csv(csv)
     print(df.shape)
+    count = 1
     
     for id in df.index:
+        print(f"{count}/{len(df)}")
         transcript = df.loc[id, "transcript"]
         entities = nlp(transcript)
         entities_group = nlp.group_entities(entities)
@@ -77,13 +79,26 @@ def extract_entities(csv, threshhold=0.8):
         df.loc[id, "entities"] = json.dumps(entities) if len(entities) != 0 else ""
         df.loc[id, "entities_group"] = json.dumps(entities_group) if len(entities_group) != 0 else ""
         df.loc[id, "entities_others"] = json.dumps(other_entity) if len(other_entity) != 0 else ""
-
+        
+        count += 1
+        
+        df_tmp = df[df["has_entity"].notna()]
+        df_tmp["has_entity"] = df_tmp["has_entity"].astype(int)
+        df_tmp.to_csv(
+            f"./results/ner/intron-train-public-58000-clean_with_named_entity.csv", index=None
+        )
+        
     df["has_entity"] = df["has_entity"].astype(int)
     df.to_csv(
-        f"./results/ner/intron-test-public-6346-clean_with_named_entity.csv", index=None
+        f"./results/ner/intron-train-public-58000-clean_with_named_entity.csv", index=None
     )
     return df
 
 
-csv = "./data/intron-test-public-6346-clean.csv"
+#  f"./results/ner/intron-test-public-6346-clean_with_named_entity.csv
+# f"./results/ner/intron-dev-public-3231-clean_with_named_entity.csv"
+
+# csv = "./data/intron-test-public-6346-clean.csv"
+# csv = "./data/intron-dev-public-3231-clean.csv"
+csv = "./data/intron-train-public-58000-clean.csv"
 df_with_ner_tag = extract_entities(csv, threshhold=0.8)
