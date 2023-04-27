@@ -1,5 +1,12 @@
 import re
 
+clinical = ["General-Clinical", "Clinical-Surgery", "Talk-Very-Fast-Clinical", 
+            "Pre-Clinical", "Clinical-Medicine", "Pre-Clinical-INT"]
+general = ["40yrs-old-and-above", "Talk-Very-Fast-Anyone", 'Transcribe-Inference',
+           "Naija-News-Non-Clinical", "News-Anyone-INT", 'Transcribe-Conversation']
+legal = ['Legally-Speaking', 'Transcribe-NASS', 'Transcribe-Kenya', 
+         'Transcribe-South-Africa', 'Transcribe-Ghana']
+
 inaudible_tags = ['[music] [inaudible]', '(inaudible) ', '[inaudible)', '(inaudible]',
                   '[Inaudible].', '[music]','[INAUDIBLE]',' [Inaudible]', '(Inaudible).',
                   '[Inaudible] ', '[silence]','[Silence]', '[inaudible] ', 'in aduible',
@@ -144,3 +151,31 @@ def get_task_tags(s):
     elif s.startswith('<'):
         return s[:s.rfind('>')+1]
     return s
+
+
+def assign_domain(project_name):
+    if project_name in clinical:
+        return "clinical"
+    elif project_name in general:
+        return "general"
+    elif project_name in legal:
+        return "legal"
+    else:
+        return "general"
+    
+def is_accent_multiple(s):
+    #print(f"accent:--{s}--")
+    if len(s.split('_')) > 2:
+        return 1
+    elif 'pair_' in s:
+        return 1
+    else:
+        return 0
+    
+
+def get_minority_accents(data, majority_count=5000):
+    accent_counts = data.accent.value_counts().to_dict()
+    print(accent_counts)
+    return [accent for accent, count in accent_counts.items() if count < majority_count]
+    
+    

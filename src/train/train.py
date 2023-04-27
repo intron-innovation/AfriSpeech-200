@@ -26,7 +26,7 @@ from transformers import (
     HubertForCTC,
     TrainingArguments,
 )
-from transformers.trainer_utils import get_last_checkpoint
+from transformers.trainer_utils import get_last_checkpoint, is_main_process
 
 from src.utils.text_processing import clean_text, strip_task_tags
 from src.utils.prepare_dataset import DataConfig, data_prep, DataCollatorCTCWithPaddingGroupLen, DISCRIMINATIVE

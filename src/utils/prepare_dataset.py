@@ -21,9 +21,10 @@ from transformers import (
     Wav2Vec2FeatureExtractor,
     Wav2Vec2Processor, BatchEncoding,
 )
-
+from transformers.trainer_utils import is_main_process
 from src.utils.audio_processing import AudioConfig, load_audio_file
-from src.utils.text_processing import clean_text, detect_inaudible, replace_inaudible
+from src.utils.text_processing import clean_text, detect_inaudible, \
+    replace_inaudible, assign_domain, is_accent_multiple, get_minority_accents
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -51,6 +52,7 @@ def load_afri_speech_data(
     data_path, max_audio_len_secs=17, audio_dir="./data/",
     return_dataset=True, split="dev", gpu=-1, domain='all',
     max_transcript_len=-1, min_transcript_len=-1,
+    minority_accents=None
 ):
     """
     load train/dev/test data from csv path.
@@ -76,7 +78,7 @@ def load_afri_speech_data(
             data["audio_paths"] = data["audio_paths"].apply(
                 lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
             )
-        # TODO: replace line 75 with this
+        # TODO: replace line 77 with this
         # lambda x: x.replace(f"/AfriSpeech-100/{split}/", f"/{audio_dir}/{split}/")
     else:
         data["audio_paths"] = data["audio_path"]
@@ -109,9 +111,26 @@ def load_afri_speech_data(
     data["is_inaudible"] = data.text.apply(detect_inaudible)
     data["text"] = data.text.apply(replace_inaudible)
     print(f"inaudible: {len(data[data['is_inaudible'] > 0])}")
+    
+    # speech detection
+    data["vad"] = 'speech'
+    data.loc[data['is_inaudible']==1, "vad"] = "no_speech"
+    data.loc[data['vad']=="no_speech", "text"] = "inaudible"
+    print(f"no speech: {len(data[data['vad'] == 'no_speech'])}")
+    
     data = data[data.is_inaudible != 1]
     print(f"drop inaudible: {data.shape}")
-
+    
+    # accent detection
+    data["is_multiple_accent"] = data.accent.apply(is_accent_multiple)
+    data.loc[data['is_multiple_accent']==1, "accent"] = "multiple"
+    print(data.is_multiple_accent.value_counts())
+    
+    if minority_accents:
+        data.loc[data['accent'].isin(minority_accents), "accent"] = "minority"
+    
+    # print(data.accent.value_counts())
+    
     data['nchars'] = data['text'].str.len()
     
     if domain != 'all':
@@ -120,12 +139,14 @@ def load_afri_speech_data(
         data = data[data.nchars >= min_transcript_len]
     if max_transcript_len != -1:
         data = data[data.nchars < max_transcript_len]
-        # data = data[data.transcript.str.len() < max_transcript_len]
 
-    # data["text"] = data["transcript"]
     print("before dedup", data.shape)
     data.drop_duplicates(subset=["audio_paths"], inplace=True)
     print("after dedup", data.shape)
+    
+    if 'project_name' in data.columns:
+        data["domain"] = data.project_name.apply(assign_domain)
+        print(data.domain.value_counts())
     
     if split == 'dev' and "1m_data_index" in data_path:
         cv = data[data.source=='common-voice']
@@ -158,7 +179,7 @@ def create_label_maps(train_path, val_path, tasks_dict, checkpoint_path):
         print("LABEL_MAP domain: ", len(LABEL_MAP['domain']), LABEL_MAP['domain'])
 
     if tasks_dict['vad']:
-        vad_list = ['speech', 'no_speech']
+        vad_list = list(data.vad.unique())
         LABEL_MAP['vad'] = {accent: i for i, accent in enumerate(vad_list)}
         print("LABEL_MAP vad: ", len(LABEL_MAP['vad']), LABEL_MAP['vad'])
 
@@ -169,12 +190,24 @@ def create_label_maps(train_path, val_path, tasks_dict, checkpoint_path):
 def expand_vocab(vocab_dict, train_path, val_path, vocab_file_name, tasks_dict):
     data = pd.concat([pd.read_csv(train_path), pd.read_csv(val_path)])
     n = len(vocab_dict)
+    
+    # accent normalization
+    data["is_multiple_accent"] = data.accent.apply(is_accent_multiple)
+    print(data["is_multiple_accent"].value_counts())
+    data.loc[data['is_multiple_accent']==1, "accent"] = "multiple"
+    
+    minority_accents = get_minority_accents(data)
+    data.loc[data['accent'].isin(minority_accents), "accent"] = "minority"
+    # print(data.accent.value_counts())
+    
     accent_list = list(data.accent.unique())
-    domain_list = list(data.domain.unique())
+    domain_list = ['general', 'clinical', 'legal'] # list(data.domain.unique())
     vad_list = ['speech', 'no_speech']
+    
     # age_group_list = list(data.age_group.unique())
     # ner_tag_list
     # clinical_tag_list
+    
     new_tags = []
     if tasks_dict['accent']:
         new_tags.extend(accent_list)
@@ -182,6 +215,7 @@ def expand_vocab(vocab_dict, train_path, val_path, vocab_file_name, tasks_dict):
         new_tags.extend(domain_list)
     if tasks_dict['vad']:
         new_tags.extend(vad_list)
+    
     for tag in new_tags:
         if f"<|{tag}|>" not in vocab_dict:
             vocab_dict[f"<|{tag}|>"] = n
@@ -198,7 +232,7 @@ def expand_vocab(vocab_dict, train_path, val_path, vocab_file_name, tasks_dict):
     with open(vocab_file_name, 'w') as vocab_file:
         json.dump(vocab_dict, vocab_file)
 
-    return vocab_dict, vocab_file_name
+    return vocab_dict, vocab_file_name, minority_accents
 
 
 def data_prep(config):
@@ -211,7 +245,7 @@ def data_prep(config):
     raw_dataset = load_data(config.train_path, config.val_path, config.aug_path)
     logger.debug(f"...Data Read Complete in {time.time() - start:.4f}. Starting Tokenizer...")
 
-    vocab_file_name = load_vocab(config.model_path, config.ckpt_path,
+    vocab_file_name, minority_accents = load_vocab(config.model_path, config.ckpt_path,
                                  config.exp_dir, raw_dataset, config.multi_task,
                                  config.train_path, config.val_path)
     PROCESSOR = load_processor(vocab_file_name)
@@ -220,11 +254,13 @@ def data_prep(config):
 
     val_dataset = load_custom_dataset(config, config.val_path, 'dev',
                                       transform_audio, transform_labels,
-                                      multi_task=config.multi_task)
+                                      multi_task=config.multi_task, 
+                                      minority_accents=minority_accents)
     if config.aug_percent and config.aug_percent > 1:
         train_df = load_custom_dataset(config, config.train_path, 'train',
                                        transform_audio, transform_labels, return_dataset=False,
-                                       multi_task=config.multi_task)
+                                       multi_task=config.multi_task, 
+                                       minority_accents=minority_accents)
         aug_df = train_df.sample(frac=config.aug_percent, random_state=config.seed)
         train_df = train_df[~train_df.audio_ids.isin(aug_df.audio_ids.to_list())]
         aug_dataset = Dataset.from_pandas(aug_df)
@@ -232,15 +268,19 @@ def data_prep(config):
     elif config.aug_path:
         train_dataset = load_custom_dataset(config, config.train_path, 'train',
                                             transform_audio, transform_labels,
-                                            multi_task=config.multi_task)
+                                            multi_task=config.multi_task, 
+                                            minority_accents=minority_accents)
         aug_dataset = load_custom_dataset(config, config.aug_path, 'aug',
                                           transform_audio, transform_labels,
-                                          multi_task=config.multi_task)
+                                          multi_task=config.multi_task, 
+                                          minority_accents=minority_accents)
     else:
         split = 'train' if 'train' in config.train_path else 'dev'
+        # for edge case when training with open-source-dev-tiny dataset
         train_dataset = load_custom_dataset(config, config.train_path, split,
                                             transform_audio, transform_labels,
-                                            multi_task=config.multi_task)
+                                            multi_task=config.multi_task, 
+                                            minority_accents=minority_accents)
 
     logger.debug(f"Load train and val dataset done in {time.time() - start:.4f}.")
     return train_dataset, val_dataset, aug_dataset, PROCESSOR
@@ -248,20 +288,22 @@ def data_prep(config):
 
 def load_custom_dataset(config, data_path, split,
                         transform_audio_, transform_labels_=None,
-                        prepare=None, return_dataset=True, multi_task=None):
+                        prepare=None, return_dataset=True, multi_task=None,
+                       minority_accents=None):
     return CustomASRDataset(data_path, transform_audio_, transform_labels_,
                             config.audio_path, split=split, domain=config.domain,
                             max_audio_len_secs=config.max_audio_len_secs,
                             min_transcript_len=config.min_transcript_len,
                             max_transcript_len=config.max_transcript_len,
                             prepare=prepare, return_dataset=return_dataset,
-                            multi_task=multi_task)
+                            multi_task=multi_task, minority_accents=minority_accents)
 
 
 def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets,
                multi_task=None, train_path=None, val_path=None):
     create_new_vocab = False
     vocab_file_name = None
+    minority_accents = None
     ckpt_parent = os.path.dirname(model_path)
 
     if os.path.isdir(model_path) and 'vocab.json' in os.listdir(model_path):
@@ -304,11 +346,12 @@ def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets,
         vocab_dict = {}
 
     if multi_task and multi_task['expand_vocab']:
-        vocab_dict, vocab_file_name = expand_vocab(vocab_dict, train_path, val_path, vocab_file_name, multi_task)
+        vocab_dict, vocab_file_name, minority_accents = expand_vocab(vocab_dict, train_path, 
+                                                                     val_path, vocab_file_name, multi_task)
     if multi_task and multi_task['architecture'] == DISCRIMINATIVE:
         create_label_maps(train_path, val_path, multi_task, checkpoints_path)
     logger.info(f"---vocab dict: {len(vocab_dict)}\n{vocab_dict}")
-    return vocab_file_name
+    return vocab_file_name, minority_accents
 
 
 def load_data(train_path, val_path, aug_path=None):
@@ -447,7 +490,7 @@ class CustomASRDataset(torch.utils.data.Dataset):
                  split=None, domain="all", max_audio_len_secs=-1, min_transcript_len=10,
                  prepare=False, max_transcript_len=-1, gpu=1,
                  length_column_name='duration', return_dataset=True,
-                 multi_task=None):
+                 multi_task=None, minority_accents=None):
 
         self.prepare = prepare
         self.split = split
@@ -456,7 +499,8 @@ class CustomASRDataset(torch.utils.data.Dataset):
                                               split=split, gpu=gpu,
                                               audio_dir=audio_dir,
                                               max_transcript_len=max_transcript_len,
-                                              domain=domain, return_dataset=return_dataset)
+                                              domain=domain, return_dataset=return_dataset,
+                                              minority_accents=minority_accents)
         self.transform = transform
         self.target_transform = transform_target
         self.multi_task = multi_task
@@ -472,7 +516,7 @@ class CustomASRDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, idx):
         audio_path = self.asr_data[idx]['audio_paths']
-        text = self.asr_data[idx]['transcript']
+        text = self.asr_data[idx]['text'] # transcript
         accent = self.asr_data[idx]['accent']
         audio_idx = self.asr_data[idx]['audio_ids']
         domain = self.asr_data[idx]['domain']
@@ -520,7 +564,7 @@ class DataCollatorCTCWithPaddingGroupLen:
 
         input_features = [{"input_values": feature["input_values"]} for feature in features]
         label_features = [{"input_ids": feature["labels"]} for feature in features]
-        # print("features:", features[0])
+
         if self.multi_task and self.multi_task['architecture'] == DISCRIMINATIVE:
             if self.multi_task['accent']:
                 accent_features = [{"input_ids": feature["accent"]} for feature in features]
