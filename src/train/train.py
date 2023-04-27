@@ -106,6 +106,7 @@ def data_setup(config):
         domain=config['data']['domain'],
         seed=int(config['hyperparameters']['data_seed']),
         multi_task=multi_task,
+        max_transcript_len=-1
     )
     return data_config
 
