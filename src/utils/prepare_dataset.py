@@ -7,8 +7,8 @@ from datetime import datetime
 import pandas as pd
 import subprocess
 
-os.environ['TRANSFORMERS_CACHE'] = '/data/.cache/'
-os.environ['XDG_CACHE_HOME'] = '/data/.cache/'
+os.environ['TRANSFORMERS_CACHE'] = '/data3/.cache/'
+os.environ['XDG_CACHE_HOME'] = '/data3/.cache/'
 
 from datasets import load_dataset, load_metric, Dataset
 from dataclasses import dataclass
@@ -185,7 +185,7 @@ def data_prep(config):
     PROCESSOR = load_processor(vocab_file_name)
     logger.debug(f"...Load vocab and processor complete in {time.time() - start:.4f}.\n"
                  f"Loading dataset...")
-
+    
     val_dataset = load_custom_dataset(config, config.val_path, 'dev',
                                       transform_audio, transform_labels,
                                       multi_task=config.multi_task)

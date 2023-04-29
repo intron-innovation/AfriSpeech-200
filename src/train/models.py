@@ -17,9 +17,9 @@ _HIDDEN_STATES_START_POSITION = 2
 
 class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
 
-    def __init__(self, config, accent=None, domain=None, vad=None,
-                 accent_len=72, domain_len=3, vad_len=2, 
-                 alphas="asr-1|accent-1|domain-1|vad-1",
+    def __init__(self, config, accent=True, domain=True, vad=False,
+                 accent_len=80, domain_len=3, vad_len=2, 
+                 alphas="asr-0.7|accent-0.2|domain-0.1",
                  loss_reduction="sum"):
         super().__init__(config)
         self.wav2vec2 = Wav2Vec2Model(config)
@@ -38,7 +38,7 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
             self.vad_head = nn.Linear(config.hidden_size, vad_len)
         self.init_weights()
         if self.loss_reduction != "weighted":
-            alphas="asr-1|accent-1|domain-1|vad-1"
+            alphas="asr-0.7|accent-0.2|domain-0.1"
         self.alphas = {alpha.split('-')[0]: float(alpha.split('-')[1]) for alpha in alphas.split("|")}
         self.num_tasks = (accent + domain + vad + 1)
         if self.loss_reduction == "weighted":
@@ -148,8 +148,8 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
         hidden_states = torch.mean(hidden_states, dim=1)
         
         if self.accent:
-            x = self.dense(hidden_states)
-            x = torch.tanh(x)
+            accent_x1 = self.dense(hidden_states)  #####
+            x = torch.tanh(accent_x1)
             x = self.dropout(x)
             logits_accent = self.accent_head(x)
 
@@ -187,12 +187,13 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
             # print("loss_reduced: ", type(loss), loss)
 
         if not return_dict:
-            output = (logits_ctc, ) + outputs[_HIDDEN_STATES_START_POSITION:]
+            print("e dey work")
+            output = (logits_ctc, ) + outputs[_HIDDEN_STATES_START_POSITION:]  
             return ((loss,) + output) if loss is not None else output
 
         return CausalLMOutput(
-            loss=loss, logits=logits_ctc,
-            hidden_states=outputs.hidden_states, attentions=outputs.attentions
+            loss=loss, logits=(logits_ctc, accent_x1),
+            hidden_states=outputs.hidden_states, attentions=outputs.attentions, 
         )
     
     def compute_loss_reduction(self, task_loss, num_losses, mode="sum"):

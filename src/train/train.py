@@ -350,7 +350,7 @@ if __name__ == "__main__":
     print("device: ", training_args.device, device)
     
     print(f"\n...Model Args loaded in {time.time() - start:.4f}. Start training...\n")
-
+    
     trainer = IntronTrainer(
         model=model,
         data_collator=data_collator,
