@@ -8,9 +8,10 @@
 import torch
 import torch.nn.functional as F
 import torch.utils.checkpoint
-from transformers import Wav2Vec2Model, Wav2Vec2PreTrainedModel
+from transformers import Wav2Vec2Model, Wav2Vec2PreTrainedModel, Wav2Vec2ForCTC
 from transformers.modeling_outputs import CausalLMOutput
 from torch import nn
+from typing import Optional, Tuple, Union
 
 _HIDDEN_STATES_START_POSITION = 2
 
@@ -195,9 +196,10 @@ class Wav2Vec2ForCTCnCLS(Wav2Vec2PreTrainedModel):
             hidden_states=outputs.hidden_states, attentions=outputs.attentions
         )
     
-    def compute_loss_reduction(self, task_loss, num_losses, mode="sum"):
+    def compute_loss_reduction(self, task_loss, num_losses, mode="mean"):
         if mode == "sum" or mode == "weighted":
             return task_loss
         if mode == "mean":
             return task_loss / num_losses
         raise NotImplementedError
+

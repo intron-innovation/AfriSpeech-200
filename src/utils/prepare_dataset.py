@@ -69,6 +69,8 @@ def load_afri_speech_data(
     """
     data = pd.read_csv(data_path)
     
+    print(f"start {split}: {data.shape}")
+    
     if "audio_paths" in data.columns:
         if split == 'aug':
             data["audio_paths"] = data["audio_paths"].apply(
@@ -86,10 +88,12 @@ def load_afri_speech_data(
     
     # drop empty transcript
     data = data[~data.transcript.isna()]
+    print(f"remove blank transcripts: {data.shape}")
     
     if max_audio_len_secs > -1 and gpu != -1:
         # when gpu is available, it cannot fit long samples
         data = data[data.duration < max_audio_len_secs]
+        print(f"remove long audios: {data.shape}")
     elif gpu == -1 and max_audio_len_secs > MAX_MODEL_AUDIO_LEN_SECS:
         # if cpu, infer all samples, no filtering
         pass
@@ -97,6 +101,7 @@ def load_afri_speech_data(
         # if cpu, infer only long samples
         # assuming gpu has inferred on all short samples
         data = data[data.duration >= max_audio_len_secs]
+        print(f"retain only long audios: {data.shape}")
     else:
         # Check if any of the sample is longer than
         # the GPU global MAX_MODEL_AUDIO_LEN_SECS
@@ -135,10 +140,13 @@ def load_afri_speech_data(
     
     if domain != 'all':
         data = data[data.domain == domain]
+        print(f"filter domain {domain}: {data.shape}")
     if min_transcript_len != -1:
         data = data[data.nchars >= min_transcript_len]
+        print(f"remove short transcripts: {data.shape}")
     if max_transcript_len != -1:
         data = data[data.nchars < max_transcript_len]
+        print(f"remove long transcripts: {data.shape}")
 
     print("before dedup", data.shape)
     data.drop_duplicates(subset=["audio_paths"], inplace=True)

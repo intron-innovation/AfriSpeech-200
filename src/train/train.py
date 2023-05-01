@@ -378,7 +378,8 @@ if __name__ == "__main__":
         eval_steps=int(config['hyperparameters']['eval_steps']),
         logging_steps=int(config['hyperparameters']['logging_steps']),
         learning_rate=float(config['hyperparameters']['learning_rate']),
-        warmup_steps=int(config['hyperparameters']['warmup_steps']),
+        warmup_ratio=float(config['hyperparameters']['warmup_ratio']),
+        max_grad_norm=float(config['hyperparameters']['max_grad_norm']),
         save_total_limit=int(config['hyperparameters']['save_total_limit']),
         dataloader_num_workers=int(config['hyperparameters']['dataloader_num_workers']),
         logging_first_step=True,
@@ -388,7 +389,9 @@ if __name__ == "__main__":
         ignore_data_skip=True if config['hyperparameters']['ignore_data_skip'] == 'True' else False,
         report_to=None
     )
-
+    
+    print("Training Args:\n", training_args.__dict__)
+    
     print("device: ", training_args.device, device)
 
     print(f"\n...Model Args loaded in {time.time() - start:.4f}. Start training...\n")
@@ -418,155 +421,3 @@ if __name__ == "__main__":
 
         trainer.log_metrics("eval", metrics)
         trainer.save_metrics("eval", metrics)
-
-    if 'strategy' in config and "hard-example-mining" in config['strategy']:
-        print(f"\n...Baseline model trained in {time.time() - start:.4f}")
-        print("Start Hard Example Mining...\n")
-
-        hard_example_mining_rounds = int(config['hyperparameters']['hard_example_mining_rounds'])
-        num_hard_example_train_epochs = int(config['hyperparameters']['num_hard_example_train_epochs'])
-        num_hard_examples = int(config['hyperparameters']['num_hard_examples'])
-
-        for mining_round in range(hard_example_mining_rounds):
-            # get no-aug rows
-            training_data = train_dataset.get_dataset()
-            train_dataloader = {}
-            # inference on rows
-            # select top k
-            top_k_audio_ids = hard_example_mining(train_dataloader, num_hard_examples,
-                                                  mining_round, checkpoints_path)
-            # create top k dataset
-            hard_example_dataset = {}
-
-            # update training args
-            # reset the trainer with the updated training and augmenting dataset
-            new_al_round_checkpoint_path = os.path.join(checkpoints_path, f"AL_Round_{mining_round}")
-            Path(new_al_round_checkpoint_path).mkdir(parents=True, exist_ok=True)
-
-            # Detecting last checkpoint.
-            last_checkpoint, checkpoint_ = get_checkpoint(new_al_round_checkpoint_path,
-                                                          config['models']['model_path'])
-            # update training arg with new output path
-            training_args.output_dir = new_al_round_checkpoint_path
-
-            # update trainer
-            # model.train()
-            trainer = IntronTrainer(
-                model=model,
-                data_collator=data_collator,
-                args=training_args,
-                compute_metrics=compute_metric,
-                train_dataset=hard_example_dataset,
-                eval_dataset=val_dataset,
-                tokenizer=PROCESSOR.feature_extractor,
-            )
-            # train on hard examples for 3 epochs
-            trainer.train(resume_from_checkpoint=checkpoint_)
-            # define path for checkpoints for new AL round
-            model.save_pretrained(new_al_round_checkpoint_path)
-
-            # resume trainer for full dataset
-            # reset the trainer with the updated training and augmenting dataset
-            new_al_round_checkpoint_path = os.path.join(checkpoints_path, f"AL_Round_{mining_round}")
-            Path(new_al_round_checkpoint_path).mkdir(parents=True, exist_ok=True)
-
-            # Detecting last checkpoint.
-            last_checkpoint, checkpoint_ = get_checkpoint(new_al_round_checkpoint_path,
-                                                          config['models']['model_path'])
-            # update training arg with new output path
-            training_args.output_dir = new_al_round_checkpoint_path
-            # set full training set
-            trainer = IntronTrainer(
-                model=model,
-                data_collator=data_collator,
-                args=training_args,
-                compute_metrics=compute_metric,
-                train_dataset=train_dataset,
-                eval_dataset=val_dataset,
-                tokenizer=PROCESSOR.feature_extractor,
-            )
-            # train on full training set for n epochs
-            trainer.train(resume_from_checkpoint=checkpoint_)
-            # define path for checkpoints for new AL round
-            model.save_pretrained(new_al_round_checkpoint_path)
-
-            # repeat
-
-    if 'aug' in config['data']:
-        # after baseline is completed
-
-        print(f"\n...Baseline model trained in {time.time() - start:.4f}. Start training with Active Learning...\n")
-
-        active_learning_rounds = int(config['hyperparameters']['active_learning_rounds'])
-        aug_batch_size = int(config['hyperparameters']['aug_batch_size'])
-        sampling_mode = config['hyperparameters']['sampling_mode']
-        k = float(config['hyperparameters']['top_k'])
-        if k < 1:
-            k = len(aug_dataset) / active_learning_rounds
-        k = int(k)
-        mc_dropout_round = int(config['hyperparameters']['mc_dropout_round'])
-
-        # AL rounds
-        for active_learning_round in range(active_learning_rounds):
-            print('Active Learning Round: {}\n'.format(active_learning_round))
-
-            # McDropout for uncertainty computation
-            set_dropout(model)
-            # evaluation step and uncertain samples selection
-            augmentation_dataloader = DataLoader(aug_dataset, batch_size=aug_batch_size)
-
-            samples_uncertainty = run_inference(model, augmentation_dataloader,
-                                                mode=sampling_mode, mc_dropout_rounds=mc_dropout_round)
-            # top-k samples (select top-3k)
-            most_uncertain_samples_idx = list(samples_uncertainty.keys())[:k]
-
-            # writing the top=k to disk
-            filename = 'Top-{}_AL_Round_{}_Mode_{}'.format(k, active_learning_round, sampling_mode)
-            # write the top-k to the disk
-            filepath = os.path.join(checkpoints_path, filename)
-            np.save(filepath, np.array(most_uncertain_samples_idx))
-            print(f"saved audio ids for round {active_learning_round} to {filepath}")
-
-            print('Old training set size: {} - Old Augmenting Size: {}'.format(len(train_dataset), len(aug_dataset)))
-            augmentation_data = aug_dataset.get_dataset()
-            training_data = train_dataset.get_dataset()
-            # get top-k samples of the augmentation set
-            selected_samples_df = augmentation_data[augmentation_data.audio_ids.isin(most_uncertain_samples_idx)]
-            # remove those samples from the augmenting set and set the new augmentation set
-            new_augmenting_samples = augmentation_data[~augmentation_data.audio_ids.isin(most_uncertain_samples_idx)]
-            aug_dataset.set_dataset(new_augmenting_samples)
-            # add the new dataset to the training set
-            new_training_data = pd.concat([training_data, selected_samples_df])
-            train_dataset.set_dataset(new_training_data)
-            print('New training set size: {} - New Augmenting Size: {}'.format(len(train_dataset), len(aug_dataset)))
-
-            # set model back to eval before training mode
-            model.eval()
-
-            # reset the trainer with the updated training and augmenting dataset
-            new_al_round_checkpoint_path = os.path.join(checkpoints_path, f"AL_Round_{active_learning_round}")
-            Path(new_al_round_checkpoint_path).mkdir(parents=True, exist_ok=True)
-
-            # Detecting last checkpoint.
-            last_checkpoint, checkpoint_ = get_checkpoint(new_al_round_checkpoint_path,
-                                                          config['models']['model_path'])
-            # update training arg with new output path
-            training_args.output_dir = new_al_round_checkpoint_path
-
-            trainer = IntronTrainer(
-                model=model,
-                data_collator=data_collator,
-                args=training_args,
-                compute_metrics=compute_metric,
-                train_dataset=train_dataset,
-                eval_dataset=val_dataset,
-                tokenizer=PROCESSOR.feature_extractor,
-            )
-            PROCESSOR.save_pretrained(new_al_round_checkpoint_path)
-
-            trainer.train(resume_from_checkpoint=checkpoint_)
-
-            # define path for checkpoints for new AL round
-            model.save_pretrained(new_al_round_checkpoint_path)
-
-            results = {}
