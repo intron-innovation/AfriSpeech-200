@@ -21,10 +21,17 @@ from torch.utils.data import DataLoader
 from datasets import load_metric
 import evaluate
 from transformers import (
+    get_constant_schedule, 
+    get_constant_schedule_with_warmup, 
+    get_cosine_schedule_with_warmup, 
+    get_cosine_with_hard_restarts_schedule_with_warmup,
+    get_linear_schedule_with_warmup,
+    get_polynomial_decay_schedule_with_warmup,
     Wav2Vec2ForCTC,
     HubertForCTC,
     TrainingArguments,
-    Trainer,
+    AdamW,
+    Trainer
     )
 from transformers.trainer_utils import get_last_checkpoint
 
@@ -351,6 +358,20 @@ if __name__ == "__main__":
     print("device: ", training_args.device, device)
     
     print(f"\n...Model Args loaded in {time.time() - start:.4f}. Start training...\n")
+    optimizer = AdamW(params= model.parameters(), lr=float(config['hyperparameters']['learning_rate']))
+    num_training_steps = len(data_collator) / training_args. num_train_epochs
+    config_lr_scheduler = config['hyperparameters']['lr_schedule']
+    
+    if config_lr_scheduler== "get_constant_schedule":
+        lr_scheduler  = get_constant_schedule(optimizer)
+    elif config_lr_scheduler == "get_cosine_schedule_with_warmup":
+        lr_scheduler  = get_cosine_schedule_with_warmup(optimizer, num_warmup_steps=training_args.warmup_steps, num_training_steps=num_training_steps)
+    elif config_lr_scheduler == "get_cosine_with_hard_restarts_schedule_with_warmup":
+        lr_scheduler  = get_cosine_with_hard_restarts_schedule_with_warmup(optimizer, num_warmup_steps=training_args.warmup_steps, num_training_steps=num_training_steps, num_cycles=5)
+    elif config_lr_scheduler == "get_polynomial_decay_schedule_with_warmup":
+        lr_scheduler  = get_polynomial_decay_schedule_with_warmup(optimizer, num_warmup_steps=training_args.warmup_steps, num_training_steps=num_training_steps, num_cycles=5)
+    else:
+        lr_scheduler  = get_linear_schedule_with_warmup(optimizer,training_args.warmup_steps)
 
     trainer = IntronTrainer(
         model=model,
@@ -360,7 +381,8 @@ if __name__ == "__main__":
         train_dataset=train_dataset,
         eval_dataset=val_dataset,
         tokenizer=PROCESSOR.feature_extractor,
-        sampler=config['data']['sampler'] if 'sampler' in config['data'] else None
+        sampler=config['data']['sampler'] if 'sampler' in config['data'] else None,
+        optimizers = (optimizer, lr_scheduler)
     )
     
     if config['hyperparameters']['do_train'] == "True":
