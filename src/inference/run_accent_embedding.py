@@ -177,7 +177,7 @@ def transcribe_whisper(args, model, loader, split):
                     tick = model(audio_or_mels)
                     logits = model(audio_or_mels).logits[0]
                     accent_embedding = (
-                        model(audio_or_mels).logits[0].detach().cpu().numpy()
+                        model(audio_or_mels).logits[1].detach().cpu().numpy()
                     )
                     for i in range(len(accent_embedding)):
                         accent_embedding_data = {
