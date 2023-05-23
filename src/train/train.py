@@ -1,7 +1,7 @@
 import os
 import gc
 
-data_home = "data"
+data_home = "data2"
 os.environ['TRANSFORMERS_CACHE'] = f'/{data_home}/.cache/'
 os.environ['XDG_CACHE_HOME'] = f'/{data_home}/.cache/'
 os.environ["WANDB_DISABLED"] = "true"
@@ -22,9 +22,16 @@ import torch
 from torch.utils.data import DataLoader
 from datasets import load_metric
 from transformers import (
+    get_constant_schedule,
+    get_constant_schedule_with_warmup,
+    get_cosine_schedule_with_warmup,
+    get_cosine_with_hard_restarts_schedule_with_warmup,
+    get_linear_schedule_with_warmup,
+    get_polynomial_decay_schedule_with_warmup,
     Wav2Vec2ForCTC,
     HubertForCTC,
     TrainingArguments,
+    AdamW,
 )
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
 
@@ -389,12 +396,40 @@ if __name__ == "__main__":
         ignore_data_skip=True if config['hyperparameters']['ignore_data_skip'] == 'True' else False,
         report_to=None
     )
-    
+
     print("Training Args:\n", training_args.__dict__)
-    
+
     print("device: ", training_args.device, device)
 
     print(f"\n...Model Args loaded in {time.time() - start:.4f}. Start training...\n")
+
+    optimizer = AdamW(params=model.parameters(), lr=float(config['hyperparameters']['learning_rate']))
+    num_training_steps = (len(train_dataset) * training_args.num_train_epochs) // \
+                         (int(config['hyperparameters']['gradient_accumulation_steps']) *
+                          int(config['hyperparameters']['train_batch_size']))
+
+    config_lr_scheduler = config['hyperparameters']['lr_schedule']
+
+    if config_lr_scheduler == "get_constant_schedule":
+        lr_scheduler = get_constant_schedule(optimizer)
+    elif config_lr_scheduler == "get_cosine_schedule_with_warmup":
+        lr_scheduler = get_cosine_schedule_with_warmup(optimizer, num_warmup_steps=training_args.warmup_steps,
+                                                       num_training_steps=num_training_steps)
+    elif config_lr_scheduler == "get_cosine_with_hard_restarts_schedule_with_warmup":
+        lr_scheduler = get_cosine_with_hard_restarts_schedule_with_warmup(optimizer,
+                                                                          num_warmup_steps=training_args.warmup_steps,
+                                                                          num_training_steps=num_training_steps,
+                                                                          num_cycles=5)
+    elif config_lr_scheduler == "get_polynomial_decay_schedule_with_warmup":
+        lr_scheduler = get_polynomial_decay_schedule_with_warmup(optimizer, num_warmup_steps=training_args.warmup_steps,
+                                                                 num_training_steps=num_training_steps, num_cycles=5)
+    elif config_lr_scheduler == "cyclicLR":
+        lr_scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer,
+                                                         base_lr=float(config['hyperparameters']['learning_rate']),
+                                                         max_lr=float(config['hyperparameters']['max_learning_rate']),
+                                                         step_size_up=500, cycle_momentum=False)
+    else:
+        lr_scheduler = get_linear_schedule_with_warmup(optimizer, training_args.warmup_steps)
 
     trainer = IntronTrainer(
         model=model,
@@ -404,7 +439,8 @@ if __name__ == "__main__":
         train_dataset=train_dataset,
         eval_dataset=val_dataset,
         tokenizer=PROCESSOR.feature_extractor,
-        sampler=config['data']['sampler'] if 'sampler' in config['data'] else None
+        sampler=config['data']['sampler'] if 'sampler' in config['data'] else None,
+        optimizers=(optimizer, lr_scheduler)
     )
 
     if config['hyperparameters']['do_train'] == "True":

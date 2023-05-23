@@ -249,7 +249,7 @@ sudo apt -y install sox
  
 12. To train single GPU on multiGPU machine `CUDA_VISIBLE_DEVICES=“1” python3 src/train/train.py --config src/config/config_xlsr_generative_single_task_baseline.ini`
 
-13. To train multi GPU `python3 -m torch.distributed.launch --nproc_per_node 4 src/train/train.py --config src/config/config_xlsr_generative_single_task_baseline.ini`
+13. To train multi GPU `python3 -m torch.distributed.launch --nproc_per_node 4 src/train/train.py --config src/config/config_xlsr_all_domain_multi_gpu.ini`
 
  14. Multi-GPU training: `python3  -m torch.distributed.launch --nproc_per_node 1 src/train/whisper_finetuning.py -c
   src/config/whisper-all-2m-4gpu.ini`
