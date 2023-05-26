@@ -1,7 +1,7 @@
 import os
 import gc
 
-data_home = "data2"
+data_home = "data3"
 os.environ['TRANSFORMERS_CACHE'] = f'/{data_home}/.cache/'
 os.environ['XDG_CACHE_HOME'] = f'/{data_home}/.cache/'
 os.environ["WANDB_DISABLED"] = "true"
@@ -419,7 +419,7 @@ if __name__ == "__main__":
         lr_scheduler = get_cosine_with_hard_restarts_schedule_with_warmup(optimizer,
                                                                           num_warmup_steps=training_args.warmup_steps,
                                                                           num_training_steps=num_training_steps,
-                                                                          num_cycles=5)
+                                                                          num_cycles=10)
     elif config_lr_scheduler == "get_polynomial_decay_schedule_with_warmup":
         lr_scheduler = get_polynomial_decay_schedule_with_warmup(optimizer, num_warmup_steps=training_args.warmup_steps,
                                                                  num_training_steps=num_training_steps, num_cycles=5)

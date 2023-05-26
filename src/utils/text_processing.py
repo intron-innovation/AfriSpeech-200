@@ -26,6 +26,9 @@ def clean_text(text):
     :return: str
     """
     # remove multiple spaces
+    if type(text) != str:
+        print(text)
+        return " "
     text = re.sub(r"\s\s+", " ", text)
     # strip trailing spaces
     text = text.strip()
