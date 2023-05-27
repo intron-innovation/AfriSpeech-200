@@ -409,39 +409,54 @@ if __name__ == "__main__":
                           int(config['hyperparameters']['train_batch_size']))
 
     config_lr_scheduler = config['hyperparameters']['lr_schedule']
+    use_custom_lr_s = config['hyperparameters']['use_custom_lr_s']
+    
+    
+    if use_custom_lr_s == "True":
+        if config_lr_scheduler == "get_constant_schedule":
+            lr_scheduler = get_constant_schedule(optimizer)
+        elif config_lr_scheduler == "get_cosine_schedule_with_warmup":
+            lr_scheduler = get_cosine_schedule_with_warmup(optimizer, num_warmup_steps=training_args.warmup_steps,
+                                                           num_training_steps=num_training_steps)
+        elif config_lr_scheduler == "get_cosine_with_hard_restarts_schedule_with_warmup":
+            lr_scheduler = get_cosine_with_hard_restarts_schedule_with_warmup(optimizer,
+                                                                              num_warmup_steps=training_args.warmup_steps,
+                                                                              num_training_steps=num_training_steps,
+                                                                              num_cycles=10)
+        elif config_lr_scheduler == "get_polynomial_decay_schedule_with_warmup":
+            lr_scheduler = get_polynomial_decay_schedule_with_warmup(optimizer, num_warmup_steps=training_args.warmup_steps,
+                                                                     num_training_steps=num_training_steps, num_cycles=5)
+        elif config_lr_scheduler == "cyclicLR":
+            lr_scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer,
+                                                             base_lr=float(config['hyperparameters']['learning_rate']),
+                                                             max_lr=float(config['hyperparameters']['max_learning_rate']),
+                                                             step_size_up=500, cycle_momentum=False)
+        else:
+            lr_scheduler = get_linear_schedule_with_warmup(optimizer,num_warmup_steps=training_args.warmup_steps, num_training_steps=num_training_steps)
 
-    if config_lr_scheduler == "get_constant_schedule":
-        lr_scheduler = get_constant_schedule(optimizer)
-    elif config_lr_scheduler == "get_cosine_schedule_with_warmup":
-        lr_scheduler = get_cosine_schedule_with_warmup(optimizer, num_warmup_steps=training_args.warmup_steps,
-                                                       num_training_steps=num_training_steps)
-    elif config_lr_scheduler == "get_cosine_with_hard_restarts_schedule_with_warmup":
-        lr_scheduler = get_cosine_with_hard_restarts_schedule_with_warmup(optimizer,
-                                                                          num_warmup_steps=training_args.warmup_steps,
-                                                                          num_training_steps=num_training_steps,
-                                                                          num_cycles=10)
-    elif config_lr_scheduler == "get_polynomial_decay_schedule_with_warmup":
-        lr_scheduler = get_polynomial_decay_schedule_with_warmup(optimizer, num_warmup_steps=training_args.warmup_steps,
-                                                                 num_training_steps=num_training_steps, num_cycles=5)
-    elif config_lr_scheduler == "cyclicLR":
-        lr_scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer,
-                                                         base_lr=float(config['hyperparameters']['learning_rate']),
-                                                         max_lr=float(config['hyperparameters']['max_learning_rate']),
-                                                         step_size_up=500, cycle_momentum=False)
+        trainer = IntronTrainer(
+            model=model,
+            data_collator=data_collator,
+            args=training_args,
+            compute_metrics=compute_metric,
+            train_dataset=train_dataset,
+            eval_dataset=val_dataset,
+            tokenizer=PROCESSOR.feature_extractor,
+            sampler=config['data']['sampler'] if 'sampler' in config['data'] else None,
+            optimizers=(optimizer, lr_scheduler)
+        )
     else:
-        lr_scheduler = get_linear_schedule_with_warmup(optimizer, training_args.warmup_steps)
-
-    trainer = IntronTrainer(
-        model=model,
-        data_collator=data_collator,
-        args=training_args,
-        compute_metrics=compute_metric,
-        train_dataset=train_dataset,
-        eval_dataset=val_dataset,
-        tokenizer=PROCESSOR.feature_extractor,
-        sampler=config['data']['sampler'] if 'sampler' in config['data'] else None,
-        optimizers=(optimizer, lr_scheduler)
-    )
+        trainer = IntronTrainer(
+            model=model,
+            data_collator=data_collator,
+            args=training_args,
+            compute_metrics=compute_metric,
+            train_dataset=train_dataset,
+            eval_dataset=val_dataset,
+            tokenizer=PROCESSOR.feature_extractor,
+            sampler=config['data']['sampler'] if 'sampler' in config['data'] else None
+        )
+        
 
     if config['hyperparameters']['do_train'] == "True":
         PROCESSOR.save_pretrained(checkpoints_path)
