@@ -7,8 +7,8 @@ from datetime import datetime
 import pandas as pd
 import subprocess
 
-os.environ['TRANSFORMERS_CACHE'] = '/data3/.cache/'
-os.environ['XDG_CACHE_HOME'] = '/data3/.cache/'
+os.environ['TRANSFORMERS_CACHE'] = '/data2/.cache/'
+os.environ['XDG_CACHE_HOME'] = '/data2/.cache/'
 
 from datasets import load_dataset, load_metric, Dataset
 from dataclasses import dataclass
@@ -75,7 +75,7 @@ def load_afri_speech_data(
             lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
         )
         # TODO: replace line 75 with this
-        # lambda x: x.replace(f"/AfriSpeech-100/{split}/", f"/{audio_dir}/{split}/")
+        # lambda x: x.replace(f"/AfriSpeech-100/{split}/", f"/{audio_dir}/{split}/")a
 
     if max_audio_len_secs > -1 and gpu != -1:
         # when gpu is available, it cannot fit long samples

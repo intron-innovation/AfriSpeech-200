@@ -5,7 +5,7 @@
 
 import os
 
-data_home = "data"
+data_home = "data3"
 os.environ["TRANSFORMERS_CACHE"] = f"/{data_home}/.cache/"
 os.environ["XDG_CACHE_HOME"] = f"/{data_home}/.cache/"
 
@@ -64,9 +64,13 @@ class AfriSpeechWhisperDataset(torch.utils.data.Dataset):
     def __getitem__(self, item):
         audio_path = self.dataset[item]["audio_paths"]
         text = self.dataset[item]["text"]
-        accent = self.dataset[item]["accent"]
+        accent = self.dataset[item]["accent"] if self.dataset[item]["accent"] is not None else "Unknown"
         domain = self.dataset[item]["domain"]
         vad = self.dataset[item].get("vad", "speech")
+        country = self.dataset[item]["country"] if self.dataset[item]["country"] is not None else "Unknown"
+        audio_ids = self.dataset[item]["audio_ids"]
+
+
 
         audio = load_audio_file(audio_path)
         if "whisper" in self.model_id and os.path.isdir(args.model_id_or_path):
@@ -87,7 +91,7 @@ class AfriSpeechWhisperDataset(torch.utils.data.Dataset):
             )
             audio = input_features.input_values[0]
 
-        return (audio, text, audio_path, accent, domain, vad)
+        return (audio, text, audio_path, accent, domain, vad, country, audio_ids)
 
 
 class LibriSpeechDataset(torch.utils.data.Dataset):
@@ -153,14 +157,11 @@ def transcribe_whisper(args, model, loader, split):
         language="en", fp16=args.gpu > -1, without_timestamps=True
     )
 
-    # options = dict(language=language, beam_size=5, best_of=5)
-    # transcribe_options = dict(task="transcribe", **options)
-    # transcription = model.transcribe(audio, **transcribe_options)["text"]
-    #embedding_id = args.model_id_or_path.split("/")[-2]
+    
     with codecs.open(
-        f"src/experiments/accent_embeddings_7_2_1.json", "w", encoding="utf-8"
+        f"src/experiments/{split}_accent_embeddings_7_2_1.json", "w", encoding="utf-8"
     ) as jsonf:
-        for audio_or_mels, texts, audio_path, accent, domain, vad in tqdm(loader):
+        for audio_or_mels, texts, audio_path, accent, domain, vad, country, audio_ids in tqdm(loader):
             if "whisper" in args.model_id_or_path and os.path.isdir(
                 args.model_id_or_path
             ):
@@ -181,59 +182,16 @@ def transcribe_whisper(args, model, loader, split):
                     )
                     for i in range(len(accent_embedding)):
                         accent_embedding_data = {
+                           "audio_ids": audio_ids[i],
                             "accent": accent[i],
                             "embeddings": accent_embedding[i].tolist(),
                             "domain": domain[i],
+                            "country": country[i],
                         }
                         jsonf.write(json.dumps(accent_embedding_data,) + "\n")
             #break
 
 
-#             pred_ids = torch.argmax(torch.tensor(logits), dim=-1)
-#             results = processor.batch_decode(pred_ids)
-
-#         if "<|" in results[0]:
-#             task_tags.extend([get_task_tags(text) for text in results])
-#             hypotheses.extend([strip_task_tags(text) for text in results])
-#         else:
-#             hypotheses.extend(results)
-#         references.extend(texts)
-#         paths.extend(audio_path)
-#         accents.extend(accent)
-
-#     data = pd.DataFrame(dict(hypothesis=hypotheses, reference=references,
-#                              audio_paths=paths, accent=accents))
-
-#     data["pred_clean"] = [clean_text(text) for text in data["hypothesis"]]
-#     data["ref_clean"] = [clean_text(text) for text in data["reference"]]
-#     data["pred_task_tags"] = task_tags if len(task_tags) > 0 else [''] * len(data)
-
-#     all_wer = jiwer.wer(list(data["ref_clean"]), list(data["pred_clean"]))
-#     print(f"Cleanup WER: {all_wer * 100:.2f} %")
-
-#     normalizer = EnglishTextNormalizer()
-
-#     gt_normalized, pred_normalized = [], []
-#     for i, (gt_text, pred_text) in enumerate(zip(data["reference"], data["hypothesis"])):
-#         gt = normalizer(gt_text)
-#         pred = normalizer(pred_text)
-#         if gt != "":
-#             gt_normalized.append(gt)
-#             pred_normalized.append(pred)
-
-#     whisper_wer = jiwer.wer(gt_normalized, pred_normalized)
-#     print(f"EnglishTextNormalizer WER: {whisper_wer * 100:.2f} %")
-
-#     data["hypothesis_clean"] = [normalizer(text) for text in data["hypothesis"]]
-#     data["reference_clean"] = [normalizer(text) for text in data["reference"]]
-
-#     write_pred_inference_df(args.model_id_or_path, data, all_wer, split=split)
-
-#     time_elapsed = int(round(time.time())) - tsince
-#     print(
-#         f"{args.model_id_or_path}-- Inference Time: {time_elapsed / 60:.4f}m | "
-#         f"{time_elapsed / len(data):.4f}s per sample"
-#     )
 
 
 if __name__ == "__main__":
@@ -258,7 +216,7 @@ if __name__ == "__main__":
         split = "test-libri-speech"
 
     else:
-        split = args.data_csv_path.split("-")[1]
+        split = "train"#args.data_csv_path.split("-")[1]
         dataset = AfriSpeechWhisperDataset(
             data_path=args.data_csv_path,
             max_audio_len_secs=args.max_audio_len_secs,
