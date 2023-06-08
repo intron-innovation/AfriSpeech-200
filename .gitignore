@@ -3,6 +3,7 @@
 src/__pycache__/
 *__pycache__*
 src/experiments
+src/experiments2
 wandb/
 aws/*
 notebooks/.ipynb_checkpoints*
