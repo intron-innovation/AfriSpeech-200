@@ -9,3 +9,5 @@ notebooks/.ipynb_checkpoints
 #Chris
 awscliv2.zip
 slurm*
+src/train/train copy.py
+src/utils/prepare_dataset copy.py
