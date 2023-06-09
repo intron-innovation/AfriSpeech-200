@@ -50,7 +50,7 @@ class DataConfig:
 def load_afri_speech_data(
         data_path, max_audio_len_secs=17, audio_dir=f"./data/",
         return_dataset=True, split="dev", gpu=-1, domain='all',
-        max_transcript_len=-1, min_transcript_len=-1, accent_subset=[]
+        max_transcript_len=-1, min_transcript_len=-1, accent_subset=None
 ):
     """
     load train/dev/test data from csv path.
@@ -65,12 +65,9 @@ def load_afri_speech_data(
     :param data_path: str
     :return: Dataset instance
     """
-    data = pd.read_csv(data_path)
-    print(accent_subset)
-    import time
-    time.sleep(10)
-    data = data if len(accent_subset)<2 else data[data['accent'].isin(accent_subset)]
-    print(data.head())
+    data = pd.read_csv(data_path) if accent_subset==None else 
+    data = data if len(accent_subset)>0 else data[data['accent'].isin(accent_subset)]
+
     if split == 'aug':
         data["audio_paths"] = data["audio_paths"].apply(
             lambda x: x.replace(f"/AfriSpeech-100/train/", audio_dir)
@@ -112,8 +109,6 @@ def load_afri_speech_data(
     print("before dedup", data.shape)
     data.drop_duplicates(subset=["audio_paths"], inplace=True)
     print("after dedup", data.shape)
-    print("the split is:", split)
-    print(data.head())
     if return_dataset:
         return Dataset.from_pandas(data)
     else:
@@ -192,12 +187,9 @@ def data_prep(config):
     PROCESSOR = load_processor(vocab_file_name)
     logger.debug(f"...Load vocab and processor complete in {time.time() - start:.4f}.\n"
                  f"Loading dataset...")
+
     
-    val_dataset = load_custom_dataset(config, config.train_path, 'train',
-                                      transform_audio, transform_labels,
-                                      multi_task=config.multi_task, accent_subset=config.accent_subset[1:])
     if config.aug_percent and config.aug_percent > 1:
-        logger.debug(1111111111111)
         train_df = load_custom_dataset(config, config.train_path, 'train',
                                        transform_audio, transform_labels, return_dataset=False,
                                        multi_task=config.multi_task)
@@ -206,32 +198,33 @@ def data_prep(config):
         aug_dataset = Dataset.from_pandas(aug_df)
         train_dataset = Dataset.from_pandas(train_df)
     elif config.aug_path:
-        logger.debug(222222222222222222)
-        train_dataset = load_custom_dataset(config, config.train_path, 'train',
+        A_train_dataset = load_custom_dataset(config, config.train_path, 'train',
                                             transform_audio, transform_labels,
                                             multi_task=config.multi_task)
         aug_dataset = load_custom_dataset(config, config.aug_path, 'aug',
                                           transform_audio, transform_labels,
-                                          multi_task=config.multi_task, accent_subset=config.accent_subset[1:])
+                                          multi_task=config.multi_task)
     else:
         split = 'train' if 'train' in config.train_path else 'dev'
-        logger.debug(3333333333333333333)
-        train_dataset = load_custom_dataset(config, config.train_path, split,
+        A_train_dataset = load_custom_dataset(config, config.train_path, split,
                                             transform_audio, transform_labels,
-                                            multi_task=config.multi_task, accent_subset=config.accent_subset[1:])
-    logger.debug(44444444444444444444444444444)
-    test_dataset = load_custom_dataset(config, config.test_path, 'test',
+                                            multi_task=config.multi_task)
+
+    D_train_dataset = load_custom_dataset(config, config.train_path, 'train',
                                       transform_audio, transform_labels,
-                                      multi_task=config.multi_task, accent_subset=[config.accent_subset[0]])
+                                      multi_task=config.multi_task, accent_subset=config.accent_subset[1:])
+
+    B_test_dataset = load_custom_dataset(config, config.test_path, 'test',
+                                      transform_audio, transform_labels,
+                                      multi_task=config.multi_task, accent_subset=config.accent_test[0])
 
     logger.debug(f"Load train and val dataset done in {time.time() - start:.4f}.")
-    return train_dataset, val_dataset, test_dataset, aug_dataset, PROCESSOR
+    return A_train_dataset, D_train_dataset, B_test_dataset, aug_dataset, PROCESSOR
 
 
 def load_custom_dataset(config, data_path, split,
                         transform_audio_, transform_labels_=None,
                         prepare=None, return_dataset=True, multi_task=None, accent_subset=None):
-    
     return CustomASRDataset(data_path, transform_audio_, transform_labels_,
                             config.audio_path, split=split, domain=config.domain,
                             max_audio_len_secs=config.max_audio_len_secs,
@@ -422,7 +415,7 @@ class CustomASRDataset(torch.utils.data.Dataset):
                  split=None, domain="all", max_audio_len_secs=-1, min_transcript_len=10,
                  prepare=False, max_transcript_len=-1, gpu=1,
                  length_column_name='duration', return_dataset=True,
-                 multi_task=None, accent_subset=None):
+                 multi_task=None, accent_subset=-1):
 
         self.prepare = prepare
         self.split = split
