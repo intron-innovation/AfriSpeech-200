@@ -228,6 +228,7 @@ if __name__ == "__main__":
     para = sys.argv[1:]
     accent_B = 'twi'
     k_accents = int(para[0])
+    prin(para)
     ##computing centroid.
     #import pdb; pdb.set_trace()
     centroids = pd.read_csv("./data/afrispeech_accents_centroids.csv").set_index("accent")

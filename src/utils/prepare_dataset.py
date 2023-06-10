@@ -66,9 +66,6 @@ def load_afri_speech_data(
     :return: Dataset instance
     """
     data = pd.read_csv(data_path)
-    print(accent_subset)
-    import time
-    time.sleep(10)
     data = data if len(accent_subset)<2 else data[data['accent'].isin(accent_subset)]
     print(data.head())
     if split == 'aug':
@@ -197,7 +194,6 @@ def data_prep(config):
                                       transform_audio, transform_labels,
                                       multi_task=config.multi_task, accent_subset=config.accent_subset[1:])
     if config.aug_percent and config.aug_percent > 1:
-        logger.debug(1111111111111)
         train_df = load_custom_dataset(config, config.train_path, 'train',
                                        transform_audio, transform_labels, return_dataset=False,
                                        multi_task=config.multi_task)
@@ -206,7 +202,6 @@ def data_prep(config):
         aug_dataset = Dataset.from_pandas(aug_df)
         train_dataset = Dataset.from_pandas(train_df)
     elif config.aug_path:
-        logger.debug(222222222222222222)
         train_dataset = load_custom_dataset(config, config.train_path, 'train',
                                             transform_audio, transform_labels,
                                             multi_task=config.multi_task)
@@ -215,11 +210,9 @@ def data_prep(config):
                                           multi_task=config.multi_task, accent_subset=config.accent_subset[1:])
     else:
         split = 'train' if 'train' in config.train_path else 'dev'
-        logger.debug(3333333333333333333)
         train_dataset = load_custom_dataset(config, config.train_path, split,
                                             transform_audio, transform_labels,
                                             multi_task=config.multi_task, accent_subset=config.accent_subset[1:])
-    logger.debug(44444444444444444444444444444)
     test_dataset = load_custom_dataset(config, config.test_path, 'test',
                                       transform_audio, transform_labels,
                                       multi_task=config.multi_task, accent_subset=[config.accent_subset[0]])
