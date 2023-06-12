@@ -55,12 +55,15 @@ def parse_argument():
                         help="Pass a training config file", metavar="FILE")
     parser.add_argument("--local_rank", type=int,
                         default=0)
+     parser.add_argument("-k", type=int,
+                        default=1)
+     parser.add_argument("-b", type=str,
+                        default='twi')
     parser.add_argument("-g", "-gpu", "--gpu", type=int,
                         default=0)
     args = parser.parse_args()
     config.read(args.config_file)
     return args, config
-
 
 def train_setup(config, args):
     repo_root = config['experiment']['repo_root']
@@ -225,10 +228,10 @@ if __name__ == "__main__":
     # device = torch.device(f"cuda:{args.gpu}" if torch.cuda.is_available() else "cpu")
     # torch.cuda.set_device(args.gpu)
     # print("cuda.current_device:", torch.cuda.current_device())
-    para = sys.argv[1:]
-    accent_B = 'twi'
-    k_accents = int(para[0])
-    prin(para)
+    #para = sys.argv[1:]
+    accent_B = args.b
+    k_accents =args.k
+
     ##computing centroid.
     #import pdb; pdb.set_trace()
     centroids = pd.read_csv("./data/afrispeech_accents_centroids.csv").set_index("accent")
