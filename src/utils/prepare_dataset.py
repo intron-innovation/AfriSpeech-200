@@ -75,7 +75,7 @@ def load_afri_speech_data(
         data["audio_paths"] = data["audio_paths"].apply(
             lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
         )
-        # Sanity test
+        # Sanity test | Added by Chris Emezue on 14th June 2023
         if not os.path.exists(data["audio_paths"].values.tolist()[0]):
             # lambda x: x.replace(f"/AfriSpeech-100/{split}/", f"/{audio_dir}/{split}/")
             data["audio_paths"] = data["audio_paths"].apply(
