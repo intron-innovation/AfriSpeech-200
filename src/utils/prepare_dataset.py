@@ -69,6 +69,7 @@ def load_afri_speech_data(
     data = data[:100] # in debug mode
 
     data = data if len(accent_subset)<2 else data[data['accent'].isin(accent_subset)]
+    
     if split == 'aug':
         data["audio_paths"] = data["audio_paths"].apply(
             lambda x: x.replace(f"/AfriSpeech-100/train/", audio_dir)
