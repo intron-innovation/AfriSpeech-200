@@ -1,5 +1,5 @@
 import os
-
+import sys
 data_home = "data3"
 os.environ['TRANSFORMERS_CACHE'] = f'/{data_home}/.cache/'
 os.environ['XDG_CACHE_HOME'] = f'/{data_home}/.cache/'
@@ -14,6 +14,7 @@ import warnings
 import pandas as pd
 from pathlib import Path
 import numpy as np
+import ast
 from tqdm import tqdm
 
 import torch
@@ -54,16 +55,20 @@ def parse_argument():
                         help="Pass a training config file", metavar="FILE")
     parser.add_argument("--local_rank", type=int,
                         default=0)
+    parser.add_argument("-k", type=int,
+                        default=1)
+    parser.add_argument("-b", type=str,
+                        default='twi')
     parser.add_argument("-g", "-gpu", "--gpu", type=int,
                         default=0)
     args = parser.parse_args()
     config.read(args.config_file)
     return args, config
 
-
 def train_setup(config, args):
+    accent_subset= ast.literal_eval(config['hyperparameters']['accent_subset'])
     repo_root = config['experiment']['repo_root']
-    exp_dir = os.path.join(repo_root, config['experiment']['dir'], config['experiment']['name'])
+    exp_dir = os.path.join(repo_root, config['experiment']['dir'], config['experiment']['name']+f"_{accent_subset[0]}_{len(accent_subset)-1}")
     config['experiment']['dir'] = exp_dir
     checkpoints_path = os.path.join(exp_dir, 'checkpoints')
     config['checkpoints']['checkpoints_path'] = checkpoints_path
@@ -108,7 +113,7 @@ def data_setup(config):
         domain=config['data']['domain'],
         seed=int(config['hyperparameters']['data_seed']),
         multi_task=multi_task,
-        accent_subset = list(config['hyperparameters']['accent_subset'])
+        accent_subset =ast.literal_eval(config['hyperparameters']['accent_subset'])
     )
     return data_config
 
@@ -224,21 +229,23 @@ if __name__ == "__main__":
     # device = torch.device(f"cuda:{args.gpu}" if torch.cuda.is_available() else "cpu")
     # torch.cuda.set_device(args.gpu)
     # print("cuda.current_device:", torch.cuda.current_device())
-    
+    #para = sys.argv[1:]
+    accent_B = ['twi']#args.b
+    k_accents =10 #args.k
 
-    accent_B = 'twi'
-    k_accents = 10
     ##computing centroid.
-    centroids = pd.read_csv("./data/afrispeech_accents_centroids.csv").set_index("accent")
-    #use euclidean distance 
-    accent_subset = compute_distances(list(centroids[accent_B]), centroids, k_accents)
+    #import pdb; pdb.set_trace()
+    train_centriods = pd.read_csv("./data/test_afrispeech_accents_centroids.csv").set_index("accent")
+    test_centriods = pd.read_csv("./data/train_afrispeech_accents_centroids.csv").set_index("accent")
 
-    config['hyperparameters']['accent_subset'] = accent_subset
+    #use euclidean distance 
+    accent_subset = accent_B + compute_distances(list(test_centriods.loc[accent_B[0]]), train_centriods, k_accents) #if k>10 else 
+    
+    config.set('hyperparameters','accent_subset', str(accent_subset))
     checkpoints_path = train_setup(config, args)
     data_config = data_setup(config)
-    A_train_dataset, D_train_dataset B_test_dataset, aug_dataset, PROCESSOR = data_prep(data_config)
+    train_dataset, val_dataset, test_dataset, aug_dataset, PROCESSOR = data_prep(data_config)
     data_collator = get_data_collator(data_config.multi_task)
-
     start = time.time()
     # Detecting last checkpoint.
     last_checkpoint, checkpoint_ = get_checkpoint(checkpoints_path, config['models']['model_path'])
@@ -341,7 +348,8 @@ if __name__ == "__main__":
         gradient_accumulation_steps=int(config['hyperparameters']['gradient_accumulation_steps']),
         gradient_checkpointing=True if config['hyperparameters']['gradient_checkpointing'] == "True" else False,
         ddp_find_unused_parameters=True if config['hyperparameters']['ddp_find_unused_parameters'] == "True" else False,
-        evaluation_strategy="epochs",
+        evaluation_strategy="epoch",
+        save_strategy= "epoch",
         num_train_epochs=int(config['hyperparameters']['num_epochs']),
         fp16=torch.cuda.is_available(),
         save_steps=int(config['hyperparameters']['save_steps']),
@@ -368,7 +376,8 @@ if __name__ == "__main__":
         data_collator=data_collator,
         args=training_args,
         compute_metrics=compute_metric,
-        train_dataset=A_train_dataset,
+        train_dataset=train_dataset,
+        eval_dataset=train_dataset,
         tokenizer=PROCESSOR.feature_extractor,
         sampler=config['data']['sampler'] if 'sampler' in config['data'] else None
     )
@@ -381,12 +390,91 @@ if __name__ == "__main__":
         model.save_pretrained(checkpoints_path)
         PROCESSOR.save_pretrained(checkpoints_path)
 
-    if config['hyperparameters']['do_eval'] == "True":
-        metrics = Atrainer.evaluate(B_test_dataset)
-        metrics["eval_samples"] = len(val_dataset)
-        metrics["eval_samples"] = str(f"{accent_B}_{str(k_accents)}")
+
+        print("==========================================|\n", "Starting test evaluation")
+
+        metrics = trainer.evaluate(test_dataset)
+        metrics["eval_samples"] = len(test_dataset)
 
         trainer.log_metrics("eval", metrics)
         trainer.save_metrics("eval", metrics)
 
-    
+
+    if 'aug' in config['data']:
+        # after baseline is completed
+        
+        print(f"\n...Baseline model trained in {time.time() - start:.4f}. Start training with Active Learning...\n")
+
+        active_learning_rounds = int(config['hyperparameters']['active_learning_rounds'])
+        aug_batch_size = int(config['hyperparameters']['aug_batch_size'])
+        sampling_mode = config['hyperparameters']['sampling_mode']
+        k = float(config['hyperparameters']['top_k'])
+        if k < 1:
+            k = len(aug_dataset)/active_learning_rounds
+        k = int(k)
+        mc_dropout_round = int(config['hyperparameters']['mc_dropout_round'])
+
+        # AL rounds
+        for active_learning_round in range(active_learning_rounds):
+            print('Active Learning Round: {}\n'.format(active_learning_round))
+
+            # McDropout for uncertainty computation
+            set_dropout(model)
+            # evaluation step and uncertain samples selection
+            augmentation_dataloader = DataLoader(aug_dataset, batch_size=aug_batch_size)
+
+            samples_uncertainty = run_inference(model, augmentation_dataloader,
+                                                mode=sampling_mode, mc_dropout_rounds=mc_dropout_round)
+            # top-k samples (select top-3k)
+            most_uncertain_samples_idx = list(samples_uncertainty.keys())[:k]
+
+            # writing the top=k to disk
+            filename = 'Top-{}_AL_Round_{}_Mode_{}'.format(k, active_learning_round, sampling_mode)
+            # write the top-k to the disk
+            filepath = os.path.join(checkpoints_path, filename)
+            np.save(filepath, np.array(most_uncertain_samples_idx))
+            print(f"saved audio ids for round {active_learning_round} to {filepath}")
+
+            print('Old training set size: {} - Old Augmenting Size: {}'.format(len(train_dataset), len(aug_dataset)))
+            augmentation_data = aug_dataset.get_dataset()
+            training_data = train_dataset.get_dataset()
+            # get top-k samples of the augmentation set
+            selected_samples_df = augmentation_data[augmentation_data.audio_ids.isin(most_uncertain_samples_idx)]
+            # remove those samples from the augmenting set and set the new augmentation set
+            new_augmenting_samples = augmentation_data[~augmentation_data.audio_ids.isin(most_uncertain_samples_idx)]
+            aug_dataset.set_dataset(new_augmenting_samples)
+            # add the new dataset to the training set
+            new_training_data = pd.concat([training_data, selected_samples_df])
+            train_dataset.set_dataset(new_training_data)
+            print('New training set size: {} - New Augmenting Size: {}'.format(len(train_dataset), len(aug_dataset)))
+
+            # set model back to eval before training mode
+            model.eval()
+
+            # reset the trainer with the updated training and augmenting dataset
+            new_al_round_checkpoint_path = os.path.join(checkpoints_path, f"AL_Round_{active_learning_round}")
+            Path(new_al_round_checkpoint_path).mkdir(parents=True, exist_ok=True)
+
+            # Detecting last checkpoint.
+            last_checkpoint, checkpoint_ = get_checkpoint(new_al_round_checkpoint_path,
+                                                          config['models']['model_path'])
+            # update training arg with new output path
+            training_args.output_dir = new_al_round_checkpoint_path
+
+            trainer = IntronTrainer(
+                model=model,
+                data_collator=data_collator,
+                args=training_args,
+                compute_metrics=compute_metric,
+                train_dataset=train_dataset,
+                eval_dataset=val_dataset,
+                tokenizer=PROCESSOR.feature_extractor,
+            )
+            PROCESSOR.save_pretrained(new_al_round_checkpoint_path)
+
+            trainer.train(resume_from_checkpoint=checkpoint_)
+
+            # define path for checkpoints for new AL round
+            model.save_pretrained(new_al_round_checkpoint_path)
+            
+            results = {}

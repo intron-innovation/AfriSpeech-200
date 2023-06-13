@@ -1,9 +1,9 @@
 import os
 import sys
 data_home = "data3"
-#os.environ['TRANSFORMERS_CACHE'] = f'/{data_home}/.cache/'
-#os.environ['XDG_CACHE_HOME'] = f'/{data_home}/.cache/'
-#os.environ["WANDB_DISABLED"] = "true"
+os.environ['TRANSFORMERS_CACHE'] = f'/{data_home}/.cache/'
+os.environ['XDG_CACHE_HOME'] = f'/{data_home}/.cache/'
+os.environ["WANDB_DISABLED"] = "true"
 
 import argparse
 import configparser
@@ -68,7 +68,7 @@ def parse_argument():
 def train_setup(config, args):
     accent_subset= ast.literal_eval(config['hyperparameters']['accent_subset'])
     repo_root = config['experiment']['repo_root']
-    exp_dir = os.path.join(repo_root, config['experiment']['dir'], config['experiment']['name']+f"_{accent_subset[0]}_{len(accent_subset)}")
+    exp_dir = os.path.join(repo_root, config['experiment']['dir'], config['experiment']['name']+f"_{accent_subset[0]}_{len(accent_subset)-1}")
     config['experiment']['dir'] = exp_dir
     checkpoints_path = os.path.join(exp_dir, 'checkpoints')
     config['checkpoints']['checkpoints_path'] = checkpoints_path
@@ -230,8 +230,8 @@ if __name__ == "__main__":
     # torch.cuda.set_device(args.gpu)
     # print("cuda.current_device:", torch.cuda.current_device())
     #para = sys.argv[1:]
-    accent_B = 'twi'#args.b
-    k_accents =25 #args.k
+    accent_B = ['twi']#args.b
+    k_accents =10 #args.k
 
     ##computing centroid.
     #import pdb; pdb.set_trace()
@@ -239,14 +239,13 @@ if __name__ == "__main__":
     test_centriods = pd.read_csv("./data/train_afrispeech_accents_centroids.csv").set_index("accent")
 
     #use euclidean distance 
-    accent_subset = compute_distances(list(test_centriods.loc[accent_B]), centroids, k_accents) #if k>10 else 
+    accent_subset = accent_B + compute_distances(list(test_centriods.loc[accent_B[0]]), train_centriods, k_accents) #if k>10 else 
     
     config.set('hyperparameters','accent_subset', str(accent_subset))
     checkpoints_path = train_setup(config, args)
     data_config = data_setup(config)
     train_dataset, val_dataset, test_dataset, aug_dataset, PROCESSOR = data_prep(data_config)
     data_collator = get_data_collator(data_config.multi_task)
-    quit()
     start = time.time()
     # Detecting last checkpoint.
     last_checkpoint, checkpoint_ = get_checkpoint(checkpoints_path, config['models']['model_path'])
@@ -390,6 +389,9 @@ if __name__ == "__main__":
 
         model.save_pretrained(checkpoints_path)
         PROCESSOR.save_pretrained(checkpoints_path)
+
+
+        print("|==========================================|\n", "Starting test evaluation\n\n")
 
         metrics = trainer.evaluate(test_dataset)
         metrics["eval_samples"] = len(test_dataset)

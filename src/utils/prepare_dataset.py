@@ -109,9 +109,9 @@ def load_afri_speech_data(
     data.drop_duplicates(subset=["audio_paths"], inplace=True)
     print("after dedup", data.shape)
     print("the split is:", split)
-    print("the info of the data is:", data.info())
-    print("the value count the of the acceents is:", data.accent.value_counts())
-    print("accent subset is:", accent_subset)
+    # print("the info of the data is:", data.info())
+    # print("the value count the of the acceents is:", data.accent.value_counts())
+    # print("accent subset is:", accent_subset)
     if return_dataset:
         return Dataset.from_pandas(data)
     else:
