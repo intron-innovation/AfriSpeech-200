@@ -11,3 +11,5 @@ awscliv2.zip
 slurm*
 src/train/train copy.py
 src/utils/prepare_dataset copy.py
+# Added on 13th June 2023
+nemo/*
