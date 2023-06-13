@@ -235,9 +235,11 @@ if __name__ == "__main__":
 
     ##computing centroid.
     #import pdb; pdb.set_trace()
-    centroids = pd.read_csv("./data/afrispeech_accents_centroids.csv").set_index("accent")
+    train_centriods = pd.read_csv("./data/test_afrispeech_accents_centroids.csv").set_index("accent")
+    test_centriods = pd.read_csv("./data/train_afrispeech_accents_centroids.csv").set_index("accent")
+
     #use euclidean distance 
-    accent_subset = compute_distances(list(centroids.loc[accent_B]), centroids, k_accents) #if k>10 else 
+    accent_subset = compute_distances(list(test_centriods.loc[accent_B]), centroids, k_accents) #if k>10 else 
     
     config.set('hyperparameters','accent_subset', str(accent_subset))
     checkpoints_path = train_setup(config, args)
