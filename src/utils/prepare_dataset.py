@@ -75,8 +75,17 @@ def load_afri_speech_data(
         data["audio_paths"] = data["audio_paths"].apply(
             lambda x: x.replace(f"/AfriSpeech-100/{split}/", audio_dir)
         )
-        # TODO: replace line 75 with this
-        # lambda x: x.replace(f"/AfriSpeech-100/{split}/", f"/{audio_dir}/{split}/")
+        # Sanity test
+        if not os.path.exists(data["audio_paths"].values.tolist()[0]):
+            # lambda x: x.replace(f"/AfriSpeech-100/{split}/", f"/{audio_dir}/{split}/")
+            data["audio_paths"] = data["audio_paths"].apply(
+            lambda x: x.replace(audio_dir, f"/{audio_dir}/{split}/")
+            )
+
+            if not os.path.exists(data["audio_paths"].values.tolist()[0]):
+                raise Exception(f'Could not find a way to replace the `audio_dir` path in order to retrieve your audio files. \n audio_dir: {audio_dir}')
+
+
 
     if max_audio_len_secs > -1 and gpu != -1:
         # when gpu is available, it cannot fit long samples
