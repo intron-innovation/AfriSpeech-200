@@ -67,7 +67,6 @@ def load_afri_speech_data(
     """
     data = pd.read_csv(data_path)
     data = data if len(accent_subset)<2 else data[data['accent'].isin(accent_subset)]
-    print(data.head())
     if split == 'aug':
         data["audio_paths"] = data["audio_paths"].apply(
             lambda x: x.replace(f"/AfriSpeech-100/train/", audio_dir)
@@ -110,7 +109,9 @@ def load_afri_speech_data(
     data.drop_duplicates(subset=["audio_paths"], inplace=True)
     print("after dedup", data.shape)
     print("the split is:", split)
-    print(data.head())
+    print("the info of the data is:", data.info())
+    print("the value count the of the acceents is:", data.accent.value_counts())
+    print("accent subset is:", accent_subset)
     if return_dataset:
         return Dataset.from_pandas(data)
     else:

@@ -55,9 +55,9 @@ def parse_argument():
                         help="Pass a training config file", metavar="FILE")
     parser.add_argument("--local_rank", type=int,
                         default=0)
-     parser.add_argument("-k", type=int,
+    parser.add_argument("-k", type=int,
                         default=1)
-     parser.add_argument("-b", type=str,
+    parser.add_argument("-b", type=str,
                         default='twi')
     parser.add_argument("-g", "-gpu", "--gpu", type=int,
                         default=0)
@@ -66,8 +66,9 @@ def parse_argument():
     return args, config
 
 def train_setup(config, args):
+    accent_subset= ast.literal_eval(config['hyperparameters']['accent_subset'])
     repo_root = config['experiment']['repo_root']
-    exp_dir = os.path.join(repo_root, config['experiment']['dir'], config['experiment']['name']+f"_{len(ast.literal_eval(config['hyperparameters']['accent_subset']))}")
+    exp_dir = os.path.join(repo_root, config['experiment']['dir'], config['experiment']['name']+f"_{accent_subset[0]}_{len(accent_subset)}")
     config['experiment']['dir'] = exp_dir
     checkpoints_path = os.path.join(exp_dir, 'checkpoints')
     config['checkpoints']['checkpoints_path'] = checkpoints_path
@@ -229,20 +230,21 @@ if __name__ == "__main__":
     # torch.cuda.set_device(args.gpu)
     # print("cuda.current_device:", torch.cuda.current_device())
     #para = sys.argv[1:]
-    accent_B = args.b
-    k_accents =args.k
+    accent_B = 'twi'#args.b
+    k_accents =25 #args.k
 
     ##computing centroid.
     #import pdb; pdb.set_trace()
     centroids = pd.read_csv("./data/afrispeech_accents_centroids.csv").set_index("accent")
     #use euclidean distance 
     accent_subset = compute_distances(list(centroids.loc[accent_B]), centroids, k_accents) #if k>10 else 
+    
     config.set('hyperparameters','accent_subset', str(accent_subset))
     checkpoints_path = train_setup(config, args)
     data_config = data_setup(config)
     train_dataset, val_dataset, test_dataset, aug_dataset, PROCESSOR = data_prep(data_config)
     data_collator = get_data_collator(data_config.multi_task)
-
+    quit()
     start = time.time()
     # Detecting last checkpoint.
     last_checkpoint, checkpoint_ = get_checkpoint(checkpoints_path, config['models']['model_path'])
