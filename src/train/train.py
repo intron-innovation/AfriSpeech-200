@@ -230,22 +230,22 @@ if __name__ == "__main__":
     # torch.cuda.set_device(args.gpu)
     # print("cuda.current_device:", torch.cuda.current_device())
     #para = sys.argv[1:]
-    accent_B = ['twi']#args.b
+    accent_B = ['bini']#args.b
     k_accents =10 #args.k
 
     ##computing centroid.
     #import pdb; pdb.set_trace()
-    train_centriods = pd.read_csv("./data/test_afrispeech_accents_centroids.csv").set_index("accent")
-    test_centriods = pd.read_csv("./data/train_afrispeech_accents_centroids.csv").set_index("accent")
+    train_centriods = pd.read_csv("./data/train_afrispeech_accents_centroids.csv").set_index("accent")
+    test_centriods = pd.read_csv("./data/test_afrispeech_accents_centroids.csv").set_index("accent")
 
     #use euclidean distance 
     accent_subset = accent_B + compute_distances(list(test_centriods.loc[accent_B[0]]), train_centriods, k_accents) #if k>10 else 
-    
     config.set('hyperparameters','accent_subset', str(accent_subset))
     checkpoints_path = train_setup(config, args)
     data_config = data_setup(config)
     train_dataset, val_dataset, test_dataset, aug_dataset, PROCESSOR = data_prep(data_config)
     data_collator = get_data_collator(data_config.multi_task)
+    
     start = time.time()
     # Detecting last checkpoint.
     last_checkpoint, checkpoint_ = get_checkpoint(checkpoints_path, config['models']['model_path'])
