@@ -7,8 +7,8 @@ from datetime import datetime
 import pandas as pd
 import subprocess
 
-os.environ['TRANSFORMERS_CACHE'] = '/data3/.cache/'
-os.environ['XDG_CACHE_HOME'] = '/data3/.cache/'
+#os.environ['TRANSFORMERS_CACHE'] = '/data3/.cache/'
+#os.environ['XDG_CACHE_HOME'] = '/data3/.cache/'
 
 from datasets import load_dataset, load_metric, Dataset
 from dataclasses import dataclass
