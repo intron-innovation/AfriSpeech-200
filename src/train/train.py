@@ -1,9 +1,9 @@
 import os
 import sys
 data_home = "data3"
-os.environ['TRANSFORMERS_CACHE'] = f'/{data_home}/.cache/'
-os.environ['XDG_CACHE_HOME'] = f'/{data_home}/.cache/'
-os.environ["WANDB_DISABLED"] = "true"
+#os.environ['TRANSFORMERS_CACHE'] = f'/{data_home}/.cache/'
+#os.environ['XDG_CACHE_HOME'] = f'/{data_home}/.cache/'
+#os.environ["WANDB_DISABLED"] = "true"
 
 import argparse
 import configparser
