@@ -1,8 +1,8 @@
 import os
 import sys
 data_home = "data3"
-os.environ['TRANSFORMERS_CACHE'] = f'/{data_home}/.cache/'
-os.environ['XDG_CACHE_HOME'] = f'/{data_home}/.cache/'
+#os.environ['TRANSFORMERS_CACHE'] = f'/{data_home}/.cache/'
+#os.environ['XDG_CACHE_HOME'] = f'/{data_home}/.cache/'
 os.environ["WANDB_DISABLED"] = "true"
 
 import argparse
@@ -67,8 +67,8 @@ def parse_argument():
 
 def train_setup(config, args):
     accent_subset= ast.literal_eval(config['hyperparameters']['accent_subset'])
-    repo_root = config['experiment']['repo_root']
-    exp_dir = os.path.join(repo_root, config['experiment']['dir'], config['experiment']['name']+f"_{accent_subset[0]}_{len(accent_subset)-1}")
+    #repo_root = config['experiment']['repo_root']
+    exp_dir = os.path.join(config['experiment']['dir'], config['experiment']['name']+f"_{accent_subset[0]}_{len(accent_subset)-1}")
     config['experiment']['dir'] = exp_dir
     checkpoints_path = os.path.join(exp_dir, 'checkpoints')
     config['checkpoints']['checkpoints_path'] = checkpoints_path
@@ -230,8 +230,8 @@ if __name__ == "__main__":
     # torch.cuda.set_device(args.gpu)
     # print("cuda.current_device:", torch.cuda.current_device())
     #para = sys.argv[1:]
-    accent_B = ['twi']#args.b
-    k_accents =10 #args.k
+    accent_B = [args.b]
+    k_accents = int(args.k)
 
     ##computing centroid.
     #import pdb; pdb.set_trace()
@@ -348,21 +348,16 @@ if __name__ == "__main__":
         gradient_accumulation_steps=int(config['hyperparameters']['gradient_accumulation_steps']),
         gradient_checkpointing=True if config['hyperparameters']['gradient_checkpointing'] == "True" else False,
         ddp_find_unused_parameters=True if config['hyperparameters']['ddp_find_unused_parameters'] == "True" else False,
-        evaluation_strategy="epoch",
         save_strategy= "epoch",
         num_train_epochs=int(config['hyperparameters']['num_epochs']),
         fp16=torch.cuda.is_available(),
         save_steps=int(config['hyperparameters']['save_steps']),
-        eval_steps=int(config['hyperparameters']['eval_steps']),
         logging_steps=int(config['hyperparameters']['logging_steps']),
         learning_rate=float(config['hyperparameters']['learning_rate']),
         warmup_steps=int(config['hyperparameters']['warmup_steps']),
         save_total_limit=int(config['hyperparameters']['save_total_limit']),
         dataloader_num_workers=int(config['hyperparameters']['dataloader_num_workers']),
         logging_first_step=True,
-        load_best_model_at_end=True if config['hyperparameters']['load_best_model_at_end'] == 'True' else False,
-        metric_for_best_model='eval_wer',
-        greater_is_better=False,
         ignore_data_skip=True if config['hyperparameters']['ignore_data_skip'] == 'True' else False,
         report_to=None
     )
@@ -377,7 +372,6 @@ if __name__ == "__main__":
         args=training_args,
         compute_metrics=compute_metric,
         train_dataset=train_dataset,
-        eval_dataset=train_dataset,
         tokenizer=PROCESSOR.feature_extractor,
         sampler=config['data']['sampler'] if 'sampler' in config['data'] else None
     )
