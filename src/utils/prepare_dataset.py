@@ -69,7 +69,7 @@ def load_afri_speech_data(
 
     data = data if len(accent_subset)<2 else data[data['accent'].isin(accent_subset)]
 
-    # data = data[:100] # in debug mode
+    #data = data[:50] # in debug mode
 
 
     if split == 'aug':

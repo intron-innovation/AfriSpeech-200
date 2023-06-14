@@ -53,6 +53,10 @@ def parse_argument():
     parser = argparse.ArgumentParser(prog="Train")
     parser.add_argument("-c", "--config", dest="config_file",
                         help="Pass a training config file", metavar="FILE")
+    parser.add_argument("-e", "--epoch", help="number of epochs",default=None)
+    parser.add_argument("-p", "--checkpointPath", help="path to checkpoint",default=None)
+    parser.add_argument("-n", "--experiment_name", help="experiment name",default='wav2vec2-large-xlsr-53-accentfold')
+
     parser.add_argument("--local_rank", type=int,
                         default=0)
     parser.add_argument("-k", type=int,
@@ -63,12 +67,17 @@ def parse_argument():
                         default=0)
     args = parser.parse_args()
     config.read(args.config_file)
+
+    if args.checkpointPath =='None':
+        args.checkpointPath = None
     return args, config
 
 def train_setup(config, args):
     accent_subset= ast.literal_eval(config['hyperparameters']['accent_subset'])
     #repo_root = config['experiment']['repo_root']
-    exp_dir = os.path.join(config['experiment']['dir'], config['experiment']['name']+f"_{accent_subset[0]}_{len(accent_subset)-1}")
+    #exp_dir = os.path.join(config['experiment']['dir'], config['experiment']['name']+f"_{accent_subset[0]}_{len(accent_subset)-1}")
+    exp_dir = os.path.join(config['experiment']['dir'], args.experiment_name)
+
     config['experiment']['dir'] = exp_dir
     checkpoints_path = os.path.join(exp_dir, 'checkpoints')
     config['checkpoints']['checkpoints_path'] = checkpoints_path
@@ -143,7 +152,10 @@ def compute_metric(pred):
     return {"wer": wer}
 
 
-def get_checkpoint(checkpoint_path, model_path):
+def get_checkpoint(checkpoint_path, model_path,args):
+    if args.checkpointPath is not None:
+        return args.checkpointPath, args.checkpointPath
+    
     last_checkpoint_ = None
     
     ckpt_files = os.listdir(checkpoint_path)
@@ -250,7 +262,7 @@ if __name__ == "__main__":
     
     start = time.time()
     # Detecting last checkpoint.
-    last_checkpoint, checkpoint_ = get_checkpoint(checkpoints_path, config['models']['model_path'])
+    last_checkpoint, checkpoint_ = get_checkpoint(checkpoints_path, config['models']['model_path'],args)
 
     CTC_model_class = None
     if 'hubert' in config['models']['model_path']:
@@ -351,7 +363,8 @@ if __name__ == "__main__":
         gradient_checkpointing=True if config['hyperparameters']['gradient_checkpointing'] == "True" else False,
         ddp_find_unused_parameters=True if config['hyperparameters']['ddp_find_unused_parameters'] == "True" else False,
         save_strategy= "epoch",
-        num_train_epochs=int(config['hyperparameters']['num_epochs']),
+        #num_train_epochs=int(config['hyperparameters']['num_epochs']),
+        num_train_epochs=int(args.epoch),
         fp16=torch.cuda.is_available(),
         save_steps=int(config['hyperparameters']['save_steps']),
         logging_steps=int(config['hyperparameters']['logging_steps']),

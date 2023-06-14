@@ -10,15 +10,15 @@
 
 
 
-#cd /home/mila/c/chris.emezue/AfriSpeech-Dataset-Paper/src/train
-#module load anaconda/3
-#module load cuda/11.0/cudnn/8.0
-#conda activate /home/mila/c/chris.emezue/scratch/nemo2
-#export PYTHONPATH=$PYTHONPATH:/home/mila/c/chris.emezue/AfriSpeech-Dataset-Paper
-
 cd /home/mila/c/chris.emezue/AfriSpeech-Dataset-Paper
 module load anaconda/3
 module load cudatoolkit/11.7
 conda activate /home/mila/c/chris.emezue/scratch/afrispeech
 
-python3 -m src.train.train -c src/config/accent_fold/config_xlsr_accentfold_chris.ini -k $2 -b $1
+python3 -m src.train.train \
+-c src/config/accent_fold/config_xlsr_accentfold_chris.ini \
+--experiment_name wav2vec2-large-xlsr-53-accentfold_${1}_${2}${3} \
+-k $2 \
+-b $1 \
+--epoch $5 \
+--checkpointPath $4
