@@ -28,7 +28,7 @@ def compute_cosine_sim(points, centroids, k):
         distance= cosine_similarity(np.array(points).reshape(1, -1), np.array(list(cent)).reshape(1, -1))[0][0]
         distances[accent] =distance
     sorted_distances = sort_dictionary(distances)
-    top_k = list(sorted_distances.items())[-k:]
+    top_k = list(sorted_distances.keys())[-k:]
     top_k.reverse()
 
     return top_k
