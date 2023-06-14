@@ -234,7 +234,6 @@ if __name__ == "__main__":
     k_accents = int(args.k)
 
     ##computing centroid.
-    import pdb; pdb.set_trace()
     train_centriods = pd.read_csv("./data/train_afrispeech_accents_centroids.csv").set_index("accent")
     test_centriods = pd.read_csv("./data/test_afrispeech_accents_centroids.csv").set_index("accent")
 
@@ -394,8 +393,10 @@ if __name__ == "__main__":
         metrics["eval_samples"] = len(test_dataset)
         metrics['k'] = args.k
         metrics['b'] = args.b
+        metrics['size_train_dataset'] = len(train_dataset)
+        metrics['train_accent_subset'] = str(train_dataset.accent_subset)
         # Save `metrics` as json file to experiment_dir
-        metrics_file_path = os.path.join(config['experiment']['dir'],'metrics.json')
+        metrics_file_path = os.path.join(config['experiment']['dir'],'metrics-test.json')
         with open(metrics_file_path,'w+') as f:
             json.dump(metrics,f)
         print("|==========================================|\n", f"metrics file saved to {metrics_file_path}")

@@ -66,10 +66,12 @@ def load_afri_speech_data(
     :return: Dataset instance
     """
     data = pd.read_csv(data_path)
-    data = data[:100] # in debug mode
-    
+
     data = data if len(accent_subset)<2 else data[data['accent'].isin(accent_subset)]
-    
+
+    # data = data[:100] # in debug mode
+
+
     if split == 'aug':
         data["audio_paths"] = data["audio_paths"].apply(
             lambda x: x.replace(f"/AfriSpeech-100/train/", audio_dir)
@@ -432,6 +434,7 @@ class CustomASRDataset(torch.utils.data.Dataset):
 
         self.prepare = prepare
         self.split = split
+        self.accent_subset = accent_subset
         self.asr_data = load_afri_speech_data(data_file, min_transcript_len=min_transcript_len,
                                               max_audio_len_secs=max_audio_len_secs,
                                               split=split, gpu=gpu,

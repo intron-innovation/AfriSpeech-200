@@ -10,7 +10,7 @@ def sort_dictionary(dict):
 
     keys = list(dict.keys())
     values = list(dict.values())
-    sorted_value_index = np.argsort(values) # in asceding order 
+    sorted_value_index = np.argsort(values) # in ascending order 
     sorted_dict = {keys[i]: values[i] for i in sorted_value_index}
     return sorted_dict
 
@@ -30,7 +30,6 @@ def compute_cosine_sim(points, centroids, k):
     sorted_distances = sort_dictionary(distances)
     top_k = list(sorted_distances.keys())[-k:]
     top_k.reverse()
-    top_k = [t[0] for t in top_k]
 
     return top_k
 
