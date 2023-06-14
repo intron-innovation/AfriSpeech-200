@@ -67,7 +67,7 @@ def load_afri_speech_data(
     """
     data = pd.read_csv(data_path)
     data = data[:100] # in debug mode
-
+    
     data = data if len(accent_subset)<2 else data[data['accent'].isin(accent_subset)]
     
     if split == 'aug':

@@ -32,7 +32,7 @@ from transformers.trainer_utils import get_last_checkpoint
 from src.utils.text_processing import clean_text, strip_task_tags
 from src.utils.prepare_dataset import DataConfig, data_prep, DataCollatorCTCWithPaddingGroupLen, DISCRIMINATIVE
 from src.utils.sampler import IntronTrainer
-from src.utils.compute_cluster_distance import compute_distances
+from src.utils.compute_cluster_distance import compute_distances,compute_cosine_sim
 from src.train.models import Wav2Vec2ForCTCnCLS
 
 warnings.filterwarnings('ignore')
@@ -234,12 +234,15 @@ if __name__ == "__main__":
     k_accents = int(args.k)
 
     ##computing centroid.
-    #import pdb; pdb.set_trace()
+    import pdb; pdb.set_trace()
     train_centriods = pd.read_csv("./data/train_afrispeech_accents_centroids.csv").set_index("accent")
     test_centriods = pd.read_csv("./data/test_afrispeech_accents_centroids.csv").set_index("accent")
 
-    #use euclidean distance 
-    accent_subset = accent_B + compute_distances(list(test_centriods.loc[accent_B[0]]), train_centriods, k_accents) #if k>10 else 
+
+    #use cosine similarity: https://cmry.github.io/notes/euclidean-v-cosine
+    accent_subset = accent_B + compute_cosine_sim(list(test_centriods.loc[accent_B[0]]), train_centriods, k_accents) 
+
+    # accent_subset = accent_B + compute_distances(list(test_centriods.loc[accent_B[0]]), train_centriods, k_accents)
     config.set('hyperparameters','accent_subset', str(accent_subset))
     checkpoints_path = train_setup(config, args)
     data_config = data_setup(config)
