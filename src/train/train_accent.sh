@@ -11,4 +11,9 @@ module load cudatoolkit/11.7
 #module load cuda/10.0/cudnn/7.6
 conda activate /home/mila/c/chris.emezue/scratch/afrispeech
 
-python3 -m src.train.train -c src/config/accent_fold/config_xlsr_accentfold_chris.ini -k 15 -b akan
+python3 -m src.train.train -c src/config/accent_fold/config_xlsr_accentfold_chris.ini -k 15 -b bini
+
+#B's
+#bini
+#angas
+#agatu
