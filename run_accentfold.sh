@@ -3,7 +3,7 @@
 # normal mode (1 and 2)
 CHEKPOINT_PATH='None' # default
 APPEND_NAME="_" # default
-EPOCH=1
+EPOCH=10
 for B in "bini" "angas" "agatu"
 #for B in "angas"
 do
