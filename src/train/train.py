@@ -32,11 +32,7 @@ from transformers.trainer_utils import get_last_checkpoint
 from src.utils.text_processing import clean_text, strip_task_tags
 from src.utils.prepare_dataset import DataConfig, data_prep, DataCollatorCTCWithPaddingGroupLen, DISCRIMINATIVE
 from src.utils.sampler import IntronTrainer
-<<<<<<< HEAD
 from src.utils.compute_cluster_distance import compute_distances,compute_cosine_sim
-=======
-from src.utils.compute_cluster_distance import compute_distances, compute_cosine_sim
->>>>>>> f1dbbfdf3eebc4998d30fb02bdb26fbf5e1ee565
 from src.train.models import Wav2Vec2ForCTCnCLS
 
 warnings.filterwarnings('ignore')
