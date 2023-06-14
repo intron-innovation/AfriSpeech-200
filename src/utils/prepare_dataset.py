@@ -319,7 +319,7 @@ def special_tokens(vocab_dict):
 
 
 def create_vocab(raw_datasets):
-    raw_datasets = raw_datasets.map(remove_special_characters, num_proc=6)
+    raw_datasets = raw_datasets.map(remove_special_characters)
     vocabs = raw_datasets.map(extract_chars_vocab,
                               batched=True, batch_size=-1, keep_in_memory=True,
                               remove_columns=raw_datasets.column_names["train"])
