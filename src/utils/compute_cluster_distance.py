@@ -30,6 +30,7 @@ def compute_cosine_sim(points, centroids, k):
     sorted_distances = sort_dictionary(distances)
     top_k = list(sorted_distances.items())[-k:]
     top_k.reverse()
+    top_k = [t[0] for t in top_k]
 
     return top_k
 
