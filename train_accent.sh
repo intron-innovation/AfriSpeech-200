@@ -5,8 +5,8 @@
 #SBATCH --mem=100G
 #SBATCH --time=72:00:00
 #SBATCH --partition=long
-#SBATCH --error=/home/mila/c/chris.emezue/AfriSpeech-Dataset-Paper$/slurmerror_accentfold_%j.txt
-#SBATCH --output=/home/mila/c/chris.emezue/AfriSpeech-Dataset-Paper$/slurmoutput_accentfold_%j.txt
+#SBATCH --error=/home/mila/c/chris.emezue/AfriSpeech-Dataset-Paper/slurm/slurmerror_accentfold_%j.txt
+#SBATCH --output=/home/mila/c/chris.emezue/AfriSpeech-Dataset-Paper/slurm/slurmoutput_accentfold_%j.txt
 
 
 
