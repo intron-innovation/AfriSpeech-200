@@ -4,7 +4,7 @@
 - [Google Doc](https://docs.google.com/document/d/1MzHIB1PCe8QVrjdA-2_DBkYld-4UNhtbPVO_Op9FH0Y/edit#)
 
 
-## How the Code works.
+## How the Code works
 The code is set up to use a given accent `B` and the number of neighbours `K` to  calculate the distance between all the accents and `B`. This returns a list (`accent_subset`) of K accents that has the closest distance including B at index 0. 
 
 
