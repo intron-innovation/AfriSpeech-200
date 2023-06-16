@@ -56,7 +56,7 @@ def find_checkpoint_path(args,config):
     except Exception:
         epoch= 6 # default epoch to coninue from
 
-    exp_name = '_'.join(args.experiment_name.split('_')[:2])+'_10000_'
+    exp_name = '_'.join(args.experiment_name.split('_')[:2])+'_10000_' # this correctly fetched the `accent_full` model
     old_exp_dir = os.path.join(config['experiment']['dir'],exp_name)
     checkpoint_dir = os.path.join(old_exp_dir,'checkpoints')
     checkpoints = [f.name for f in os.scandir(checkpoint_dir) if 'checkpoint' in f.name]
