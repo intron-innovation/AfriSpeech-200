@@ -48,6 +48,34 @@ print("cuda.current_device:", torch.cuda.current_device())
 device = torch.device(f"cuda" if torch.cuda.is_available() else "cpu")
 
 
+def find_checkpoint_path(args,config):
+    try:
+        if '_cont' in args.experiment_name:
+            # extract the number of epochs
+            epoch = int(args.experiment_name.split('_')[-1])
+    except Exception:
+        epoch= 6 # default epoch to coninue from
+
+    exp_name = '_'.join(args.experiment_name.split('_')[:2])+'_10000_'
+    old_exp_dir = os.path.join(config['experiment']['dir'],exp_name)
+    checkpoint_dir = os.path.join(old_exp_dir,'checkpoints')
+    checkpoints = [f.name for f in os.scandir(checkpoint_dir) if 'checkpoint' in f.name]
+
+    # find the checkpoint with the given epoch of interest. If there isn't take one at random
+
+    for checkpoint in checkpoints:
+        checkpoint_path = os.path.join(checkpoint_dir,checkpoint)
+        with open(os.path.join(checkpoint_path,'trainer_state.json'),'r') as f:
+            trainer_state = json.load(f)
+        if trainer_state['epoch'] == epoch:
+            print(f'Found checkpoint for epoch {epoch}: {checkpoint_path}')
+            return checkpoint_path
+    print(f'Could not find checkpoint at {epoch}. Resorting to random checkpoint....')
+    sorted(checkpoints)    
+    return os.path.join(checkpoint_dir,checkpoints[0])
+
+
+
 def parse_argument():
     config = configparser.ConfigParser()
     parser = argparse.ArgumentParser(prog="Train")
@@ -70,6 +98,8 @@ def parse_argument():
 
     if args.checkpointPath =='None':
         args.checkpointPath = None
+    if args.checkpointPath == 'decipher':
+        args.checkpointPath = find_checkpoint_path(args,config)
     return args, config
 
 def train_setup(config, args):
@@ -400,18 +430,18 @@ if __name__ == "__main__":
         PROCESSOR.save_pretrained(checkpoints_path)
 
 
-        print("|==========================================|\n", "Starting test evaluation\n\n")
+    print("|==========================================|\n", "Starting test evaluation\n\n")
 
-        metrics = trainer.evaluate(test_dataset)
-        metrics["eval_samples"] = len(test_dataset)
-        metrics['k'] = args.k
-        metrics['b'] = args.b
-        metrics['size_train_dataset'] = len(train_dataset)
-        metrics['train_accent_subset'] = str(train_dataset.accent_subset)
-        # Save `metrics` as json file to experiment_dir
-        metrics_file_path = os.path.join(config['experiment']['dir'],'metrics-test.json')
-        with open(metrics_file_path,'w+') as f:
-            json.dump(metrics,f)
-        print("|==========================================|\n", f"metrics file saved to {metrics_file_path}")
-        trainer.log_metrics("eval", metrics)
-        trainer.save_metrics("eval", metrics)
+    metrics = trainer.evaluate(test_dataset)
+    metrics["eval_samples"] = len(test_dataset)
+    metrics['k'] = args.k
+    metrics['b'] = args.b
+    metrics['size_train_dataset'] = len(train_dataset)
+    metrics['train_accent_subset'] = str(train_dataset.accent_subset)
+    # Save `metrics` as json file to experiment_dir
+    metrics_file_path = os.path.join(config['experiment']['dir'],'metrics-test.json')
+    with open(metrics_file_path,'w+') as f:
+        json.dump(metrics,f)
+    print("|==========================================|\n", f"metrics file saved to {metrics_file_path}")
+    trainer.log_metrics("eval", metrics)
+    trainer.save_metrics("eval", metrics)
