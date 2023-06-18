@@ -430,18 +430,18 @@ if __name__ == "__main__":
         PROCESSOR.save_pretrained(checkpoints_path)
 
 
-    print("|==========================================|\n", "Starting test evaluation\n\n")
+        print("|==========================================|\n", "Starting test evaluation\n\n")
 
-    metrics = trainer.evaluate(test_dataset)
-    metrics["eval_samples"] = len(test_dataset)
-    metrics['k'] = args.k
-    metrics['b'] = args.b
-    metrics['size_train_dataset'] = len(train_dataset)
-    metrics['train_accent_subset'] = str(train_dataset.accent_subset)
-    # Save `metrics` as json file to experiment_dir
-    metrics_file_path = os.path.join(config['experiment']['dir'],'metrics-test.json')
-    with open(metrics_file_path,'w+') as f:
-        json.dump(metrics,f)
-    print("|==========================================|\n", f"metrics file saved to {metrics_file_path}")
-    trainer.log_metrics("eval", metrics)
-    trainer.save_metrics("eval", metrics)
+        metrics = trainer.evaluate(test_dataset)
+        metrics["eval_samples"] = len(test_dataset)
+        metrics['k'] = args.k
+        metrics['b'] = args.b
+        metrics['size_train_dataset'] = len(train_dataset)
+        metrics['train_accent_subset'] = str(train_dataset.accent_subset)
+        # Save `metrics` as json file to experiment_dir
+        metrics_file_path = os.path.join(config['experiment']['dir'],'metrics-test.json')
+        with open(metrics_file_path,'w+') as f:
+            json.dump(metrics,f)
+        print("|==========================================|\n", f"metrics file saved to {metrics_file_path}")
+        trainer.log_metrics("eval", metrics)
+        trainer.save_metrics("eval", metrics)
