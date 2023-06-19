@@ -5,7 +5,6 @@
 > 100+ African accents totalling  200+ hrs of audio
 
 
-
 ### How to run this code
 
 1. Create a virtual environment `conda create -n afrispeech python=3.9`
@@ -19,7 +18,6 @@
 5. Install requirements `pip3 install -r requirements.txt`
 
 6. For Inference Run `python3 src/inference/afrispeech-inference.py --audio_dir /data/data/intron/ --model_id_or_path facebook/wav2vec2-large-960h`
-
 
 
 #### How to run multi-task experiments
