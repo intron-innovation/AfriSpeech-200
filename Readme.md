@@ -5,34 +5,6 @@
 > 100+ African accents totalling  200+ hrs of audio
 
 
-### How to Access the Data
-
-Train and dev sets have been uploaded to an s3 bucket for public access.
-Here are the steps to access the data
-
-1. If not installed already, download and install `awscli` for your 
-platform (linux/mac/windows) following the instructions [here](https
-://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) 
-
-2. Create a download folder e.g. `mkdir AfriSpeech-100`
-
-3. Request aws credentials to access the data by sending an email
-with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM on slack
-
-4. Once you receive credentials, change into your data directory `cd AfriSpeech-100`
-
-5. Type `aws configure` at the command line, hit enter, and fill in the following based on the credentials you receive.
-    ```
-    AWS Access Key ID [None]: <ACCESS-KEY-ID-FROM-CREDENTIALS-SENT>
-    AWS Secret Access Key [None]: <SECRET-KEY-FROM-CREDENTIALS-SENT>
-    Default region name [None]: eu-west-2
-    Default output format [None]: <leave this blank>
-    ```
-
-6. Run `aws s3 cp s3://intron-open-source/AfriSpeech-100 . --recursive` to download all the audio
-
-7. Download may take over 2hrs depending on your bandwidth. Train set: 57816, 103G; Dev set: 3227, 5.2G
-
 
 ### How to run this code
 
