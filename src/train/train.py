@@ -63,7 +63,6 @@ def parse_argument():
 def train_setup(config, args):
     #repo_root = config['experiment']['repo_root']
     #exp_dir = os.path.join(repo_root, config['experiment']['dir'], config['experiment']['name'])
-    breakpoint()
     exp_dir = os.path.join(config['experiment']['dir'], config['experiment']['name'])
     config['experiment']['dir'] = exp_dir
     checkpoints_path = os.path.join(exp_dir, 'checkpoints')

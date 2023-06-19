@@ -15,5 +15,4 @@ module load anaconda/3
 module load cudatoolkit/11.7
 conda activate /home/mila/c/chris.emezue/scratch/afrispeech
 
-python3 -m src.train.train \
--c src/config/config_xlsr_3_heads_asr_accent_domain_weighted_5_3_2_chris.ini
+python3 -m src.train.train --config src/config/config_xlsr_3_heads_asr_accent_domain_weighted_5_3_2_chris.ini
