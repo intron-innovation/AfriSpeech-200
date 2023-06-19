@@ -64,6 +64,7 @@ def load_afri_speech_data(
     :return: Dataset instance
     """
     data = pd.read_csv(data_path)
+    data = data[:10] # if debug
     if split == 'aug':
         data["audio_paths"] = data["audio_paths"].apply(
             lambda x: x.replace(f"/AfriSpeech-100/train/", audio_dir)
@@ -283,10 +284,6 @@ def load_data(train_path, val_path, aug_path=None):
         dataset = load_dataset('csv', data_files={'train': train_path, 'val': val_path, 'aug': aug_path})
     else:
         dataset = load_dataset('csv', data_files={'train': train_path, 'val': val_path})
-
-    # Comment below when not in debugging mode
-    dataset['train'] = dataset['train'].select([0,1,2,3,4]) # if DEBUG mode
-    dataset['val'] = dataset['val'].select([0,1,2,3,4]) # if DEBUG mode
 
     return dataset
 
