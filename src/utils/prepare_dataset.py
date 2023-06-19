@@ -284,7 +284,10 @@ def load_data(train_path, val_path, aug_path=None):
     else:
         dataset = load_dataset('csv', data_files={'train': train_path, 'val': val_path})
 
-    dataset = dataset.select([0,1,2,3,4]) # if DEBUG mode
+    # Comment below when not in debugging mode
+    dataset['train'] = dataset['train'].select([0,1,2,3,4]) # if DEBUG mode
+    dataset['val'] = dataset['val'].select([0,1,2,3,4]) # if DEBUG mode
+
     return dataset
 
 
