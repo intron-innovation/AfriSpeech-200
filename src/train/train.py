@@ -118,6 +118,7 @@ def get_data_collator(multi_task):
 
 
 def compute_metric(pred):
+    breakpoint()
     pred_logits = pred.predictions
     pred_ids = np.argmax(pred_logits, axis=-1)
 
@@ -132,6 +133,43 @@ def compute_metric(pred):
 
     wer = wer_metric.compute(predictions=pred_str_list,
                              references=label_str_list)
+
+
+
+    ### Added for F1 and stuff
+    # cls_pred_logits = pred.predictions[1]
+    # cls_pred_ids = np.argmax(cls_pred_logits, axis=-1)
+    # cls_total = len(pred.label_ids[1])
+    # cls_correct = (cls_pred_ids == pred.label_ids[1]).sum().item() # label = (ctc_label, cls_label)
+    
+    # domain_pred_logits = pred.predictions[2]
+    # domain_pred_ids = np.argmax(domain_pred_logits, axis=-1)
+    # domain_total = len(pred.label_ids[2])
+    # domain_correct = (domain_pred_ids == pred.label_ids[2]).sum().item() # label = (ctc_label, cls_label)
+
+    # vad_pred_logits = pred.predictions[3]
+    # vad_pred_ids = np.argmax(vad_pred_logits, axis=-1)
+    # vad_total = len(pred.label_ids[3])
+    # vad_correct = (vad_pred_ids == pred.label_ids[3]).sum().item() # label = (ctc_label, cls_label)
+
+
+
+    # ctc_pred_logits = pred.predictions[0]
+    # ctc_pred_ids = np.argmax(ctc_pred_logits, axis=-1)
+    # pred.label_ids[0][pred.label_ids[0] == -100] = processor.tokenizer.pad_token_id
+    # ctc_pred_str = processor.batch_decode(ctc_pred_ids)
+    # # we do not want to group tokens when computing the metrics
+    # ctc_label_str = processor.batch_decode(pred.label_ids[0], group_tokens=False)
+    # if logger.isEnabledFor(logging.DEBUG):
+    #     for reference, predicted in zip(label_str, pred_str):
+    #         logger.debug(f'reference: "{reference}"')
+    #         logger.debug(f'predicted: "{predicted}"')
+    #         if orthography.untransliterator is not None:
+    #             logger.debug(f'reference (untransliterated): "{orthography.untransliterator(reference)}"')
+    #             logger.debug(f'predicted (untransliterated): "{orthography.untransliterator(predicted)}"')
+
+    # wer = wer_metric.compute(predictions=ctc_pred_str, references=ctc_label_str)
+    # return {"cls_acc": cls_correct/cls_total, "domain_acc": domain_correct/domain_total,   "vad_acc":vad_correct/vad_total, "wer": wer, "wer_correct": correct, "cls_total": cls_total, "domain_total": domain_total, "vad_total": vad_total,  "strlen": len(ctc_label_str)}
 
     return {"wer": wer}
 
