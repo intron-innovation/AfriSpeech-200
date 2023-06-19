@@ -62,17 +62,24 @@ def find_checkpoint_path(args,config):
     checkpoints = [f.name for f in os.scandir(checkpoint_dir) if 'checkpoint' in f.name]
 
     # find the checkpoint with the given epoch of interest. If there isn't take one at random
-
+    # save global step of epoch 6
+    global_step = None
     for checkpoint in checkpoints:
         checkpoint_path = os.path.join(checkpoint_dir,checkpoint)
         with open(os.path.join(checkpoint_path,'trainer_state.json'),'r') as f:
             trainer_state = json.load(f)
         if trainer_state['epoch'] == epoch:
             print(f'Found checkpoint for epoch {epoch}: {checkpoint_path}')
-            return checkpoint_path
+            global_step = trainer_state['global_step']
+            return checkpoint_path, global_step,epoch
     print(f'Could not find checkpoint at {epoch}. Resorting to random checkpoint....')
     sorted(checkpoints)    
-    return os.path.join(checkpoint_dir,checkpoints[0])
+    with open(os.path.join(checkpoints[0],'trainer_state.json'),'r') as f:
+        trainer_state = json.load(f)
+    global_step = trainer_state['global_step']
+    epoch = trainer_state['epoch']
+        
+    return os.path.join(checkpoint_dir,checkpoints[0]),global_step,epoch
 
 
 
@@ -99,7 +106,7 @@ def parse_argument():
     if args.checkpointPath =='None':
         args.checkpointPath = None
     if args.checkpointPath == 'decipher':
-        args.checkpointPath = find_checkpoint_path(args,config)
+        args.checkpointPath,args.checkpointPath_global_step,args.checkpointPath_epoch = find_checkpoint_path(args,config)
     return args, config
 
 def train_setup(config, args):
@@ -408,6 +415,12 @@ if __name__ == "__main__":
     )
     
     print("device: ", training_args.device, device)
+    # set `max_steps`` if we are doing W3
+    if args.checkpointPath is not None:
+        num_steps_per_epoch = len(train_dataset)/int(config['hyperparameters']['train_batch_size']) / int(config['hyperparameters']['gradient_accumulation_steps'])
+        rem_epochs = int(args.epoch) - args.checkpointPath_epoch
+        max_step = (rem_epochs*num_steps_per_epoch) + args.checkpointPath_global_step
+        training_args.max_steps = max_step
     
     print(f"\n...Model Args loaded in {time.time() - start:.4f}. Start training...\n")
 
