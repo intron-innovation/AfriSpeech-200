@@ -49,6 +49,10 @@ device = torch.device(f"cuda" if torch.cuda.is_available() else "cpu")
 
 
 def find_checkpoint_path(args,config):
+    if 'cont' not in args.experiment_name:
+        raise Exception(f"""Checkpoint mode is set to decipher however `cont` is not specified in args.experiment_name ({args.experiment_name}). 
+                            You need to specify `cont` so it can try to find the checkpoint path to continue from""")
+
     try:
         if '_cont' in args.experiment_name:
             # extract the number of epochs
@@ -286,9 +290,16 @@ if __name__ == "__main__":
     train_centriods = pd.read_csv("./data/train_afrispeech_accents_centroids.csv").set_index("accent")
     test_centriods = pd.read_csv("./data/test_afrispeech_accents_centroids.csv").set_index("accent")
 
+    if 'random' in args.experiment_name:
+        print('='*20 + 'Using random subset of accents' + '='*20)
+        # if RANDOM, then randomly choose `k_accents` in `train_centroids`.
+        accent_lists = train_centriods.index.values.tolist()
+        accent_subset = np.random.choice(accent_lists,size = k_accents,replace=False).tolist()
 
-    #use cosine similarity: https://cmry.github.io/notes/euclidean-v-cosine
-    accent_subset = accent_B + compute_cosine_sim(list(test_centriods.loc[accent_B[0]]), train_centriods, k_accents) 
+    else:
+        print('='*20 + 'Using subset of accents based on cosine similarity' + '='*20)
+        #use cosine similarity: https://cmry.github.io/notes/euclidean-v-cosine
+        accent_subset = accent_B + compute_cosine_sim(list(test_centriods.loc[accent_B[0]]), train_centriods, k_accents) 
 
     # accent_subset = accent_B + compute_distances(list(test_centriods.loc[accent_B[0]]), train_centriods, k_accents)
     config.set('hyperparameters','accent_subset', str(accent_subset))

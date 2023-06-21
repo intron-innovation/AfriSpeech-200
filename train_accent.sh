@@ -16,7 +16,7 @@ module load cudatoolkit/11.7
 conda activate /home/mila/c/chris.emezue/scratch/afrispeech
 
 python3 -m src.train.train \
--c src/config/accent_fold/config_xlsr_accentfold_chris_m1.ini \
+-c src/config/accent_fold/config_xlsr_accentfold_chris.ini \
 --experiment_name wav2vec2-large-xlsr-53-accentfold_${1}_${2}${3} \
 -k $2 \
 -b $1 \

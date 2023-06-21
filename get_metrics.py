@@ -16,11 +16,28 @@ accent_dict_cont = {10:'Accent_10_cont',20:'Accent_20_cont',35:'Accent_35_cont',
 
 # for normal
 s= ''
-for neighbor in [10 ,20 ,35,10000]:
-    s = s+f'{accent_dict[neighbor]}'
+# for neighbor in [10 ,20 ,35,10000]:
+#     s = s+f'{accent_dict[neighbor]}'
+#     for B in ["bini" ,"angas", "agatu"]:
+
+#         exp_dir_name = exp_dir_template.format(B,neighbor,'_')
+#         exp_dir = os.path.join(TASK_FOLDER,exp_dir_name)
+
+#         metrics_path = os.path.join(exp_dir,'metrics-test.json')
+#         with open(metrics_path,'r') as f:
+#             metrics = json.load(f)
+#         wer = metrics['eval_wer']
+#         s = s+'&'+f'{wer:.3f}'
+#     s = s + '\\ \n'
+# breakpoint()
+
+# # for CONT
+s= ''
+for neighbor in [10 ,20 ,35]:
+    s = s+f'{accent_dict_cont[neighbor]}'
     for B in ["bini" ,"angas", "agatu"]:
 
-        exp_dir_name = exp_dir_template.format(B,neighbor,'_')
+        exp_dir_name = exp_dir_template.format(B,neighbor,'_cont_6')
         exp_dir = os.path.join(TASK_FOLDER,exp_dir_name)
 
         metrics_path = os.path.join(exp_dir,'metrics-test.json')
@@ -30,24 +47,6 @@ for neighbor in [10 ,20 ,35,10000]:
         s = s+'&'+f'{wer:.3f}'
     s = s + '\\ \n'
 breakpoint()
-
-# # for CONT
-# s= ''
-# for neighbor in [10 ,20 ,35]:
-#     s = s+f'{accent_dict_cont[neighbor]}'
-#     for B in ["bini" ,"angas", "agatu"]:
-
-#         exp_dir_name = exp_dir_template.format(B,neighbor,'_cont')
-#         exp_dir = os.path.join(TASK_FOLDER,exp_dir_name)
-
-#         metrics_path = os.path.join(exp_dir,'metrics-test.json')
-#         with open(metrics_path,'r') as f:
-#             metrics = json.load(f)
-#         wer = metrics['eval_wer']
-#         s = s+'&'+f'{wer:.3f}'
-#     s = s + '\\ \n'
-
-
 
 
 #breakpoint()
