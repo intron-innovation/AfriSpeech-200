@@ -283,12 +283,20 @@ if __name__ == "__main__":
     # torch.cuda.set_device(args.gpu)
     # print("cuda.current_device:", torch.cuda.current_device())
     #para = sys.argv[1:]
-    accent_B = [args.b]
     k_accents = int(args.k)
 
     ##computing centroid.
     train_centriods = pd.read_csv("./data/train_afrispeech_accents_centroids.csv").set_index("accent")
     test_centriods = pd.read_csv("./data/test_afrispeech_accents_centroids.csv").set_index("accent")
+    
+    try:
+        accent_index = int(args.b)
+        accent_name = test_centriods.iloc[accent_index]._name
+        args.b = accent_name
+    except ValueError:
+        print(f'B is of type string so it is an accent on its own.')
+        
+    accent_B = [args.b]
 
     if 'random' in args.experiment_name:
         print('='*20 + 'Using random subset of accents' + '='*20)

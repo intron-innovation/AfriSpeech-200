@@ -3,19 +3,21 @@ import matplotlib.pyplot as plt
 import os, json
 import ast
 import pandas as pd
+from plot_table import plot_table,get_color_shade
 
 
-TASK_FOLDER = '/home/mila/c/chris.emezue/scratch/AfriSpeech-100/task4-m1/'
+TASK_FOLDER = '/home/mila/c/chris.emezue/scratch/AfriSpeech-100/task4/'
 exp_dir_template = 'wav2vec2-large-xlsr-53-accentfold_{}_{}{}'
 
 
 
-accent_dict = {10:'Accent_10',20:'Accent_20',35:'Accent_35',10000:'Accent_FULL'}
-accent_dict_cont = {10:'Accent_10_cont',20:'Accent_20_cont',35:'Accent_35_cont',10000:'Accent_FULL_cont'}
+accent_dict = {10:'Accent\_10',20:'Accent\_20',35:'Accent\_35',10000:'Accent\_FULL'}
+accent_dict_cont = {10:'Accent\_10\_cont',20:'Accent\_20\_cont',35:'Accent\_35\_cont',10000:'Accent\_FULL_\cont'}
+accent_dict_random = {10:'Accent\_10\_random',20:'Accent\_20\_random',35:'Accent\_35\_random',10000:'Accent\_FULL\_random'}
 
 
 # for normal
-s= ''
+#s= ''
 # for neighbor in [10 ,20 ,35,10000]:
 #     s = s+f'{accent_dict[neighbor]}'
 #     for B in ["bini" ,"angas", "agatu"]:
@@ -32,21 +34,42 @@ s= ''
 # breakpoint()
 
 # # for CONT
-s= ''
-for neighbor in [10 ,20 ,35]:
-    s = s+f'{accent_dict_cont[neighbor]}'
-    for B in ["bini" ,"angas", "agatu"]:
+# s= ''
+# for neighbor in [10 ,20 ,35]:
+#     s = s+f'{accent_dict_cont[neighbor]}'
+#     for B in ["bini" ,"angas", "agatu"]:
 
-        exp_dir_name = exp_dir_template.format(B,neighbor,'_cont_6')
-        exp_dir = os.path.join(TASK_FOLDER,exp_dir_name)
+#         exp_dir_name = exp_dir_template.format(B,neighbor,'_cont_6')
+#         exp_dir = os.path.join(TASK_FOLDER,exp_dir_name)
 
-        metrics_path = os.path.join(exp_dir,'metrics-test.json')
-        with open(metrics_path,'r') as f:
-            metrics = json.load(f)
-        wer = metrics['eval_wer']
-        s = s+'&'+f'{wer:.3f}'
-    s = s + '\\ \n'
-breakpoint()
+#         metrics_path = os.path.join(exp_dir,'metrics-test.json')
+#         with open(metrics_path,'r') as f:
+#             metrics = json.load(f)
+#         wer = metrics['eval_wer']
+#         s = s+'&'+f'{wer:.3f}'
+#     s = s + '\\ \n'
+# breakpoint()
+
+
+# for RANDOM
+# s= ''
+# for neighbor in [10 ,20 ,35]:
+#     s = s+f'{accent_dict_random[neighbor]}'
+#     for B in ["bini" ,"angas", "agatu"]:
+
+#         exp_dir_name = exp_dir_template.format(B,neighbor,'_random')
+#         exp_dir = os.path.join(TASK_FOLDER,exp_dir_name)
+
+#         try:
+#             metrics_path = os.path.join(exp_dir,'metrics-test.json')
+#             with open(metrics_path,'r') as f:
+#                 metrics = json.load(f)
+#             wer = metrics['eval_wer']
+#         except FileNotFoundError:
+#             wer = 100.000
+#         s = s+'&'+f'{wer:.3f}'
+#     s = s + '\\ \n'
+# breakpoint()
 
 
 #breakpoint()
@@ -94,3 +117,122 @@ def get_details_of_accent_subset(plot=False):
 
 
 #get_details_of_accent_subset(True)
+
+
+
+def get_completed_runs(folder):
+    run_folders = [os.path.join(folder,f) for f in os.listdir(folder)]
+    metric_paths = [os.path.join(f,'metrics-test.json') for f in run_folders]
+    exist_metric_paths = [1 if os.path.exists(f) else 0 for f in metric_paths]
+    print(f'metrics json files completed: {sum(exist_metric_paths)} \ {len(run_folders)}')
+    for p, m in zip(metric_paths,exist_metric_paths):
+        if m==0:
+            print(p)
+
+
+TASK_FOLDER_RANDOM = '/home/mila/c/chris.emezue/scratch/AfriSpeech-100/task4-new-idea/'
+test_only_accents = ['obolo', 'jukun', 'bini', 'etche', 'bajju', 'idah', 'ikulu', 'ukwuani', 'estako', 'ekene', 'okirika', 'ishan', 'eket', 'ibani', 'eleme', 'yoruba, hausa', 'eggon', 'ebiobo', 'mada', 'nyandang', 'ijaw(nembe)', 'agatu', 'gbagyi', 'urobo', 'yala mbembe', 'ekpeye', 'gerawa', 'bassa', 'afo', 'mwaghavul', 'kubi', 'igbo and yoruba', 'bagi', 'jaba', 'khana', 'angas', 'brass', 'delta', 'oklo', 'kalabari', 'igarra']
+
+#get_completed_runs(TASK_FOLDER_RANDOM)
+#breakpoint()
+
+def read_json(file_path):
+    with open(file_path,'r') as f:
+        return json.load(f)
+
+
+def get_all_test_accent_stats():
+    folder = '/home/mila/c/chris.emezue/scratch/AfriSpeech-100/task4-new-idea/'
+    # we want to get random, af, accent
+
+    exp_folders = [(os.path.join(folder,f),'random') if 'random' in f else (os.path.join(folder,f),'AccentFold') for f in os.listdir(folder)]
+    metric_paths = [(os.path.join(f[0],'metrics-test.json'),f[1]) for f in exp_folders if os.path.exists(os.path.join(f[0],'metrics-test.json'))]
+    metrics = [(read_json(m[0]),m[1]) for m in metric_paths]
+    accents = [m[0]['b'] for m in metrics]
+    wer = [m[0]['eval_wer'] for m in metrics]
+    eval_samples = [m[0]['eval_samples'] for m in metrics]
+    size_train_dataset = [m[0]['size_train_dataset'] for m in metrics]
+    eval_loss = [m[0]['eval_loss'] for m in metrics]
+    method = [m[1] for m in metrics]
+
+    df = pd.DataFrame({'Method':method,'Accent':accents,'Test WER':wer,'# Test samples':eval_samples,'# Train samples':size_train_dataset,'Test loss':eval_loss})
+    # Only select the 41 accents only in test
+    # test_adjust = ['gerawa','igbo and yoruba','obolo','ukwuahi','urobo','ikulu']
+
+    
+    df_test_only = df[df['Accent'].isin(test_only_accents)]
+    # df[df['Accent'].isin(test_adjust)]
+    return df_test_only
+
+
+#df = get_all_test_accent_stats()
+#breakpoint()
+# df.groupby(['Method']).mean()
+# fig, ax = plt.subplots()
+# ax = sns.lineplot(data=df, x="Accent", y="Test WER",style="Method",hue='Method',markers=True)
+
+# ax.set_xticklabels(ax.get_xticklabels(), rotation=90, ha='center')
+# fig.set_figwidth(13.4)
+# fig.tight_layout()
+# fig.savefig('lineplot_test_wer_41.png')
+
+# fig, ax = plt.subplots()
+# ax = sns.barplot(data=df, y="# Train samples", x="Accent", hue="Method")
+
+# ax.set_xticklabels(ax.get_xticklabels(), rotation=90, ha='center')
+# fig.set_figwidth(13.4)
+# fig.tight_layout()
+# fig.savefig('train_samples_barplot_test_41.png')
+# breakpoint()
+
+
+def get_table_chosen_accents(type_filter='AccentFold'):
+    folder = '/home/mila/c/chris.emezue/scratch/AfriSpeech-100/task4-new-idea/'
+
+    exp_folders = [(os.path.join(folder,f),'random') if 'random' in f else (os.path.join(folder,f),'AccentFold') for f in os.listdir(folder)]
+    metric_paths = [(os.path.join(f[0],'metrics-test.json'),f[1]) for f in exp_folders if os.path.exists(os.path.join(f[0],'metrics-test.json'))]
+    metrics = [(read_json(m[0]),m[1]) for m in metric_paths]
+    metrics = [m[0] for m in metrics if m[1]==type_filter]
+
+
+
+    # Get dict of accents and their # clips
+    df_d = pd.read_csv('afrispeech_stats.csv')
+    df_d_accents = df_d['Accent'].values.tolist()
+    df_d_count = df_d['Clips'].values.tolist()
+    accent_dict = {k:v for k,v in zip(df_d_accents,df_d_count)}
+
+
+    # create lang and counts. 
+    accents = []
+    counts = []
+    for accent in test_only_accents:
+        accents.append(f'{accent}_MAINK')
+        counts.append(0)
+        specific_metric = [a for a in metrics if a['b']==accent]
+        if specific_metric==[]:
+            continue
+        assert len(specific_metric)==1
+        accent_specific_metric = specific_metric[0]
+        accents_used = ast.literal_eval(accent_specific_metric['train_accent_subset'])
+        assert len(accents_used) == 20
+        accents.extend(accents_used)
+        counts.extend([accent_dict[a] for a in accents_used])
+    assert len(accents)==len(counts)
+
+    fig,the_table,colors_ = plot_table(accents,counts,21)
+    the_table.set_fontsize(30)
+    the_table.figure.set_figwidth(12.8)
+    the_table.figure.set_figheight(9.6)
+
+    #the_table.scale(1,5)
+    #plt.title('Heatmap ofLanfrica Records per language')
+    the_table.figure.tight_layout()
+
+    the_table.figure.savefig('table_accent_chosen_heatmap.png')
+    #plt.show()
+
+    breakpoint()
+
+
+get_table_chosen_accents()

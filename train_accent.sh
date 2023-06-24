@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=accent-fold
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:32gb:1
 #SBATCH --cpus-per-gpu=24
 #SBATCH --mem=100G
 #SBATCH --time=72:00:00
