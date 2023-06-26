@@ -108,7 +108,7 @@ class LibriSpeechDataset(torch.utils.data.Dataset):
         domain = "general"
         vad = "speech"
 
-        audio = np.asarray(audio)
+        audio = np.asarray(audio)            
         if 'whisper' in self.model_id and os.path.isdir(self.model_id):
             input_features = processor(
                 audio,
@@ -136,10 +136,6 @@ def generate_fn(input_features):
     )
     return pred_ids.sequences
 
-# pmap the generate function for data parallelism
-p_generate = pmap(generate_fn, "input_features")
-# replicate the parameters across devices
-params = replicate(params)
 
 
 def transcribe_whisper(args, model, loader, split):
@@ -161,9 +157,17 @@ def transcribe_whisper(args, model, loader, split):
     audio_or_mels = audio_or_mels.to(device)
     for audio_or_mels, texts, audio_path, accent, domain, vad in tqdm(loader):
         if "whisper" in args.model_id_or_path and args.framework=="jax":
-            
+            # pmap the generate function for data parallelism
+            p_generate = pmap(generate_fn, "input_features")
+            # replicate the parameters across devices
+            params = replicate(params)
+            pred_ids = p_generate(input_features)
+            output_ids = device_get(pred_ids.reshape(-1, model.config.max_length))
+
+            # post-process: convert tokens ids to text string
+            results = processor.batch_decode(pred_ids, skip_special_tokens=True)
         
-        if "whisper" in args.model_id_or_path and os.path.isdir(args.model_id_or_path):
+        elif "whisper" in args.model_id_or_path and os.path.isdir(args.model_id_or_path):
             with torch.no_grad():
                 pred_ids = model.generate(audio_or_mels)
             results = processor.batch_decode(pred_ids, skip_special_tokens=True)
@@ -281,3 +285,6 @@ if __name__ == "__main__":
     model.eval()
 
     transcribe_whisper(args, model, data_loader, split)
+
+
+#CUDA_VISIBLE_DEVICES=0 python3 src/inference/wJAX-afrispeech-inference.py --model_id_or_path openai/whisper-small --gpu 1 --batchsize 3 --audio_dir /data/data/intron/ --data_csv data/intron-test-public-6346-clean.csv --framework jax
