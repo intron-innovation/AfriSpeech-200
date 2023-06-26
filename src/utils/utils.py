@@ -127,5 +127,11 @@ def parse_argument():
         default="call",
         help="mode for remote endpoints [call, get]",
     )
+    parser.add_argument(
+        "--framework",
+        default=None,
+        help="frame work to use for whisper inference",
+    )
+
 
     return parser.parse_args()

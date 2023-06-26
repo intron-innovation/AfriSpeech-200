@@ -37,6 +37,7 @@ from transformers.trainer_utils import get_last_checkpoint, is_main_process
 
 from src.utils.text_processing import clean_text, strip_task_tags
 from src.utils.prepare_dataset import DataConfig, data_prep, DataCollatorCTCWithPaddingGroupLen, DISCRIMINATIVE
+from src.utils.exponential_cosine_restart import CosineAnnealingWarmRestarts
 from src.utils.sampler import IntronTrainer
 from src.train.models import Wav2Vec2ForCTCnCLS
 import logging
@@ -422,7 +423,7 @@ if __name__ == "__main__":
             lr_scheduler = get_cosine_with_hard_restarts_schedule_with_warmup(optimizer,
                                                                               num_warmup_steps=training_args.warmup_steps,
                                                                               num_training_steps=num_training_steps,
-                                                                              num_cycles=10)
+                                                                              num_cycles=80)
         elif config_lr_scheduler == "get_polynomial_decay_schedule_with_warmup":
             lr_scheduler = get_polynomial_decay_schedule_with_warmup(optimizer, num_warmup_steps=training_args.warmup_steps,
                                                                      num_training_steps=num_training_steps, num_cycles=5)
@@ -430,7 +431,9 @@ if __name__ == "__main__":
             lr_scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer,
                                                              base_lr=float(config['hyperparameters']['learning_rate']),
                                                              max_lr=float(config['hyperparameters']['max_learning_rate']),
-                                                             step_size_up=500, cycle_momentum=False)
+                                                             step_size_up=50, cycle_momentum=False)
+        elif config_lr_scheduler == "exponential_cosine_restart":
+            lr_scheduler = CosineAnnealingWarmRestarts(optimizer,T_0=3700) #T_0 is ~ total steps//80cycles ##########
         else:
             lr_scheduler = get_linear_schedule_with_warmup(optimizer,num_warmup_steps=training_args.warmup_steps, num_training_steps=num_training_steps)
 
