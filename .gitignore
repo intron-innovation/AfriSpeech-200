@@ -5,6 +5,7 @@ src/__pycache__/
 src/experiments
 wandb/
 aws/*
+data/.cache
 
 #Chris
 awscliv2.zip
