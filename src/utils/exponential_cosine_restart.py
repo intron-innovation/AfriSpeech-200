@@ -70,8 +70,9 @@ def _get_cosine_with_hard_restarts_schedule_with_warmup_lr_lambda(
     cosine_lr = max(0.0, 0.5 * (1.0 + math.cos(math.pi * cycle_progress)))
     
     restart_lr = restart_decay ** cycle
+    # final_lr = cosine_lr * restart_lr
+    # if final
     return cosine_lr * restart_lr
-
 
 def get_cosine_with_hard_restarts_schedule_with_warmupx(
     optimizer: Optimizer, num_warmup_steps: int, num_training_steps: int, num_cycles: int = 1, last_epoch: int = -1, restart_decay: float = 1.0
