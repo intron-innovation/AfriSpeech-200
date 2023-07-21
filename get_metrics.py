@@ -133,8 +133,8 @@ def get_completed_runs(folder):
 TASK_FOLDER_RANDOM = '/home/mila/c/chris.emezue/scratch/AfriSpeech-100/task4-new-idea/'
 test_only_accents = ['obolo', 'jukun', 'bini', 'etche', 'bajju', 'idah', 'ikulu', 'ukwuani', 'estako', 'ekene', 'okirika', 'ishan', 'eket', 'ibani', 'eleme', 'yoruba, hausa', 'eggon', 'ebiobo', 'mada', 'nyandang', 'ijaw(nembe)', 'agatu', 'gbagyi', 'urobo', 'yala mbembe', 'ekpeye', 'gerawa', 'bassa', 'afo', 'mwaghavul', 'kubi', 'igbo and yoruba', 'bagi', 'jaba', 'khana', 'angas', 'brass', 'delta', 'oklo', 'kalabari', 'igarra']
 
-#get_completed_runs(TASK_FOLDER_RANDOM)
-#breakpoint()
+get_completed_runs(TASK_FOLDER_RANDOM)
+breakpoint()
 
 def read_json(file_path):
     with open(file_path,'r') as f:
@@ -235,4 +235,4 @@ def get_table_chosen_accents(type_filter='AccentFold'):
     breakpoint()
 
 
-get_table_chosen_accents()
+#get_table_chosen_accents()
