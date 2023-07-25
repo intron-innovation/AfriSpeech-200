@@ -1,8 +1,9 @@
-import os
+import os,sys
 import glob
 import subprocess
 import tarfile
 import copy
+breakpoint()
 from omegaconf import OmegaConf, open_dict
 from pathlib import Path
 import pytorch_lightning as ptl
@@ -219,14 +220,13 @@ if num_tokens < INTRON_VOCAB_SIZE:
         f"Please reconstruct the tokenizer with fewer tokens"
     )
 
-#model = nemo_asr.models.ASRModel.from_pretrained(config["models"]["finetune"], map_location=config["experiment"]["map_location"])
 
+# Training from scratch. 25.07.2023
 if 'transducer' in config["models"]["finetune"]:
-  model = nemo_asr.models.EncDecRNNTBPEModel.from_pretrained(config["models"]["finetune"], map_location=config["experiment"]["map_location"])
-  # "nvidia/stt_en_conformer_transducer_large"
+  model = nemo_asr.models.EncDecRNNTBPEModel(config)
 elif 'conformer' in config["models"]["finetune"]:
-  model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(config["models"]["finetune"], map_location=config["experiment"]["map_location"])
-  # "nvidia/stt_en_conformer_ctc_large"
+  model = nemo_asr.models.EncDecCTCModelBPE(config)
+
 
 
 model.change_vocabulary(new_tokenizer_dir=TOKENIZER_DIR, new_tokenizer_type="bpe")
