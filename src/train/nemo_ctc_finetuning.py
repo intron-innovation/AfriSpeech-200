@@ -3,7 +3,6 @@ import glob
 import subprocess
 import tarfile
 import copy
-breakpoint()
 from omegaconf import OmegaConf, open_dict
 from pathlib import Path
 import pytorch_lightning as ptl
@@ -220,28 +219,34 @@ if num_tokens < INTRON_VOCAB_SIZE:
         f"Please reconstruct the tokenizer with fewer tokens"
     )
 
-
+breakpoint()
 # Training from scratch. 25.07.2023
-if 'transducer' in config["models"]["finetune"]:
-  model = nemo_asr.models.EncDecRNNTBPEModel(config)
-elif 'conformer' in config["models"]["finetune"]:
-  model = nemo_asr.models.EncDecCTCModelBPE(config)
 
+cf2 = OmegaConf.load('/home/mila/c/chris.emezue/AfriSpeech-Dataset-Paper/src/config/conformer_ctc_bpe.yaml')
+cf2.model.tokenizer.dir = TOKENIZER_DIR
+cf2.model.train_ds.manifest_filepath = intron_train_manifest_cleaned
+cf2.model.validation_ds.manifest_filepath = intron_dev_manifest_cleaned
+
+
+if 'transducer' in config["models"]["finetune"]:
+  model = nemo_asr.models.EncDecRNNTBPEModel(cf2.model)
+elif 'conformer' in config["models"]["finetune"]:
+  model = nemo_asr.models.EncDecCTCModelBPE(cf2.model)
 
 
 model.change_vocabulary(new_tokenizer_dir=TOKENIZER_DIR, new_tokenizer_type="bpe")
 
 
-freeze_encoder = config['hyperparameters']['freeze_feature_encoder']
-freeze_encoder = bool(freeze_encoder)
+# freeze_encoder = config['hyperparameters']['freeze_feature_encoder']
+# freeze_encoder = bool(freeze_encoder)
 
-if freeze_encoder:
-  model.encoder.freeze()
-  model.encoder.apply(enable_bn_se)
-  logging.info("Model encoder has been frozen")
-else:
-  model.encoder.unfreeze()
-  logging.info("Model encoder has been un-frozen")
+# if freeze_encoder:
+#   model.encoder.freeze()
+#   model.encoder.apply(enable_bn_se)
+#   logging.info("Model encoder has been frozen")
+# else:
+#   model.encoder.unfreeze()
+#   logging.info("Model encoder has been un-frozen")
 
 ## Update config
 
