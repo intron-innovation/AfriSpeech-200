@@ -219,7 +219,7 @@ if num_tokens < INTRON_VOCAB_SIZE:
         f"Please reconstruct the tokenizer with fewer tokens"
     )
 
-breakpoint()
+# breakpoint()
 # Training from scratch. 25.07.2023
 
 cf2 = OmegaConf.load('/home/mila/c/chris.emezue/AfriSpeech-Dataset-Paper/src/config/conformer_ctc_bpe.yaml')
@@ -234,7 +234,7 @@ elif 'conformer' in config["models"]["finetune"]:
   model = nemo_asr.models.EncDecCTCModelBPE(cf2.model)
 
 
-model.change_vocabulary(new_tokenizer_dir=TOKENIZER_DIR, new_tokenizer_type="bpe")
+# model.change_vocabulary(new_tokenizer_dir=TOKENIZER_DIR, new_tokenizer_type="bpe")
 
 
 # freeze_encoder = config['hyperparameters']['freeze_feature_encoder']
@@ -353,18 +353,19 @@ def analyse_ctc_failures_in_model(model):
 
 with open_dict(model.cfg.optim):
   model.cfg.optim.lr = float(config["hyperparameters"]["learning_rate"])
-  model.cfg.optim.weight_decay = float(config["hyperparameters"]["weight_decay"])
-  model.cfg.optim.sched.warmup_steps = None  # Remove default number of steps of warmup
-  model.cfg.optim.sched.warmup_ratio = float(config["hyperparameters"]["warmup_ratio"]) # 10 % warmup
-  model.cfg.optim.sched.min_lr = float(config["hyperparameters"]["min_learning_rate"])
+  # model.cfg.optim.weight_decay = float(config["hyperparameters"]["weight_decay"])
+  # model.cfg.optim.sched.warmup_steps = None  # Remove default number of steps of warmup
+  # model.cfg.optim.sched.warmup_ratio = float(config["hyperparameters"]["warmup_ratio"]) # 10 % warmup
+  # model.cfg.optim.sched.min_lr = float(config["hyperparameters"]["min_learning_rate"])
 
 ### Setup data augmentation
 
-with open_dict(model.cfg.spec_augment):
-  model.cfg.spec_augment.freq_masks = int(config["hyperparameters"]["freq_mask"])
-  model.cfg.spec_augment.freq_width = int(config["hyperparameters"]["freq_width"])
-  model.cfg.spec_augment.time_masks = int(config["hyperparameters"]["time_mask"])
-  model.cfg.spec_augment.time_width = float(config["hyperparameters"]["time_width"])
+# Block comment from Chris
+# with open_dict(model.cfg.spec_augment):
+#   model.cfg.spec_augment.freq_masks = int(config["hyperparameters"]["freq_mask"])
+#   model.cfg.spec_augment.freq_width = int(config["hyperparameters"]["freq_width"])
+#   model.cfg.spec_augment.time_masks = int(config["hyperparameters"]["time_mask"])
+#   model.cfg.spec_augment.time_width = float(config["hyperparameters"]["time_width"])
 
 model.spec_augmentation = model.from_config_dict(model.cfg.spec_augment)
 
