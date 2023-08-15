@@ -28,6 +28,7 @@ from transformers import (
     get_cosine_with_hard_restarts_schedule_with_warmup,
     get_linear_schedule_with_warmup,
     get_polynomial_decay_schedule_with_warmup,
+    AutoModelForAudioClassification,
     Wav2Vec2ForCTC,
     HubertForCTC,
     TrainingArguments,
@@ -47,6 +48,7 @@ torch.cuda.empty_cache()
 
 # warnings.filterwarnings('ignore')
 wer_metric = load_metric("wer")
+f1_metric = load_metric("f1")
 SAMPLING_RATE = 16000
 PROCESSOR = None
 
@@ -144,7 +146,14 @@ def compute_metric(pred):
     wer = wer_metric.compute(predictions=pred_str_list,
                              references=label_str_list)
 
-    return {"wer": wer}
+def compute_f1_metric(pred):
+    pred_logits = pred.predictions
+    pred_ids = np.argmax(pred_logits, axis=-1)
+
+    f1 = f1_metric.compute(predictions=pred_ids, references=pred.label_ids)
+
+    return {"f1": f1}
+
 
 
 def get_checkpoint(checkpoint_path, model_path):
@@ -286,6 +295,8 @@ if __name__ == "__main__":
         CTC_model_class = HubertForCTC
     elif 'tasks' in config and config['tasks']['architecture'] == DISCRIMINATIVE:
         CTC_model_class = Wav2Vec2ForCTCnCLS
+    elif 'tasks' in config and config['tasks']['architecture'] == "accent_classifier":
+        CTC_model_class = AutoModelForAudioClassification
     else:
         CTC_model_class = Wav2Vec2ForCTC
 
@@ -317,6 +328,19 @@ if __name__ == "__main__":
             domain_len=int(config['tasks']['num_domains']),
             vad_len=int(config['tasks']['num_vad'])
         )
+    elif 'tasks' in config and config['tasks']['architecture'] == "accent_classifier":
+        model = CTC_model_class.from_pretrained(
+            last_checkpoint if last_checkpoint else config['models']['model_path'],
+            attention_dropout=float(config['hyperparameters']['attention_dropout']),
+            hidden_dropout=float(config['hyperparameters']['hidden_dropout']),
+            feat_proj_dropout=float(config['hyperparameters']['feat_proj_dropout']),
+            mask_time_prob=float(config['hyperparameters']['mask_time_prob']),
+            layerdrop=float(config['hyperparameters']['layerdrop']),
+            ctc_zero_infinity=True,
+            pad_token_id=PROCESSOR.tokenizer.pad_token_id,
+            num_labels=config['task']['num_accents'],
+            )
+
     elif config['models']['model_path'] in models_with_different_vocab:
         from transformers.file_utils import hf_bucket_url, cached_path
 

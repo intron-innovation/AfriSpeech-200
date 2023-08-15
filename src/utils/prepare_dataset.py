@@ -449,19 +449,21 @@ def transform_labels(text, accent, domain, vad, tasks_dict):
     label_accent = label_domain = label_vad = None
     if tasks_dict:
         if tasks_dict['accent']:
-            if tasks_dict['architecture'] == DISCRIMINATIVE:
+            if tasks_dict['architecture'] == DISCRIMINATIVE or tasks_dict['architecture'] == "accent_classifier":
                 label_accent = LABEL_MAP['accent'].get(accent, LABEL_MAP['accent']["unk"])
+
             else:
                 label_accent = LABEL_MAP.get(accent, LABEL_MAP["unk"])
 
         if tasks_dict['domain']:
-            if tasks_dict['architecture'] == DISCRIMINATIVE:
+            if tasks_dict['architecture'] == DISCRIMINATIVE or tasks_dict['architecture'] == "domain_classifier":
                 label_domain = LABEL_MAP['domain'].get(domain, LABEL_MAP['domain']["unk"])
+                
             else:
                 label_domain = LABEL_MAP.get(domain, LABEL_MAP["unk"])
 
         if tasks_dict['vad']:
-            if tasks_dict['architecture'] == DISCRIMINATIVE:
+            if tasks_dict['architecture'] == DISCRIMINATIVE or tasks_dict['architecture'] == "vad_classifier":
                 label_vad = LABEL_MAP['vad'].get(vad)
             else:
                 label_vad = LABEL_MAP.get(vad)
@@ -470,6 +472,8 @@ def transform_labels(text, accent, domain, vad, tasks_dict):
             labels = concat_cls_head_labels(labels, label_domain, label_accent, label_vad, tasks_dict)
         else:
             labels = concat_labels(labels, label_domain, label_accent, label_vad, mode=tasks_dict['expand_vocab_mode'])
+        
+            
     return labels
 
 
@@ -537,10 +541,12 @@ class CustomASRDataset(torch.utils.data.Dataset):
             input_audio = self.transform(audio_path)
             label = self.target_transform(text, accent, domain, vad, self.multi_task)
             result = {'input_values': input_audio[0], 'input_lengths': len(input_audio[0])}
+            result.update({'labels': label[1]})
+        
 
         result.update({'labels': label, 'accent': accent, 'audio_idx': audio_idx})
 
-        if self.multi_task and self.multi_task['architecture'] == DISCRIMINATIVE:
+        if self.multi_task['architecture'] == "accent_classifier":
             num_tasks = 1
             if self.multi_task['accent']:
                 result.update({'accent': label[num_tasks]})
@@ -553,6 +559,7 @@ class CustomASRDataset(torch.utils.data.Dataset):
                 num_tasks += 1
             result.update({'tasks': num_tasks})
             result.update({'labels': label[0]})
+            
         return result
 
 
@@ -573,13 +580,13 @@ class DataCollatorCTCWithPaddingGroupLen:
         input_features = [{"input_values": feature["input_values"]} for feature in features]
         label_features = [{"input_ids": feature["labels"]} for feature in features]
 
-        if self.multi_task and self.multi_task['architecture'] == DISCRIMINATIVE:
-            if self.multi_task['accent']:
-                accent_features = [{"input_ids": feature["accent"]} for feature in features]
-            if self.multi_task['domain']:
-                domain_features = [{"input_ids": feature["domain"]} for feature in features]
-            if self.multi_task['vad']:
-                vad_features = [{"input_ids": feature["vad"]} for feature in features]
+        # if self.multi_task and self.multi_task['architecture'] == DISCRIMINATIVE:
+        #     if self.multi_task['accent']:
+        #         accent_features = [{"input_ids": feature["accent"]} for feature in features]
+        #     if self.multi_task['domain']:
+        #         domain_features = [{"input_ids": feature["domain"]} for feature in features]
+        #     if self.multi_task['vad']:
+        #         vad_features = [{"input_ids": feature["vad"]} for feature in features]
 
         batch = self.processor.pad(
             input_features,
@@ -588,34 +595,19 @@ class DataCollatorCTCWithPaddingGroupLen:
             pad_to_multiple_of=self.pad_to_multiple_of,
             return_tensors="pt",
         )
-        with self.processor.as_target_processor():
-            labels_batch = self.processor.pad(
-                label_features,
-                padding=self.padding,
-                max_length=self.max_length,
-                pad_to_multiple_of=self.pad_to_multiple_of_labels,
-                return_tensors="pt",
-            )
+        # with self.processor.as_target_processor():
+        #     labels_batch = self.processor.pad(
+        #         label_features,
+        #         padding=self.padding,
+        #         max_length=self.max_length,
+        #         pad_to_multiple_of=self.pad_to_multiple_of_labels,
+        #         return_tensors="pt",
+        #     )
 
-        # replace padding with -100 to ignore loss correctly
-        labels = labels_batch["input_ids"].masked_fill(labels_batch.attention_mask.ne(1), -100)
-        batch["labels"] = labels
-
-        if self.multi_task and self.multi_task['architecture'] == DISCRIMINATIVE:
-            if self.multi_task['accent']:
-                accent_features = {key: [example[key] for example in accent_features]
-                                   for key in accent_features[0].keys()}
-                batch["accent"] = BatchEncoding(accent_features, tensor_type='pt')
-            if self.multi_task['domain']:
-                domain_features = {key: [example[key] for example in domain_features]
-                                   for key in domain_features[0].keys()}
-                batch["domain"] = BatchEncoding(domain_features, tensor_type='pt')
-            if self.multi_task['vad']:
-                vad_features = {key: [example[key] for example in vad_features]
-                                   for key in vad_features[0].keys()}
-                batch["vad"] = BatchEncoding(vad_features, tensor_type='pt')
+        
 
         if "attention_mask" in batch:
             batch["attention_mask"] = batch["attention_mask"].to(torch.long)
+        batch['labels'] = batch['labels'].to(torch.long)
 
         return batch
