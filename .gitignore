@@ -10,3 +10,6 @@ notebooks/.ipynb_checkpoints*
 #Chris
 awscliv2.zip
 slurm*
+wav2vec2-base-ft-keyword-spotting/
+accent_class.py
+cls.sh
