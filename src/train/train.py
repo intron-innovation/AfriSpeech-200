@@ -4,7 +4,7 @@ import gc
 data_home = "data3"
 os.environ['TRANSFORMERS_CACHE'] = f'/{data_home}/.cache/'
 os.environ['XDG_CACHE_HOME'] = f'/{data_home}/.cache/'
-os.environ["WANDB_DISABLED"] = "false"
+os.environ["WANDB_DISABLED"] = "true"
 
 import argparse
 import configparser
@@ -104,10 +104,27 @@ def data_setup(config):
         multi_task['accent'] = True if config['tasks']['accent'] == "True" else False
         multi_task['domain'] = True if config['tasks']['domain'] == "True" else False
         multi_task['vad'] = True if config['tasks']['vad'] == "True" else False
+    if 'type' in config:
+        if config['type']['accent'] == "True":
+            multi_task['task'] = 'accent'
+            if config['type']['accent_norm'] == "True":
+                multi_task['accent_norm'] = "True"
+        elif config['type']['domain'] == "True":
+            multi_task['task'] = 'domain'
 
+        elif config['type']['vad'] == "True":
+            multi_task['task'] = 'vad'
+
+        else: 
+            raise Exception("Please specify a classification Task")
+            
+        
+        
+        
     data_config = DataConfig(
         train_path=config['data']['train'],
         val_path=config['data']['val'],
+        test_path=config['data']['test'],
         aug_path=config['data']['aug'] if 'aug' in config['data'] else None,
         aug_percent=float(config['data']['aug_percent']) if 'aug_percent' in config['data'] else None,
         exp_dir=config['experiment']['dir'],
@@ -150,9 +167,9 @@ def compute_f1_metric(pred):
     pred_logits = pred.predictions
     pred_ids = np.argmax(pred_logits, axis=-1)
 
-    f1 = f1_metric.compute(predictions=pred_ids, references=pred.label_ids)
+    f1 = f1_metric.compute(predictions=pred_ids, references=pred.label_ids, average="weighted")
 
-    return {"f1": f1}
+    return f1
 
 
 
@@ -283,9 +300,18 @@ if __name__ == "__main__":
 
     checkpoints_path = train_setup(config, args)
     data_config = data_setup(config)
-    train_dataset, val_dataset, aug_dataset, PROCESSOR = data_prep(data_config)
-    data_collator = get_data_collator(data_config.multi_task)
+    train_dataset, val_dataset, test_dataset, aug_dataset, PROCESSOR, LABEL_MAP = data_prep(data_config)
+    if config['type']['accent'] == "True":
+        label_mapping = LABEL_MAP['accent']
+    if config['type']['domain'] == "True":
+        label_mapping = LABEL_MAP['domain']
+    if config['type']['vad'] == "True":
+        label_mapping = LABEL_MAP['vad']
+    label2id = label_mapping
+    id2label = {v: k for k, v in label2id.items()}    
 
+    data_collator = get_data_collator(data_config.multi_task)
+    #breakpoint()
     start = time.time()
     # Detecting last checkpoint.
     last_checkpoint, checkpoint_ = get_checkpoint(checkpoints_path, config['models']['model_path'])
@@ -295,7 +321,7 @@ if __name__ == "__main__":
         CTC_model_class = HubertForCTC
     elif 'tasks' in config and config['tasks']['architecture'] == DISCRIMINATIVE:
         CTC_model_class = Wav2Vec2ForCTCnCLS
-    elif 'tasks' in config and config['tasks']['architecture'] == "accent_classifier":
+    elif config['type']['architecture'] == "accent_classifier":
         CTC_model_class = AutoModelForAudioClassification
     else:
         CTC_model_class = Wav2Vec2ForCTC
@@ -328,9 +354,12 @@ if __name__ == "__main__":
             domain_len=int(config['tasks']['num_domains']),
             vad_len=int(config['tasks']['num_vad'])
         )
-    elif 'tasks' in config and config['tasks']['architecture'] == "accent_classifier":
+    elif config['type']['architecture'] == "accent_classifier":
         model = CTC_model_class.from_pretrained(
             last_checkpoint if last_checkpoint else config['models']['model_path'],
+            finetuning_task="audio-classification",
+            label2id=label2id,
+            id2label=id2label,
             attention_dropout=float(config['hyperparameters']['attention_dropout']),
             hidden_dropout=float(config['hyperparameters']['hidden_dropout']),
             feat_proj_dropout=float(config['hyperparameters']['feat_proj_dropout']),
@@ -338,7 +367,7 @@ if __name__ == "__main__":
             layerdrop=float(config['hyperparameters']['layerdrop']),
             ctc_zero_infinity=True,
             pad_token_id=PROCESSOR.tokenizer.pad_token_id,
-            num_labels=config['task']['num_accents'],
+            #num_labels=79#config['type']['num_accents'],
             )
 
     elif config['models']['model_path'] in models_with_different_vocab:
@@ -416,7 +445,7 @@ if __name__ == "__main__":
         dataloader_num_workers=int(config['hyperparameters']['dataloader_num_workers']),
         logging_first_step=True,
         load_best_model_at_end=True if config['hyperparameters']['load_best_model_at_end'] == 'True' else False,
-        metric_for_best_model='eval_wer',
+        metric_for_best_model='f1',
         greater_is_better=False,
         ignore_data_skip=True if config['hyperparameters']['ignore_data_skip'] == 'True' else False,
         report_to=None
@@ -486,9 +515,9 @@ if __name__ == "__main__":
     else:
         trainer = IntronTrainer(
             model=model,
-            data_collator=data_collator,
+            #data_collator=data_collator,
             args=training_args,
-            compute_metrics=compute_metric,
+            compute_metrics=compute_f1_metric,
             train_dataset=train_dataset,
             eval_dataset=val_dataset,
             tokenizer=PROCESSOR.feature_extractor,
@@ -510,3 +539,9 @@ if __name__ == "__main__":
 
         trainer.log_metrics("eval", metrics)
         trainer.save_metrics("eval", metrics)
+    if config['hyperparameters']['do_test'] == "True":
+        metrics = trainer.evaluate(test_dataset, metric_key_prefix="test")
+        metrics["test_samples"] = len(test_dataset)
+
+        trainer.log_metrics("test", metrics)
+        trainer.save_metrics("test", metrics)
