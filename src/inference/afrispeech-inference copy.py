@@ -175,7 +175,7 @@ def transcribe_whisper(args, model, loader, split):
         #accents_int.extend(accent_int)
 
     data = pd.DataFrame(dict(texts=references,
-                             audio_paths=paths, accent=accents, accent_int=accents_ints, pred_accent=hypotheses, pred_accent_int=hypotheses_int, domain=domains))
+                             audio_paths=paths, accent=accents, accent_int=accents_ints, pred_accent=hypotheses, pred_accent_ind=hypotheses_int, domain=domains))
     f1_metric = load_metric("f1")
     f1 = f1_metric.compute(predictions=hypotheses_int, references=accents_ints, average='weighted')
     print(f"The F1 is: {f1['f1']:.3f}")
@@ -242,11 +242,4 @@ if __name__ == "__main__":
 
 
 #python3 src/inference/afrispeech-inference.py --model_id_or_path  src/experiments/wav2vec2-large-xlsr-53-accent-classification/checkpoints --gpu 1 --batchsize 8 --audio_dir /data/data/intron/ --data_csv data/intron-test-public-6346-clean.csv
-# python3 src/inference/afrispeech-inference.py --model_id_or_path  src/experiments/wav2vec2-large-xlsr-53-accent-classification-normalized-accent/checkpoints/checkpoint-29279 --gpu 1 --batchsize 16 --audio_dir /data/data/intron/ --data_csv data/intron-test-public-6346-clean.csv
-
-
-
-
-#/data3/accent_cls/AfriSpeech-Dataset-Paper/src/experiments/wav2vec2-large-xlsr-53-accent-classification/checkpoints/checkpoint-29279
-
-#/data3/accent_cls/AfriSpeech-Dataset-Paper/src/experiments/wav2vec2-large-xlsr-53-accent-classification-normalized-accent/checkpoints/checkpoint-29279
+# python3 src/inference/afrispeech-inference.py --model_id_or_path  src/experiments/wav2vec2-large-xlsr-53-accent-classification/checkpoints --gpu 1 --batchsize 16 --audio_dir /data/data/intron/ --data_csv data/intron-test-public-6346-clean.csv

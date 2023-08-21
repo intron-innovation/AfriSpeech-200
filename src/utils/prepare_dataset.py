@@ -25,6 +25,8 @@ from transformers.trainer_utils import is_main_process
 from src.utils.audio_processing import AudioConfig, load_audio_file
 from src.utils.text_processing import clean_text, detect_inaudible, \
     replace_inaudible, assign_domain, is_accent_multiple, get_minority_accents
+from src.utils.language_mapping import LANGUAGE_MAPPING
+
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -40,6 +42,8 @@ CONFIG = None
 MAX_MODEL_AUDIO_LEN_SECS = 87
 LABEL_MAP = {}
 DISCRIMINATIVE = 'discriminative'
+NORMALIZE = None
+
 
 
 class DataConfig:
@@ -67,9 +71,12 @@ def load_afri_speech_data(
     :param data_path: str
     :return: Dataset instance
     """
-    data = pd.read_csv(data_path)#.iloc[:5]
+    data = pd.read_csv(data_path)#.iloc[:10]
     
     print(f"start {split}: {data.shape}")
+    if NORMALIZE == True:
+        data['accent'] = data['accent'].apply(lambda x: LANGUAGE_MAPPING[x].lower())
+        
     
     if "audio_paths" in data.columns:
         if split == 'aug':
@@ -152,6 +159,7 @@ def load_afri_speech_data(
     data.drop_duplicates(subset=["audio_paths"], inplace=True)
     print("after dedup", data.shape)
     
+    
     if 'project_name' in data.columns:
         data["domain"] = data.project_name.apply(assign_domain)
         print(data.domain.value_counts())
@@ -175,24 +183,29 @@ def load_afri_speech_data(
 
 
 def create_label_maps(train_path, val_path, tasks_dict, checkpoint_path):
+    global NORMALIZE
     data = pd.concat([pd.read_csv(train_path), pd.read_csv(val_path)])
-    if tasks_dict['accent']:
-        accent_list = list(data.accent.unique()) + ['unk']
-        LABEL_MAP['accent'] = {accent: i for i, accent in enumerate(accent_list)}
-        print("LABEL_MAP: ", len(LABEL_MAP['accent']), LABEL_MAP['accent'])
+    if tasks_dict['task']=="accent" and tasks_dict['accent_norm']=="True":
+        NORMALIZE = True
+        if NORMALIZE == True:
+            data['accent'] = data['accent'].apply(lambda x: LANGUAGE_MAPPING[x].lower())
+    
+    
+    accent_list = list(data.accent.unique()) + ['unk']
+    LABEL_MAP['accent'] = {accent: i for i, accent in enumerate(accent_list)}
+    print("LABEL_MAP: ", len(LABEL_MAP['accent']), LABEL_MAP['accent'])
 
-    if tasks_dict['domain']:
-        domain_list = list(data.domain.unique()) + ['unk']
-        LABEL_MAP['domain'] = {accent: i for i, accent in enumerate(domain_list)}
-        print("LABEL_MAP domain: ", len(LABEL_MAP['domain']), LABEL_MAP['domain'])
+    domain_list = list(data.domain.unique()) + ['unk']
+    LABEL_MAP['domain'] = {accent: i for i, accent in enumerate(domain_list)}
+    print("LABEL_MAP domain: ", len(LABEL_MAP['domain']), LABEL_MAP['domain'])
 
-    if tasks_dict['vad']:
-        vad_list = list(data.vad.unique())
-        LABEL_MAP['vad'] = {accent: i for i, accent in enumerate(vad_list)}
-        print("LABEL_MAP vad: ", len(LABEL_MAP['vad']), LABEL_MAP['vad'])
+    # vad_list = list(data.vad.unique())
+    # LABEL_MAP['vad'] = {accent: i for i, accent in enumerate(vad_list)}
+    # print("LABEL_MAP vad: ", len(LABEL_MAP['vad']), LABEL_MAP['vad'])
 
     with open(os.path.join(checkpoint_path, 'label_map.json'), 'w') as f:
         json.dump(LABEL_MAP, f)
+
 
 
 def expand_vocab(vocab_dict, train_path, val_path, vocab_file_name, tasks_dict):
@@ -264,6 +277,10 @@ def data_prep(config):
                                       transform_audio, transform_labels,
                                       multi_task=config.multi_task, 
                                       minority_accents=minority_accents)
+    test_dataset = load_custom_dataset(config, config.test_path, 'test',
+                                      transform_audio, transform_labels,
+                                      multi_task=config.multi_task, 
+                                      minority_accents=minority_accents)
     if config.aug_percent and config.aug_percent > 1:
         train_df = load_custom_dataset(config, config.train_path, 'train',
                                        transform_audio, transform_labels, return_dataset=False,
@@ -291,7 +308,7 @@ def data_prep(config):
                                             minority_accents=minority_accents)
 
     logger.debug(f"Load train and val dataset done in {time.time() - start:.4f}.")
-    return train_dataset, val_dataset, aug_dataset, PROCESSOR
+    return train_dataset, val_dataset, test_dataset,  aug_dataset, PROCESSOR, LABEL_MAP
 
 
 def load_custom_dataset(config, data_path, split,
@@ -353,11 +370,8 @@ def load_vocab(model_path, checkpoints_path, exp_dir, raw_datasets,
     else:
         vocab_dict = {}
 
-    if multi_task and multi_task['expand_vocab']:
-        vocab_dict, vocab_file_name, minority_accents = expand_vocab(vocab_dict, train_path, 
-                                                                     val_path, vocab_file_name, multi_task)
-    if multi_task and multi_task['architecture'] == DISCRIMINATIVE:
-        create_label_maps(train_path, val_path, multi_task, checkpoints_path)
+    
+    create_label_maps(train_path, val_path, multi_task, checkpoints_path)
     logger.info(f"---vocab dict: {len(vocab_dict)}\n{vocab_dict}")
     return vocab_file_name, minority_accents
 
@@ -442,39 +456,26 @@ def concat_labels(text_list, domain, accent, vad, mode="prepend"):
 
 
 def transform_labels(text, accent, domain, vad, tasks_dict):
+    #breakpoint()
     text = clean_text(text)
     with PROCESSOR.as_target_processor():
         labels = PROCESSOR(text.lower()).input_ids
 
     label_accent = label_domain = label_vad = None
-    if tasks_dict:
-        if tasks_dict['accent']:
-            if tasks_dict['architecture'] == DISCRIMINATIVE or tasks_dict['architecture'] == "accent_classifier":
-                label_accent = LABEL_MAP['accent'].get(accent, LABEL_MAP['accent']["unk"])
+    if tasks_dict['task'] =='accent':
+        label = int(LABEL_MAP['accent'].get(accent, LABEL_MAP['accent']["unk"]))
 
-            else:
-                label_accent = LABEL_MAP.get(accent, LABEL_MAP["unk"])
 
-        if tasks_dict['domain']:
-            if tasks_dict['architecture'] == DISCRIMINATIVE or tasks_dict['architecture'] == "domain_classifier":
-                label_domain = LABEL_MAP['domain'].get(domain, LABEL_MAP['domain']["unk"])
-                
-            else:
-                label_domain = LABEL_MAP.get(domain, LABEL_MAP["unk"])
+    if tasks_dict['task'] =='domain':
+        label = LABEL_MAP['domain'].get(domain, LABEL_MAP['domain']["unk"])
+        
+    if tasks_dict['task'] =='vad':
+        label = LABEL_MAP['vad'].get(domain, LABEL_MAP['vad']["unk"])
 
-        if tasks_dict['vad']:
-            if tasks_dict['architecture'] == DISCRIMINATIVE or tasks_dict['architecture'] == "vad_classifier":
-                label_vad = LABEL_MAP['vad'].get(vad)
-            else:
-                label_vad = LABEL_MAP.get(vad)
-
-        if tasks_dict['architecture'] == DISCRIMINATIVE:
-            labels = concat_cls_head_labels(labels, label_domain, label_accent, label_vad, tasks_dict)
-        else:
-            labels = concat_labels(labels, label_domain, label_accent, label_vad, mode=tasks_dict['expand_vocab_mode'])
+        
+    return label
         
             
-    return labels
 
 
 def concat_cls_head_labels(asr_labels, label_domain, label_accent, label_vad, tasks_dict):
@@ -533,32 +534,17 @@ class CustomASRDataset(torch.utils.data.Dataset):
         audio_idx = self.asr_data[idx]['audio_ids']
         domain = self.asr_data[idx]['domain']
         vad = self.asr_data[idx].get('vad', 'speech')
-
         if self.prepare:
             input_audio, label = self.transform(audio_path, text)
             result = {'input_features': input_audio, 'input_lengths': len(input_audio)}
         else:
             input_audio = self.transform(audio_path)
             label = self.target_transform(text, accent, domain, vad, self.multi_task)
-            result = {'input_values': input_audio[0], 'input_lengths': len(input_audio[0])}
-            result.update({'labels': label[1]})
+            result = {'input_values': input_audio[0], 'input_lengths': len(input_audio[0]), 'labels': label}
+
         
 
-        result.update({'labels': label, 'accent': accent, 'audio_idx': audio_idx})
 
-        if self.multi_task['architecture'] == "accent_classifier":
-            num_tasks = 1
-            if self.multi_task['accent']:
-                result.update({'accent': label[num_tasks]})
-                num_tasks += 1
-            if self.multi_task['domain']:
-                result.update({'domain': label[num_tasks]})
-                num_tasks += 1
-            if self.multi_task['vad']:
-                result.update({'vad': label[num_tasks]})
-                num_tasks += 1
-            result.update({'tasks': num_tasks})
-            result.update({'labels': label[0]})
             
         return result
 
@@ -604,10 +590,9 @@ class DataCollatorCTCWithPaddingGroupLen:
         #         return_tensors="pt",
         #     )
 
-        
-
+        #print(features)
         if "attention_mask" in batch:
             batch["attention_mask"] = batch["attention_mask"].to(torch.long)
-        batch['labels'] = batch['labels'].to(torch.long)
+        #batch['labels'] = feature['labels'].to(torch.long)
 
         return batch

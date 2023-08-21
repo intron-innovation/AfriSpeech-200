@@ -30,7 +30,7 @@ def write_pred(model_id_or_path, results, wer, cols=None, output_dir="./results"
     return predictions_df
 
 
-def write_pred_inference_df(model_id_or_path, predictions_df, wer, output_dir="./results", split="dev"):
+def write_pred_inference_df(model_id_or_path, predictions_df, f1, output_dir="./results", split="dev"):
     """
     Write model predictions to file
     :param cols: List[str]
@@ -43,11 +43,11 @@ def write_pred_inference_df(model_id_or_path, predictions_df, wer, output_dir=".
     if "checkpoints" in model_id_or_path and '/data/AfriSpeech-Dataset-Paper' in model_id_or_path:
         model_id_or_path = model_id_or_path.split("/")[-1]
     elif "checkpoints" in model_id_or_path or os.path.isdir(model_id_or_path):
-        model_id_or_path = model_id_or_path.split("/")[3]
+        model_id_or_path = f"{model_id_or_path.split('/')[2]}_{model_id_or_path.split('/')[3]}"
     else:
         model_id_or_path = model_id_or_path.replace("/", "-")
 
-    output_path = f"{output_dir}/intron-open-{split}-{model_id_or_path}-wer-{round(wer, 4)}-{len(predictions_df)}.csv"
+    output_path = f"{output_dir}/intron-open-{split}-{model_id_or_path}-f1-{round(f1, 4)}-{len(predictions_df)}.csv"
     predictions_df.to_csv(output_path, index=False)
     print(output_path)
     return predictions_df
