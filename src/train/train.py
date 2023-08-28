@@ -32,7 +32,7 @@ from transformers.trainer_utils import get_last_checkpoint
 from src.utils.text_processing import clean_text, strip_task_tags
 from src.utils.prepare_dataset import DataConfig, data_prep, DataCollatorCTCWithPaddingGroupLen, DISCRIMINATIVE
 from src.utils.sampler import IntronTrainer
-from src.utils.compute_cluster_distance import compute_distances,compute_cosine_sim
+from src.utils.compute_cluster_distance import compute_distances,compute_cosine_sim,compute_geo_proximity
 from src.train.models import Wav2Vec2ForCTCnCLS
 
 warnings.filterwarnings('ignore')
@@ -288,8 +288,12 @@ if __name__ == "__main__":
     ##computing centroid.
     train_centriods = pd.read_csv("./data/train_afrispeech_accents_centroids.csv").set_index("accent")
     test_centriods = pd.read_csv("./data/test_afrispeech_accents_centroids.csv").set_index("accent")
-    train_accent_cords = pd.read_csv("./data/train_accents_cords.csv").set_index("accent")
-    test_accent_cords = pd.read_csv("./data/test_accents_cords.csv").set_index("accent")
+
+    #train_accent_cords = pd.read_csv("./data/train_accents_cords.csv").set_index("accent")
+    #test_accent_cords = pd.read_csv("./data/test_accents_cords.csv").set_index("accent")
+
+    accent_cords = pd.read_csv("./data/accents_cords.csv").set_index("accent")
+
 
     
     try:
@@ -306,6 +310,11 @@ if __name__ == "__main__":
         # if RANDOM, then randomly choose `k_accents` in `train_centroids`.
         accent_lists = train_centriods.index.values.tolist()
         accent_subset = np.random.choice(accent_lists,size = k_accents,replace=False).tolist()
+    elif 'geo' in args.experiment_name:
+        print('='*20 + 'Using geographical proximity of accents' + '='*20)
+        # if RANDOM, then randomly choose `k_accents` in `train_centroids`.
+        accent_lists = train_centriods.index.values.tolist()
+        accent_subset = compute_geo_proximity(accent_B,accent_lists,accent_cords,k_accents)
 
     else:
         print('='*20 + 'Using subset of accents based on cosine similarity' + '='*20)

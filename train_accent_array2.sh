@@ -15,7 +15,9 @@ module load anaconda/3
 module load cudatoolkit/11.7
 conda activate /home/mila/c/chris.emezue/scratch/afrispeech
 
-export SLURM_ARRAY_TASK_ID=$1
+#export SLURM_ARRAY_TASK_ID=$1
+export SLURM_ARRAY_TASK_ID='bini' # in debug mode
+
 
 python3 -m src.train.train \
 -c src/config/accent_fold/config_xlsr_accentfold_chris_new_idea.ini \
