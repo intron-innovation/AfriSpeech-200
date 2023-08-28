@@ -130,11 +130,12 @@ def get_completed_runs(folder):
             print(p)
 
 
-TASK_FOLDER_RANDOM = '/home/mila/c/chris.emezue/scratch/AfriSpeech-100/task4-new-idea/'
+#TASK_FOLDER_RANDOM = '/home/mila/c/chris.emezue/scratch/AfriSpeech-100/task4-new-idea/'
+
 test_only_accents = ['obolo', 'jukun', 'bini', 'etche', 'bajju', 'idah', 'ikulu', 'ukwuani', 'estako', 'ekene', 'okirika', 'ishan', 'eket', 'ibani', 'eleme', 'yoruba, hausa', 'eggon', 'ebiobo', 'mada', 'nyandang', 'ijaw(nembe)', 'agatu', 'gbagyi', 'urobo', 'yala mbembe', 'ekpeye', 'gerawa', 'bassa', 'afo', 'mwaghavul', 'kubi', 'igbo and yoruba', 'bagi', 'jaba', 'khana', 'angas', 'brass', 'delta', 'oklo', 'kalabari', 'igarra']
 
-get_completed_runs(TASK_FOLDER_RANDOM)
-breakpoint()
+#get_completed_runs(TASK_FOLDER_RANDOM)
+#breakpoint()
 
 def read_json(file_path):
     with open(file_path,'r') as f:
@@ -156,7 +157,7 @@ def get_all_test_accent_stats():
     method = [m[1] for m in metrics]
 
     df = pd.DataFrame({'Method':method,'Accent':accents,'Test WER':wer,'# Test samples':eval_samples,'# Train samples':size_train_dataset,'Test loss':eval_loss})
-    # Only select the 41 accents only in test
+    # Only select the 41 accents in test
     # test_adjust = ['gerawa','igbo and yoruba','obolo','ukwuahi','urobo','ikulu']
 
     
@@ -229,10 +230,10 @@ def get_table_chosen_accents(type_filter='AccentFold'):
     #plt.title('Heatmap ofLanfrica Records per language')
     the_table.figure.tight_layout()
 
-    the_table.figure.savefig('table_accent_chosen_heatmap.png')
+    the_table.figure.savefig('plots/table_accent_chosen_heatmap.svg')
     #plt.show()
 
     breakpoint()
 
 
-#get_table_chosen_accents()
+get_table_chosen_accents()

@@ -57,14 +57,14 @@ APPEND_NAME="_geo"
 EPOCH=10
 #for B in "bini" "angas" "agatu"
 #for B in "bini"
-#for B in 'afemai' 'angas' 'afo' 'afrikaans' 'akan' 'akan (fante)' 'alago' 'anaang' 'bagi' 'bajju' 'bassa' 'bassa-nge/nupe' 'bekwarra' 'benin' 'berom' 'bette' 'brass' 'delta' 'ebiobo' 'ebira' 'edo' 'efik' 'eggon' 'ekene' 'eket' 'ekpeye' 'eleme' 'english' 'epie' 'esan' 'estako' 'etche' 'etsako' 'fulani' 'gbagyi' 'gerawa' 'hausa' 'hausa/fulani' 'ibani' 'ibibio' 'idah' 'idoma' 'igala' 'igarra' 'igbo' 'igbo and yoruba' 'ijaw' 'ijaw(nembe)' 'ika' 'ikulu' 'ikwere' 'ishan' 'isindebele' 'isixhosa' 'isizulu' 'isoko' 'itsekiri' 'izon' 'jaba' 'jukun' 'kalabari' 'kanuri' 'khana' 'kikuyu' 'kinyarwanda' 'kiswahili' 'kubi' 'luganda' 'luhya' 'luo' 'mada' 'meru' 'mwaghavul' 'nembe' 'ngas' 'nupe' 'nyandang' 'obolo' 'ogbia' 'ogoni' 'okirika' 'oklo' 'okrika' 'pidgin' 'sepedi' 'sesotho' 'setswana' 'shona' 'siswati' 'sotho' 'south african english' 'swahili' 'tiv' 'tshivenda' 'tswana' 'twi' 'ukwuani' 'urhobo' 'urobo' 'venda' 'venda and xitsonga' 'xhosa' 'yala mbembe' 'yoruba' 'yoruba hausa' 'zulu'
-for B in "angas"
+# Do for only the OOD accents of interest
+for B in 'obolo'  'jukun'  'bini'  'etche'  'bajju'  'idah'  'ikulu'  'ukwuani'  'estako'  'ekene'  'okirika'  'ishan'  'eket'  'ibani'  'eleme'  'yoruba  hausa'  'eggon'  'ebiobo'  'mada'  'nyandang'  'ijaw(nembe)'  'agatu'  'gbagyi'  'urobo'  'yala mbembe'  'ekpeye'  'gerawa'  'bassa'  'afo'  'mwaghavul'  'kubi'  'igbo and yoruba'  'bagi'  'jaba'  'khana'  'angas'  'brass'  'delta'  'oklo'  'kalabari'  'igarra'
+#for B in "angas"
 do
-    #for neighbor in 10 20 35
     for neighbor in 20 #35
     do
-        #sbatch train_accent.sh $B $neighbor $APPEND_NAME $CHEKPOINT_PATH $EPOCH
-        bash train_accent.sh $B $neighbor ${APPEND_NAME} ${CHEKPOINT_PATH} ${EPOCH}
+        sbatch train_accent_geo.sh $B $neighbor $APPEND_NAME $CHEKPOINT_PATH $EPOCH
+        #bash train_accent_geo.sh $B $neighbor ${APPEND_NAME} ${CHEKPOINT_PATH} ${EPOCH}
     done
 done
 
