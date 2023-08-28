@@ -312,7 +312,6 @@ if __name__ == "__main__":
         accent_subset = np.random.choice(accent_lists,size = k_accents,replace=False).tolist()
     elif 'geo' in args.experiment_name:
         print('='*20 + 'Using geographical proximity of accents' + '='*20)
-        # if RANDOM, then randomly choose `k_accents` in `train_centroids`.
         accent_lists = train_centriods.index.values.tolist()
         accent_subset = compute_geo_proximity(accent_B,accent_lists,accent_cords,k_accents)
 
