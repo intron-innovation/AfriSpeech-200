@@ -44,7 +44,8 @@ def distance_two_coords(coord1,coord2):
 
 def compute_geo_proximity(accent,other_accents,accent_info_df,k):
     # get the country coord of accent
-    # calculate distance between country coord in `other_accents` and `accent`. Save the result in another column
+    # calculate distance between country coord in `other_accents` and `accent`. 
+    # Save the result in another column
     # Sort by distance and take k accents.
     assert len(accent)==1
     accent = accent[0]
