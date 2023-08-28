@@ -33,4 +33,8 @@ def compute_cosine_sim(points, centroids, k):
 
     return top_k
 
+# def compute_geo_proximity(points, centroids, k):
+#    distance = {}
+   
+
 

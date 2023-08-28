@@ -288,6 +288,9 @@ if __name__ == "__main__":
     ##computing centroid.
     train_centriods = pd.read_csv("./data/train_afrispeech_accents_centroids.csv").set_index("accent")
     test_centriods = pd.read_csv("./data/test_afrispeech_accents_centroids.csv").set_index("accent")
+    train_accent_cords = pd.read_csv("./data/train_accents_cords.csv").set_index("accent")
+    test_accent_cords = pd.read_csv("./data/test_accents_cords.csv").set_index("accent")
+
     
     try:
         accent_index = int(args.b)
