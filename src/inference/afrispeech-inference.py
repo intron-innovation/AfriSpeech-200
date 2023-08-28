@@ -158,6 +158,7 @@ def transcribe_whisper(args, model, loader, split):
                 logits = model(audio_or_mels).logits
             pred_ids = torch.argmax(torch.tensor(logits), dim=-1)
             results = processor.batch_decode(pred_ids)
+        import pdb; pdb.set_trace()
         
         if "<|" in results[0]:
             task_tags.extend([get_task_tags(text) for text in results])
