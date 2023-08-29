@@ -268,7 +268,7 @@ def compare_accent_subsets():
     print('Count: ',count)
     fig,ax = plt.subplots()
     ax.hist(diff)
-    ax.set_title('# accents from AccentFold different from geographical proximity')
+    ax.set_title('# accents from AccentFold different from GeoProx')
     ax.set_xlabel('# accents')
     ax.set_ylabel('Count')
     fig.savefig('plots/hist_diff_accents_fold_geo.png')
