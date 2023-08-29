@@ -58,13 +58,17 @@ EPOCH=10
 #for B in "bini" "angas" "agatu"
 #for B in "bini"
 # Do for only the OOD accents of interest
-for B in 'obolo'  'jukun'  'bini'  'etche'  'bajju'  'idah'  'ikulu'  'ukwuani'  'estako'  'ekene'  'okirika'  'ishan'  'eket'  'ibani'  'eleme'  'yoruba  hausa'  'eggon'  'ebiobo'  'mada'  'nyandang'  'ijaw(nembe)'  'agatu'  'gbagyi'  'urobo'  'yala mbembe'  'ekpeye'  'gerawa'  'bassa'  'afo'  'mwaghavul'  'kubi'  'igbo and yoruba'  'bagi'  'jaba'  'khana'  'angas'  'brass'  'delta'  'oklo'  'kalabari'  'igarra'
+#for B in 'obolo'  'jukun'  'bini'  'etche'  'bajju'  'idah'  'ikulu'  'ukwuani'  'estako'  'ekene'  'okirika'  'ishan'  'eket'  'ibani'  'eleme'  'yoruba  hausa'  'eggon'  'ebiobo'  'mada'  'nyandang'  'ijaw(nembe)'  'agatu'  'gbagyi'  'urobo'  'yala mbembe'  'ekpeye'  'gerawa'  'bassa'  'afo'  'mwaghavul'  'kubi'  'igbo and yoruba'  'bagi'  'jaba'  'khana'  'angas'  'brass'  'delta'  'oklo'  'kalabari'  'igarra'
+
+for B in 'yoruba, hausa' 'yala mbembe' 'igbo and yoruba' 
+#for B in 'yoruba, hausa' 
+
 #for B in "angas"
 do
     for neighbor in 20 #35
     do
-        sbatch train_accent_geo.sh $B $neighbor $APPEND_NAME $CHEKPOINT_PATH $EPOCH
-        #bash train_accent_geo.sh $B $neighbor ${APPEND_NAME} ${CHEKPOINT_PATH} ${EPOCH}
+        sbatch train_accent_geo.sh "$B" $neighbor $APPEND_NAME $CHEKPOINT_PATH $EPOCH # we add "" in B for the names with space in between
+        #bash train_accent_geo.sh "$B" $neighbor ${APPEND_NAME} ${CHEKPOINT_PATH} ${EPOCH}
     done
 done
 
