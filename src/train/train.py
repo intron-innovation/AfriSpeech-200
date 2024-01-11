@@ -446,7 +446,7 @@ if __name__ == "__main__":
         logging_first_step=True,
         load_best_model_at_end=True if config['hyperparameters']['load_best_model_at_end'] == 'True' else False,
         metric_for_best_model='f1',
-        greater_is_better=False,
+        greater_is_better=True,
         ignore_data_skip=True if config['hyperparameters']['ignore_data_skip'] == 'True' else False,
         report_to=None
     )

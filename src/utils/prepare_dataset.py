@@ -25,8 +25,8 @@ from transformers.trainer_utils import is_main_process
 from src.utils.audio_processing import AudioConfig, load_audio_file
 from src.utils.text_processing import clean_text, detect_inaudible, \
     replace_inaudible, assign_domain, is_accent_multiple, get_minority_accents
-from src.utils.language_mapping import LANGUAGE_MAPPING
-
+from src.utils.language_mapping import LANGUAGE_MAPPING, ACCENT_LANGUAGE_FAMILIES, ACCENTS_COUNTRY_DICT
+LANGUAGE_MAPPING = ACCENTS_COUNTRY_DICT #ACCENT_LANGUAGE_FAMILIES
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
