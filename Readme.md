@@ -1,4 +1,4 @@
-# AfriSpeech-100
+# AfriSpeech-200
 
 #### Pan-African accented speech dataset for clinical and general domain ASR
 
@@ -14,7 +14,7 @@ Contributor List: []
 - [x] Start experiments
 
 
-#### Abstract [draft]
+#### Abstract
 
 Africa has a very low doctor:patient ratio. At very buys clinics, doctors could  see 30+ patients per day
  (a very heavy patient burden compared with developed countries), but productivity tools are lacking for these
@@ -200,12 +200,12 @@ Here are the steps to access the data
 platform (linux/mac/windows) following the instructions [here](https
 ://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) 
 
-2. Create a download folder e.g. `mkdir AfriSpeech-100`
+2. Create a download folder e.g. `mkdir AfriSpeech-200`
 
 3. Request aws credentials to access the data by sending an email
 with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM on slack
 
-4. Once you receive credentials, change into your data directory `cd AfriSpeech-100`
+4. Once you receive credentials, change into your data directory `cd AfriSpeech-200`
 
 5. Type `aws configure` at the command line, hit enter, and fill in the following based on the credentials you receive.
     ```
@@ -215,7 +215,7 @@ with title "AfriSpeech S3 Credentials Request" to tobi@intron.io or send me a DM
     Default output format [None]: <leave this blank>
     ```
 
-6. Run `aws s3 cp s3://intron-open-source/AfriSpeech-100 . --recursive` to download all the audio
+6. Run `aws s3 cp s3://intron-open-source/AfriSpeech-200 . --recursive` to download all the audio
 
 7. Download may take over 2hrs depending on your bandwidth. Train set: 57816, 103G; Dev set: 3227, 5.2G
 
